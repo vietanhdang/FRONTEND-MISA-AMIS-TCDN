@@ -28,10 +28,7 @@ export default {
         };
     },
     mounted() {
-        setInterval(() => {
-            this.count++;
-            this.$root.$toast.success(`${this.count}`);
-        }, 2000);
+        this.$root.$toast.success(`${this.count}`);
     },
 }
 </script>
