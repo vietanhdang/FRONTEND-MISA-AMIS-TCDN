@@ -1,0 +1,63 @@
+/* BEM 
+Block Elements Modifiers
+B__E--M
+*/
+#toast-wrapper {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  .toast {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    height: 48px;
+    line-height: 48px;
+    margin-top: 18px;
+    min-width: 300px;
+    .toast__icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-left: 18px;
+      i {
+        font-size: 14px;
+      }
+      flex-shrink: 0;
+    }
+    .toast__text {
+      margin: 0 12px;
+      flex-shrink: 0;
+    }
+    .toast__button {
+      margin: 0 16px;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      font-size: 24px;
+      line-height: 24px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+  }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(calc(100% + 20px));
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+  }
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+    }
+  }
+}

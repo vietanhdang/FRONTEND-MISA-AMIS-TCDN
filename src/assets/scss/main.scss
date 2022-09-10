@@ -1,0 +1,24 @@
+@import "variables";
+@import "grid";
+@import "form";
+@import "input";
+@import "header";
+@import "navbar";
+@import "content";
+@import "dialog";
+@import "toast";
+@import "dialog";
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: $bg-white;
+}
+::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: $bg-grey;
+}
