@@ -21,3 +21,4 @@ Object.keys(components).forEach((key) => {
 });
 
 app.mount("#app"); // Mount app vào DOM
+

@@ -11,7 +11,6 @@
         </div>
         <div class="content__main">
             <div class="content__table">
-
                 <div class="content__toolbar">
                     <div class="content__toolbar-filter">
                         <v-input placeholder="Tìm theo mã, tên nhân viên" icon="icon-search" v-model="keyword"
@@ -87,7 +86,6 @@
                                                 </div>
                                             </div>
                                         </button>
-
                                     </div>
 
                                 </td>
@@ -108,7 +106,6 @@
                             <div class="v-pagination__container--right--item">
                                 <VSelect :data="options" :position="'top'" v-model="pageSize" propKey="key"
                                     propValue="value" />
-
                             </div>
                             <div class="v-pagination__container--right--item">
                                 <div class="v-pagination__container--right--item--text page-item" @click="prevPage">
@@ -161,7 +158,6 @@
                 <div class="dialog__body dialog__body__form">
                     <div class="row">
                         <div class="col l-6 m-6 c-12">
-                            {{keyword}}
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 m-5 c-5">
                                     <v-input label="Mã" placeholder="Nhập mã nhân viên" :required="true"
@@ -273,6 +269,12 @@ export default {
                 { key: 30, value: '30 bản ghi trên 1 trang' },
                 { key: 50, value: '50 bản ghi trên 1 trang' },
                 { key: 100, value: '100 bản ghi trên 1 trang' },
+                { key: 200, value: '200 bản ghi trên 1 trang' },
+                { key: 500, value: '500 bản ghi trên 1 trang' },
+                { key: 1000, value: '1000 bản ghi trên 1 trang' },
+                { key: 2000, value: '2000 bản ghi trên 1 trang' },
+                { key: 5000, value: '5000 bản ghi trên 1 trang' },
+                { key: 10000, value: '10000 bản ghi trên 1 trang' },
             ],
             department: [
                 { key: 1, value: 'Phòng kế toán' },
@@ -558,7 +560,7 @@ export default {
 
                 &:hover {
                     background-color: #e5e5e5;
-                    color: $text-green;
+                    color: $bg-green-hover;
                     transition: all 0.2s ease;
                 }
 

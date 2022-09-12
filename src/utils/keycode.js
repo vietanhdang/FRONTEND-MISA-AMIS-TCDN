@@ -12,6 +12,5 @@ export default {
   RIGHT: 39,
   DELETE: 46,
   ESC: 27,
+  F1: 112,
 };
-
-

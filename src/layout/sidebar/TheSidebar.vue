@@ -180,7 +180,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .navbar {
-    
+
     .router-link-active {
         font-size: 14px;
         font-weight: 700 !important;
@@ -192,9 +192,9 @@ export default {
             }
         }
     }
-    
+
     &.collapsed {
-        transition:width .3s ease-in-out;
+        transition: width .3s ease-in-out;
         width: 74px;
 
         .navbar__item__list {

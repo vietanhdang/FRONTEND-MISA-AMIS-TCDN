@@ -84,4 +84,9 @@
   &-analysis {
     background: url($sprite-img) no-repeat -248px -1662px;
   }
+  &-arrow-down {
+    background: url($sprite-img) no-repeat -896px -359px;
+    width: 16px;
+    height: 16px;
+  }
 }

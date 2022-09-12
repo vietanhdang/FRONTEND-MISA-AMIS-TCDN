@@ -30,7 +30,7 @@
 </template>
 <script>
 /* eslint-disable */
-import { removeVietnameseTones } from '@/utils/text-normalization';
+import { removeVietnameseTones } from '@/utils/format';
 import keycode from '@/utils/keycode';
 export default {
     name: "VCombobox",
@@ -288,13 +288,13 @@ export default {
             }
 
             .icon-arrow-down {
-                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -368px -360px;
+                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
                 width: 16px;
                 height: 16px;
             }
 
             .icon-arrow-up {
-                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -368px -360px;
+                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
                 width: 16px;
                 height: 16px;
                 transform: rotate(180deg);

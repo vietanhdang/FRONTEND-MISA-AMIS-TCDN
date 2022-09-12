@@ -668,6 +668,11 @@
 .icon-analysis {
   background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -248px -1662px;
 }
+.icon-arrow-down {
+  background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -896px -359px;
+  width: 16px;
+  height: 16px;
+}
 
 .content {
   max-width: calc(100% - 200px);
@@ -1032,10 +1037,12 @@ B__E--M
 
 ::-webkit-scrollbar-track {
   background: #ffffff;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #bdbdbd;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

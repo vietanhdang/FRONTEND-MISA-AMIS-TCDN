@@ -3,11 +3,11 @@
         <div class="v-select__label" v-if="label" @click="openSelect">
             {{ label }} <span v-if="required"> * </span>
         </div>
-        <div class="v-select__selected" :class="{ open: open }" @click="openSelect" @blur="closeSelect" tabindex="-1"
+        <div class="v-select__selected" :class="{ open: open }" @click="toggleSelect" @blur="closeSelect" tabindex="-1"
             @keydown="selecItemUpDown">
             {{ data[indexItemSelected][propValue] }}
         </div>
-        <div class="v-select__icon" @click="openSelect" @blur="closeSelect" tabindex="-1" @keydown="selecItemUpDown">
+        <div class="v-select__icon" @click="toggleSelect" @blur="closeSelect" tabindex="-1" @keydown="selecItemUpDown">
             <div class="icon-arrow-down" v-if="position === 'bottom'"></div>
             <div class="icon-arrow-down" v-if="!open && position === 'top'"></div>
             <div class="icon-arrow-up" v-if="open && position === 'top'"></div>
@@ -77,6 +77,13 @@ export default {
          */
         openSelect() {
             this.open = true;
+        },
+        /**
+         * @description: Đóng mở select box
+         * Author: AnhDV 12/09/2022
+         */
+        toggleSelect() {
+            this.open = !this.open;
         },
         /**
          * @description: Đóng select box 
@@ -238,13 +245,13 @@ export default {
 
 .icon {
     &-arrow-down {
-        background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -368px -360px;
+        background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
         width: 16px;
         height: 16px;
     }
 
     &-arrow-up {
-        background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -368px -360px;
+        background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
         width: 16px;
         height: 16px;
         transform: rotate(180deg);

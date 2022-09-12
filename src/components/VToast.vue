@@ -85,7 +85,22 @@ export default {
             count: 0,
         };
     },
-    mounted() {
+    watch: {
+        toasts: {
+            /**
+            * @description: Hàm này dùng để theo giõi nếu số lượng thông báo vượt quá maxMessage
+            * @param: {any} 
+            * Author: AnhDV 10/09/2022
+            */
+            handler: function (val) {
+                if (val.length > this.maxMessage) {
+                    this.toasts.splice(this.maxMessage);
+                }
+            },
+            deep: true,
+        },
+    },
+    created() {
         /**
          * Tạo API để truyên thông báo từ các component khác
          * Author: AnhDV 10/09/2022
@@ -136,15 +151,12 @@ export default {
             } else {
                 this.toasts.unshift(messageData);
             }
-            // Kiểm tra xem có giới hạn số lượng thông báo hiển thị hay không
-            if (this.toasts.length > this.maxMessage) {
-
-                this.toasts.splice(this.maxMessage);
-            }
-
+            console.log(messageData);
             // Nếu thời gian hiển thị thông báo lớn hơn 0 thì bắt xử lý tiến trình
             if (messageData.timeout > 0) {
                 this.startProgress(messageData);
+            } else {
+                messageData.showProgress = false;
             }
         },
 
@@ -251,21 +263,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-move,
+/* apply transition to moving elements */
+.v-enter-active,
+.v-leave-active {
+    transition: all 0.5s ease;
+}
+
 .v-enter-from,
 .v-leave-to {
     opacity: 0;
-    transform: translateX(calc(100% + 20px));
+    transform: translateX(30px);
 }
 
-.v-enter-active,
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
 .v-leave-active {
-    transition: all 0.5s;
+    position: absolute;
 }
 
-.v-enter-to {
-    opacity: 1;
-    transform: translateX(0);
-}
 
 .v {
     &-toast {
