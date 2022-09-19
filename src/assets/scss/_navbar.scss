@@ -1,33 +1,47 @@
-.navbar {
-  width: 200px;
+.sidebar {
+  width: auto;
   height: 100%;
   border-right: 1px solid #e5e5e5;
   color: $text-white;
-  background-color: $bg-grey-bold;
+  background-color: #393a3d;
   overflow-y: auto;
   flex-shrink: 0;
-  a {
-    text-decoration: none;
-    color: #fff;
+  &__header {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 24px;
+  }
+  &__content {
+    padding-top: 8px;
+    padding-bottom: 14px;
+  }
+  &__logo {
+    width: auto;
+    img {
+      height: 32px;
+    }
   }
   &__item__list {
-    padding: 20px 12px 0px 12px;
+    a {
+      color: #fff;
+    }
   }
   &__item {
-    width: 100%;
-    margin-bottom: 4px;
-    height: 44px;
+    width: auto;
+    height: 42px;
+    padding: 0 14px 0 8px;
+    border-left: 6px transparent solid;
+    text-decoration: none;
     display: flex;
     cursor: pointer;
-    border-radius: 4px;
-    background-color: $bg-grey-bold;
     align-items: center;
     &:hover {
-      background-color: $bg-grey-bold-hover;
+      background-color: rgba(#d4d7dc, 0.2);
     }
   }
   &__item--icon {
-    margin: 0 12px;
+    margin-right: 8px;
     div {
       width: 24px;
       height: 24px;
@@ -36,57 +50,6 @@
   }
   &__item--text {
     font-weight: 500;
-  }
-}
-.icon {
-  &-dashboard {
-    background: url($sprite-img) no-repeat -30px -1587px;
-  }
-  &-cash {
-    background: url($sprite-img) no-repeat -74px -1588px;
-  }
-  &-bank {
-    background: url($sprite-img) no-repeat -118px -1588px;
-  }
-  &-buy {
-    background: url($sprite-img) no-repeat -162px -1588px;
-  }
-  &-sell {
-    background: url($sprite-img) no-repeat -206px -1588px;
-  }
-  &-bill {
-    background: url($sprite-img) no-repeat -250px -1588px;
-  }
-  &-warehouse {
-    background: url($sprite-img) no-repeat -291px -1588px;
-  }
-  &-tool {
-    background: url($sprite-img) no-repeat -335px -1588px;
-  }
-  &-fixed-asset {
-    background: url($sprite-img) no-repeat -379px -1588px;
-  }
-  &-tax {
-    background: url($sprite-img) no-repeat -423px -1588px;
-  }
-  &-price {
-    background: url($sprite-img) no-repeat -467px -1588px;
-  }
-  &-summary {
-    background: url($sprite-img) no-repeat -511px -1588px;
-  }
-  &-budget {
-    background: url($sprite-img) no-repeat -423px -1661px;
-  }
-  &-report {
-    background: url($sprite-img) no-repeat -547px -1590px;
-  }
-  &-analysis {
-    background: url($sprite-img) no-repeat -248px -1662px;
-  }
-  &-arrow-down {
-    background: url($sprite-img) no-repeat -896px -359px;
-    width: 16px;
-    height: 16px;
+    font-size: 13px;
   }
 }

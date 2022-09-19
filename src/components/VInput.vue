@@ -6,19 +6,27 @@
             </label>
         </div>
         <div class="v-input__input">
-            <input ref="input" :type="type" :placeholder="placeholder" :class="className" :id="id" :checked="checked"
-                :value="modelValue" :required="required" @input="bindValue" :name="name" :style="style" />
-            <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">{{ label_custom
-            }}</label>
-            <label class="v-input__radio" v-if="type === 'radio'" @click="$refs.input.click()">{{ label_custom
-            }}</label>
-            <div class="v-input__icon" v-if="icon">
-                <div :class="icon"></div>
+            <input ref="input" :type="type" :placeholder="placeholder"
+                :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id"
+                :checked="type === 'checkbox' || type === 'radio' ? (modelValue == value? true : false) : checked"
+                :value="type === 'checkbox' || type === 'radio' ? value : modelValue" :required="required" :name="name"
+                :disabled="disabled" :style="style" v-model="model">
+            <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
+                <label class="label_custom" v-if="label_custom">{{label_custom}}</label>
+            </label>
+            <label class="v-input__radio" v-if="type === 'radio'" @click="$refs.input.click()">
+                <label class="label_custom">{{ label_custom}}</label>
+            </label>
+            <div class="v-input__icon ms-16 ms-icon ms-icon-search" v-if="icon">
             </div>
         </div>
     </div>
 </template>
-
+  <!-- <div class="error-tooltip">
+                <div class="error-tooltip__text">
+                    {{ error }}
+                </div>
+            </div> -->
 <script>
 export default {
     name: "VInput",
@@ -75,8 +83,57 @@ export default {
             required: false,
             default: () => [],
         },
+        error: {
+            type: String,
+            required: false,
+            default: "",
+        },
+        outline: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        value: {
+            required: false,
+        },
+        focus: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+    },
+    data() {
+        return {
+            model: this.modelValue,
+        };
+    },
+    watch: {
+        /**
+         * @description: Hàm này dùng để lắng nghe sự thay đổi của input để emit ra ngoài 
+         * Author: AnhDV 16/09/2022
+         */
+        model(value) {
+            this.$emit("update:modelValue", value);
+        },
+
+        /**
+         * @description: Hàm này dùng để lắng nghe sự thay đổi của giá trị truyền vào để cập nhật giá trị cho input
+         * Author: AnhDV 16/09/2022
+         */
+        modelValue(value) {
+            this.model = value;
+        },
     },
     computed: {
+        /**
+         * @description: Tạo style cho input
+         * Author: AnhDV 14/09/2022
+         */
         style() {
             let styleProps = {};
             if (this.styleProps.length > 0) {
@@ -91,24 +148,61 @@ export default {
             }
         },
     },
-    methods: {
-        /**
-         * @description: Tự động bind value cho input
-         * @param: {event} e
-         * Author: AnhDV 10/09/2022
-         */
-        bindValue(e) {
-            this.$emit("update:modelValue", e.target.value);
-        },
+    mounted() {
+        if (this.focus) { // Nếu có truyền focus vào thì focus vào input
+            this.$refs.input.focus();
+        }
     },
 
 }
 </script>
 <style scoped lang="scss">
+// .error {
+//     &-tooltip {
+//         display: flex;
+//         justify-content: center;
+//         align-items: center;
+//         min-width: 100%;
+//         max-width: 100%;
+//         position: absolute;
+//         top: 115%;
+
+//     }
+
+//     &-tooltip__text {
+//         background-color: #F06666;
+//         min-width: 40px;
+//         text-align: center;
+//         border-radius: 2px;
+//         font-size: 13px;
+//         font-weight: 500;
+//         color: #fff;
+//         position: relative;
+
+//         &:after {
+//             content: "";
+//             position: absolute;
+//             bottom: 100%;
+//             left: 50%;
+//             margin-left: -5px;
+//             border-width: 5px;
+//             border-style: solid;
+//             border-color: transparent transparent #F06666 transparent;
+//         }
+//     }
+// }
+
 .v {
     &-input {
         display: flex;
         flex-direction: column;
+        position: relative;
+    }
+
+    &-input__outline {
+        &:hover {
+            outline: 1px solid #e2e2e2;
+        }
     }
 
     &-input__label {
@@ -126,8 +220,10 @@ export default {
 
     &-input__input {
         display: flex;
+        align-items: flex-start;
         flex-direction: column;
         position: relative;
+        justify-content: center;
 
         label {
             font-weight: 400;
@@ -135,11 +231,11 @@ export default {
         }
 
         input {
-            height: 36px;
+            height: 32px;
             outline: none;
             border-radius: 4px;
             border: 1px solid #bbbbbb;
-            padding: 8px 8px 8px 12px;
+            padding: 0 10px;
 
             &:focus {
                 border: 1px solid #019160;
@@ -150,38 +246,49 @@ export default {
                 color: #bbbbbb;
             }
         }
+
+        .error {
+            border: 1px solid red;
+        }
     }
 
     &-input__with-icon {
         padding: 8px 36px 8px 12px;
     }
 
-    &-input__checkbox {}
+    &-input__checkbox {
 
-    &-input__radio {}
+        .label_custom {
+            margin-left: 10px;
+        }
+    }
+
+    &-input__radio {
+        line-height: 18px;
+        cursor: pointer;
+
+        label {
+            margin-left: 10px;
+        }
+    }
 
     &-input__icon {
-        width: 20px;
-        height: 20px;
         position: absolute;
-        right: 8px;
-        top: 8px;
-        overflow: hidden;
+        right: 11px;
     }
+
 }
 
-.icon {
-    &-search {
-        background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -317px -148px;
-        width: 16px;
-        height: 16px;
-        opacity: 0.7;
-    }
+
+.inpur__normal {
+    padding: 0 12px 0 10px;
 }
 
 input[type="checkbox"],
 input[type="radio"] {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
 }
 
 @keyframes rotate {
@@ -201,21 +308,27 @@ input[type="checkbox"]+label:before {
     border: 1px solid #bbbbbb;
     border-radius: 4px;
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     vertical-align: bottom;
-    margin-right: 10px;
     cursor: pointer;
     animation: rotateRevert 0.2s;
 }
 
 input[type="checkbox"]:checked+label:before {
     border-color: $bg-green;
-    background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -1501px -311px;
-    width: 16px;
-    height: 16px;
+    background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1500px -311px;
+    width: 20px;
+    height: 20px;
     animation: rotate 0.3s;
 }
+
+
+input[type="checkbox"]:focus+label:before,
+input[type="radio"]:focus+label:before {
+    border-color: #019160;
+}
+
 
 input[type="radio"]+label:before {
     border-radius: 50%;
@@ -223,11 +336,10 @@ input[type="radio"]+label:before {
     content: "";
     cursor: pointer;
     display: inline-block;
-    height: 16px;
-    margin-right: 8px;
+    height: 18px;
+    width: 18px;
     position: relative;
     vertical-align: bottom;
-    width: 16px;
 }
 
 input[type="radio"]:checked+label:before {

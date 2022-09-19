@@ -45,6 +45,10 @@ export default {
 
     },
     computed: {
+        /**
+         * @description: tạo style cho button
+         * Author: AnhDV 14/09/2022
+         */
         style() {
             let styleProps = {};
             if (this.styleProps.length > 0) {
@@ -65,8 +69,6 @@ export default {
 .v {
     &-button {
         white-space: nowrap;
-        font-size: 13px;
-        line-height: 13px;
 
         &__button {
             display: flex;
@@ -129,8 +131,8 @@ export default {
         &__icon {}
 
         &__text {
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
         }
     }
 

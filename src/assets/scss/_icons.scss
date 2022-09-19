@@ -1,0 +1,210 @@
+.ms {
+  /* icon size */
+  &-14 {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+  }
+  &-16 {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+  }
+  &-18 {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+  }
+  &-20 {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
+  &-24 {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+  &-30 {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+  &-32 {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  &-48 {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  &-round {
+    border-radius: 50%;
+  }
+  &-auto {
+    width: auto;
+    height: auto;
+    min-width: auto;
+    min-height: auto;
+  }
+  &-fill {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+  }
+}
+.ms-icon {
+  background: url($sprite-img) no-repeat;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-arrow-right {
+    background-position: -1349px -563px;
+    transform: rotate(90deg) translate(25%, 25%);
+  }
+  &-arrow-left {
+    background-position: -1690px -524px;
+    transform: rotate(-90deg) translate(25%, 25%);
+  }
+  &-arrow-down {
+    background-position: -1690px -524px;
+  }
+  &-arrow-up {
+    background-position: -1690px -524px;
+  }
+  &-reload {
+    background-position: -423px -201px;
+    &:hover {
+      background-position: -1097px -88px;
+    }
+  }
+  &-excel {
+    background-position: -704px -200px;
+    &:hover {
+      background-position: -704px -256px;
+    }
+  }
+  &-search {
+    background-position: -992px -360px;
+  }
+  &-datepicker {
+    background-position: -124px -309px;
+  }
+  &-three-stripes {
+    background-position: -843px -30px;
+  }
+  &-three-stripes--white {
+    background-position: -316px -37px;
+  }
+  &-small-user {
+    background-position: -352px -894px;
+  }
+  &-chevron-down {
+    background-position: -1076px -32px;
+  }
+  &-chevron-big-down {
+    background-position: -80px -360px;
+    transform: rotate(90deg);
+  }
+  &-bell {
+    &:hover {
+      animation: bell 0.3s backwards;
+    }
+    background-position: -788px -30px;
+    @keyframes bell {
+      0% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(20deg);
+      }
+      50% {
+        transform: rotate(0deg);
+      }
+      75% {
+        transform: rotate(-20deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+  }
+  &-nine-dots {
+    background-position: -424px -86px;
+  }
+  &-dashboard {
+    background-position: -30px -1587px;
+  }
+  &-cash {
+    background-position: -74px -1588px;
+  }
+  &-bank {
+    background-position: -118px -1588px;
+  }
+  &-buy {
+    background-position: -162px -1588px;
+  }
+  &-sell {
+    background-position: -206px -1588px;
+  }
+  &-bill {
+    background-position: -250px -1588px;
+  }
+  &-warehouse {
+    background-position: -291px -1588px;
+  }
+  &-tool {
+    background-position: -335px -1588px;
+  }
+  &-fixed-asset {
+    background-position: -379px -1588px;
+  }
+  &-tax {
+    background-position: -423px -1588px;
+  }
+  &-price {
+    background-position: -467px -1588px;
+  }
+  &-summary {
+    background-position: -511px -1588px;
+  }
+  &-budget {
+    background-position: -423px -1661px;
+  }
+  &-report {
+    background-position: -547px -1590px;
+  }
+  &-analysis {
+    background-position: -248px -1662px;
+  }
+  &-arrow-down {
+    background-position: -896px -359px;
+  }
+  &-info {
+    background-position: -826px -456px;
+  }
+
+  &-danger {
+    background-position: -592px -456px;
+  }
+
+  &-close {
+    background-position: -144px -144px;
+  }
+
+  &-help {
+    background-position: -89px -144px;
+  }
+}

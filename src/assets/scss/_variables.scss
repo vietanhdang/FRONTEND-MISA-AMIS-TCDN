@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "MISA Fonts Regular";
+  src: url("@/assets/fonts/notosans-regular.2cb88a13.woff2");
+}
+
+@font-face {
+  font-family: "MISA Fonts Bold";
+  src: url("@/assets/fonts/notosans-bold.3ede5aff.woff2");
+}
+
+$Misa-font-regular: "MISA Fonts Regular";
+$Misa-font-bold: "MISA Fonts Bold";
 $text-white: #ffffff;
 $text-black: #000000;
 $text-blue: #007aff;
@@ -23,7 +35,7 @@ $bg-error: #de3618;
 $bg-success: #50b83c;
 
 $bg-grey: #9e9e9e;
-$bg-grey-hover: #bdbdbd;
+$bg-grey-hover: #e0e0e0;
 $bg-grey-bold: #1f1f1f;
 $bg-grey-bold-hover: #616161;
 $bg-grey-bold-active: #424242;

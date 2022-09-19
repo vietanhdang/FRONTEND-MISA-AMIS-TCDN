@@ -6,6 +6,8 @@ import VCombobox from "./VCombobox";
 import VTooltip from "./VTooltip";
 import VToast from "./VToast";
 import VDialog from "./VDialog";
+import VTable from "./VTable";
+import VDatePicker from "./VDatePicker";
 export default {
   VButton,
   VInput,
@@ -14,4 +16,6 @@ export default {
   VTooltip,
   VToast,
   VDialog,
+  VDatePicker,
+  VTable,
 };

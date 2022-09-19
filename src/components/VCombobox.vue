@@ -7,9 +7,9 @@
         <div class="v-combobox__body">
             <div class="v-combobox__selected" :class="{ isShowListData: isShowListData }" :style="style">
                 <input ref="input" type="text" v-model="textInput" @click="showListData" :placeholder="placeholder"
-                    @blur="hideListData" @keydown="selecItemUpDown" :required="required" />
+                    @blur="hideListData" @keydown="selecItemUpDown" :required="required" @focus="showListData()" />
             </div>
-            <div class="v-combobox__icon" @click="showListData" tabindex="-1" @blur="hideListData"
+            <div class="ms-32 v-combobox__icon" @click="showListData" tabindex="-1" @blur="hideListData"
                 @keydown="selecItemUpDown">
                 <div class="icon-arrow-down"></div>
             </div>
@@ -21,7 +21,9 @@
                 <div v-else class="v-select__items" v-for="(option, index) of filterData" :key="index"
                     @mousedown="onHandleSelected(option, index)"
                     :class="[{'itemFocus': index == indexItemFocus},{ 'hover':  option[propKey] === keyItemSelected }]">
-                    {{ option[propValue] }}
+                    <slot name="item" :option="option" :index="index">
+                        {{ option[propValue] }}
+                    </slot>
                     <div :class="{ 'v-select__items--checked': option[propKey] === keyItemSelected }"></div>
                 </div>
             </div>
@@ -31,13 +33,14 @@
 <script>
 /* eslint-disable */
 import { removeVietnameseTones } from '@/utils/format';
+import axios from 'axios';
 import keycode from '@/utils/keycode';
 export default {
     name: "VCombobox",
     props: {
         data: {
             type: Array,
-            required: true,
+            required: false
         },
         placeholder: {
             type: String,
@@ -72,14 +75,15 @@ export default {
             required: false,
             default: "value",
         },
-        defaultSelected: {
-            required: false,
-            default: null,
-        },
         styleProps: {
             type: Array,
             required: false,
             default: () => [],
+        },
+        propApi: {
+            type: String,
+            required: false,
+            default: null,
         },
     },
     computed: {
@@ -104,6 +108,7 @@ export default {
             indexItemSelected: -1, // index item selected
             keyItemSelected: "", // key item focus
             textInput: "", // Text input
+            dataApi: [], // Data from api
             filterData: [], // Data has been filtered
             scrollY: 0, // position scroll Y of selected item
         };
@@ -114,7 +119,7 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         textInput() {
-            this.filterData = this.data.filter((option) =>
+            this.filterData = this.dataApi.filter((option) =>
                 removeVietnameseTones(option[this.propValue])
                     .toLowerCase()
                     .includes(removeVietnameseTones(this.textInput).toLowerCase())
@@ -135,8 +140,8 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         showListData() {
-            this.filterData = this.data; // Truyền dữ liệu vào filterData
             this.isShowListData = true; // Chuyển trạng thái hiển thị danh sách dữ liệu
+            this.filterData = this.dataApi; // Gán dữ liệu đã lọc bằng dữ liệu từ api
             if (this.indexItemSelected !== -1 && this.scrollY !== 0) {
                 this.$nextTick(() => { // Đợi DOM render xong thì mới scroll đến vị trí đã chọn
                     this.$refs["combobox__data"].scrollTop = this.scrollY;
@@ -151,14 +156,18 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         onHandleSelected(option, index) {
-            this.scrollY = this.$refs["combobox__data"].scrollTop; // Lấy vị trí scroll Y của item được chọn
+            try {
+                this.scrollY = this.$refs["combobox__data"].scrollTop; // Lấy vị trí scroll Y của item được chọn
+            } catch (error) {
+                this.scrollY = 0;
+            }
             const value = option[this.propValue];
             this.textInput = value; // Gán giá trị cho textInput
             this.indexItemSelected = index; // Gán index của item được chọn
             this.indexItemFocus = index; // Gán index của item được focus
             this.keyItemSelected = option[this.propKey]; // Gán key của item được chọn
             this.isShowListData = false; // Ẩn danh sách dữ liệu
-            this.$emit("update:modelValue", this.data[index][this.propKey]); // Emit dữ liệu lên component cha
+            this.$emit("update:modelValue", this.dataApi[index][this.propKey]); // Emit dữ liệu lên component cha
         },
         /**
          * @description: Hàm này dùng để chọn item khi nhấn phím mũi tên lên, xuống, enter, esc
@@ -188,6 +197,7 @@ export default {
                         } else { // Nếu vị trí của item được focus nhỏ hơn vị trí của box chứa dữ liệu thì scroll lên
                             this.$refs["combobox__data"].scrollTop = 0;
                         }
+
                         break;
                     case keycode.UP:
                         if (this.indexItemFocus === null) { // Nếu không có item nào được focus thì focus vào item cuối cùng
@@ -214,14 +224,25 @@ export default {
         },
     },
     created() {
-        if (this.defaultSelected) { // Nếu có giá trị mặc định truyền từ component cha
-            const index = this.data.findIndex((item) => item[this.propKey] === this.defaultSelected); // Tìm index của item có key trùng với giá trị mặc định
-            if (index !== -1) { // Nếu có item trùng với giá trị mặc định
-                this.textInput = this.data[index][this.propValue];
-                this.indexItemSelected = index;
-                this.indexItemFocus = index;
-                this.$emit("update:modelValue", this.data[index][this.propKey]);
-            }
+        if (this.propApi) { // Nếu có api truyền từ component cha thì gọi api
+            axios.get(this.propApi).then((res) => {
+                this.dataApi = res.data;
+                this.filterData = res.data;
+
+                if (this.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
+                    const index = this.dataApi.findIndex((item) => item[this.propKey] === this.modelValue); // Tìm index của item có key trùng với giá trị mặc định
+                    if (index !== -1) { // Nếu có item trùng với giá trị mặc định
+                        this.onHandleSelected(this.dataApi[index], index); // Lấy dữ liệu của item được focus
+                    }
+                }
+            })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        if (this.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
+            this.dataApi = this.data;
+            this.filterData = this.data;
         }
     },
 }
@@ -246,22 +267,26 @@ export default {
         width: 100%;
         text-align: left;
         outline: none;
-        height: 36px;
-        line-height: 36px;
+        height: 32px;
+        box-sizing: border-box;
 
         .v-combobox__selected {
             background-color: $bg-white;
             border-radius: 4px;
             color: $text-black;
             user-select: none;
-
-            padding: 0 46px 0 12px;
+            height: 100%;
+            width: 100%;
+            padding: 0 36px 0 10px;
             border: 1px solid #bbbbbb;
+            outline: none;
 
             input {
                 border: none;
                 outline: none;
                 width: 100%;
+                height: 100%;
+                padding: 0;
             }
 
             &.isShowListData {
@@ -270,8 +295,8 @@ export default {
         }
 
         .v-combobox__icon {
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
             position: absolute;
             right: 0;
             top: 0;
@@ -314,16 +339,17 @@ export default {
             left: 0;
             right: 0;
             z-index: 9999;
-            max-height: 232px;
+            max-height: 200px;
             overflow-y: auto;
             box-shadow: 0 0 10px rgba(23, 27, 42, 0.24);
 
             .v-select__items {
-                padding: 0 8px;
+                padding: 0 4px;
                 cursor: pointer;
                 user-select: none;
                 border-radius: 4px;
-                min-height: 36px;
+                min-height: 32px;
+                line-height: 32px;
                 position: relative;
 
                 &:hover {

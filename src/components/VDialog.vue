@@ -3,30 +3,28 @@
         <div class="v-dialog" v-if="modelValue" @keypress="onHandleKey">
             <div class="v-dialog__overlay" ref="overlay"></div>
             <div class="v-dialog__content" tabindex="-1" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
-                :class="{'v-dialog__content--form': dialogType === 'form'}" @mouseup="stopDrag">
-                <div class="v-dialog__header" v-if="header">
+                :class="{'v-dialog__content-form': dialogType === 'form'}" @mouseup="stopDrag">
+                <div class="v-dialog__header" v-if="header" @mousemove="stopDrag">
                     <div class="v-dialog__title">
                         <slot name="title"></slot>
                     </div>
                     <div class="v-dialog__close">
                         <v-tooltip content="GIÚP (F1)" position="bottom" :fixed="true">
-                            <div class="v-icon-help"></div>
+                            <div class="ms-24 ms-icon ms-icon-help"></div>
                         </v-tooltip>
                         <v-tooltip content="ĐÓNG (ESC)" :fixed="true" position="bottom">
-                            <div class="v-icon-close" @click="$emit('update:modelValue', false)">
+                            <div class="ms-24 ms-icon ms-icon-close" @click="$emit('update:modelValue', false)">
                             </div>
                         </v-tooltip>
                     </div>
                 </div>
                 <div class="v-dialog__body" v-if="dialogType !== 'form'">
-                    <div class="v-dialog__icon" v-if="icon">
-                        <div :class="`v-icon-${icon}`"></div>
-                    </div>
+                    <div v-if="icon" :class="`ms-48 ms-icon ms-icon-${icon}`"></div>
                     <div class="v-dialog__text" @mousemove="stopDrag">
                         <slot name="body"></slot>
                     </div>
                 </div>
-                <div class="v-dialog__body" v-else>
+                <div class="v-dialog__body" v-else @mousemove="stopDrag">
                     <slot name="body"></slot>
                 </div>
                 <div class="v-line"></div>
@@ -106,7 +104,6 @@ export default {
          * Author: AnhDV 11/09/2022
          */
         stopDrag() {
-            // this.$refs["dialog-content"].style.cursor = "grab"; // thay đổi con trỏ chuột
             this.draggable = false;
         },
         /**
@@ -145,13 +142,6 @@ export default {
         justify-content: center;
         align-items: center;
 
-        &__icon {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 48px;
-            height: 48px;
-        }
 
         &__overlay {
             position: absolute;
@@ -170,12 +160,12 @@ export default {
             width: 444px;
             min-width: 444px;
             padding: 32px;
-            cursor: grab;
+            // cursor: grab;
 
             // padding: 24px;
             // width: 400px;
             // max-width: 100%;
-            &--form {
+            &-form {
                 width: auto;
             }
         }
@@ -240,44 +230,6 @@ export default {
                 }
             }
         }
-    }
-
-
-    &-icon {
-        &-info {
-            background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -826px -456px;
-            width: 48px;
-            height: 48px;
-        }
-
-        &-danger {
-            background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -592px -456px;
-            width: 48px;
-            height: 48px;
-        }
-
-
-        &-close {
-            background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -144px -144px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-
-            &:hover {
-                color: #333;
-            }
-        }
-
-        &-help {
-            background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -89px -144px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-right: 6px;
-        }
-
     }
 
     &-line {

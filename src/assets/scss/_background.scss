@@ -1,0 +1,18 @@
+.bg {
+  &-color {
+    &-white {
+      background-color: #fff !important;
+    }
+    &-grey {
+      background-color: #f5f5f5 !important;
+    }
+    &-transparent {
+      background-color: transparent !important;
+    }
+  }
+}
+.border {
+  &-none {
+    border: none !important;
+  }
+}

@@ -5,6 +5,8 @@
                 <img src="../../assets/loading.svg" alt="">
             </div>
         </div>
+        {{keyword}}
+        <input type="date" v-model="keyword" class="form-control" />
         <div class="content__header">
             <div class="content__header--title">Nhân viên</div>
             <v-button :text="'Thêm mới nhân viên'" type="button'" @click="formState = true"></v-button>

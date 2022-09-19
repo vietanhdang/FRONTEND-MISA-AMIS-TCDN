@@ -1,0 +1,47 @@
+.d {
+  &-block {
+    display: block;
+  }
+  &-inline-block {
+    display: inline-block;
+  }
+  &-inline {
+    display: inline;
+  }
+  &-flex {
+    display: flex;
+  }
+}
+.justify-content {
+  &-start {
+    justify-content: flex-start;
+  }
+  &-end {
+    justify-content: flex-end;
+  }
+  &-center {
+    justify-content: center;
+  }
+  &-between {
+    justify-content: space-between;
+  }
+  &-around {
+    justify-content: space-around;
+  }
+}
+.align-items {
+  &-start {
+    align-items: flex-start;
+  }
+  &-end {
+    align-items: flex-end;
+  }
+  &-center {
+    align-items: center;
+  }
+}
+.cursor {
+  &-pointer {
+    cursor: pointer;
+  }
+}

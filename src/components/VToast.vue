@@ -13,9 +13,9 @@
                             <span :style="{'color': colorMessage[item.type]}">{{noticeMessage[item.type]}}!</span>
                             {{item.message}}
                         </div>
-                        <div class="v-toast__content__action" v-if="item.type === 'success'">
+                        <!-- <div class="v-toast__content__action" v-if="item.type === 'success'">
                             <span>Hoàn tác</span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="v-toast__content__button">
                         <div class="v-icon" :class="getIcon('x')" @click="removeMessage(item)"></div>
@@ -151,7 +151,6 @@ export default {
             } else {
                 this.toasts.unshift(messageData);
             }
-            console.log(messageData);
             // Nếu thời gian hiển thị thông báo lớn hơn 0 thì bắt xử lý tiến trình
             if (messageData.timeout > 0) {
                 this.startProgress(messageData);
@@ -159,7 +158,6 @@ export default {
                 messageData.showProgress = false;
             }
         },
-
         /**
          * Bắt đầu xử lý tiến trình thông báo
          * @param {*} messageData 

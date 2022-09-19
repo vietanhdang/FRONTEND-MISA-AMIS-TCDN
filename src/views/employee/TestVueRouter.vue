@@ -1,284 +1,282 @@
 <template>
-    <div class="grid">
-        <div class="row no-gutters">
-            <div class="col c-2 m-2 l-2">
-                <v-button text="Show dialog danger" @click="showDialogDanger = true;showDialoginfo = true;">
-                </v-button>
-            </div>
-            <div class="col c-2 m-2 l-2">
-                <v-button text="Show dialog info" @click="showDialoginfo = true"></v-button>
-            </div>
-            <div class="col c-2 m-2 l-2">
-                <v-button text="Show dialog add" @click="showDialogAdd = true"></v-button>
-            </div>
-            <div class="col c-2 m-2 l-2">
-                <v-button text="Show Toast" @click="showToast"></v-button>
-            </div>
+    <div class="employee__content">
+        <div class="content__header">
+            <div class="content__header--title">Nhân viên</div>
+            <v-button :text="'Thêm mới nhân viên'" type="button'" @click="handleAction('add')"></v-button>
         </div>
-        <v-dialog v-model="showDialogDanger" :header="false" icon="danger">
-            <template #body>
-                Bạn có thực sự muốn xóa Nhân viên "00655" không?
-            </template>
-            <template #footer__left>
-                <v-button @click="showDialogDanger = false" className="v-button__button-no-bg border" text="Không">
-                </v-button>
-            </template>
-            <template #footer__right>
-                <!-- <v-button @click="showDialog = false" className="v-button__button-no-bg border" text="Không"></v-button> -->
-                <v-button text="Có"></v-button>
-            </template>
-        </v-dialog>
-        <v-dialog v-model="showDialoginfo" :header="false" icon="info">
-            <template #title>
-                Dialog title
-            </template>
-            <template #body>
-                Dữ liệu đã được thay đổi, bạn có muốn cất không?
-            </template>
-            <template #footer__left>
-                <v-button @click="showDialoginfo = false;" className="v-button__button-no-bg border" text="Hủy">
-                </v-button>
-            </template>
-            <template #footer__right>
-                <v-button @click="showDialog = false" className="v-button__button-no-bg border" text="Không"></v-button>
-                <v-button text="Có"></v-button>
-            </template>
-        </v-dialog>
-        <v-dialog v-model="showDialogAdd" :header="true" icon="info" dialogType="form">
-            <template #title>
-                <div class="row e-header">
-                    <div class="e-header__title col">
-                        Thông tin nhân viên
-                    </div>
-                    <div class="col">
-                        <v-input type="checkbox" label_custom="Là khách hàng" :checked="false"></v-input>
-                    </div>
-                    <div class="col">
-                        <v-input type="checkbox" label_custom="Là nhà cung cấp" :checked="false"></v-input>
-                    </div>
-                </div>
-            </template>
-            <template #body>
-                <div class="grid wide v-max-900">
-                    <div class="row">
-                        <div class="col l-6 m-6 c-12">
-                            <div class="row sm-gutter">
-                                <div class="form-group col l-5 m-5 c-5">
-                                    <v-input label="Mã" placeholder="Nhập mã nhân viên" :required="true">
-                                    </v-input>
-                                </div>
-                                <div class="form-group col l-7 m-7 c-7">
-                                    <v-input label="Tên" :required="true" placeholder="Nhập tên nhân viên">
-                                    </v-input>
-                                </div>
-                                <div class="form-group col l-12 m-12 c-12">
-                                    <v-combobox :data="department" position="bottom" placeholder="Chọn đơn vị"
-                                        label="Đơn vị" />
-                                </div>
-                                <div class="form-group col l-12 m-12 c-12">
-                                    <v-input label="Chức danh" placeholder="Nhập chức danh">
-                                    </v-input>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col l-6 m-6 c-12">
-                            <div class="row sm-gutter">
-                                <div class="form-group col l-5 m-5 c-12">
-                                    <v-input label="Ngày sinh" type="date"> </v-input>
-                                </div>
-                                <div class="form-group col l-7 m-7 c-12">
-                                    <label class="label form-control">Giới tính</label>
-                                    <div class="row sm-gutter e-body__gender">
-                                        <div class="col">
-                                            <v-input type="radio" label_custom="Nam" name="gender" value="0">
-                                            </v-input>
-                                        </div>
-                                        <div class="col">
-                                            <v-input type="radio" label_custom="Nữ" name="gender" value="1">
-                                            </v-input>
-                                        </div>
-                                        <div class="col">
-                                            <v-input type="radio" label_custom="Khác" name="gender" value="2">
-                                            </v-input>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group col l-7 m-7 c-12">
-                                    <v-input label="Số CMND" placeholder="Nhập số CMND"> </v-input>
-                                </div>
-                                <div class="form-group col l-5 m-5 c-12">
-                                    <v-input label="Ngày cấp" type="date"> </v-input>
-                                </div>
-                                <div class="form-group col l-12 m-12 c-12">
-                                    <v-input label="Nơi cấp" placeholder="Nhập nơi cấp"> </v-input>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row sm-gutter">
-                        <div class="form-group col l-12 m-12 c-12">
-                            <v-input label="Địa chỉ" placeholder="Nhập địa chỉ"> </v-input>
-                        </div>
-                    </div>
-                    <div class="row sm-gutter">
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="ĐT di động" placeholder="Nhập số điện thoại di động"></v-input>
-                        </div>
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="ĐT cố định" placeholder="Nhập số điện thoại cố định"> </v-input>
-                        </div>
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="Email" placeholder="Nhập email"> </v-input>
-                        </div>
-                    </div>
-                    <div class="row sm-gutter">
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="Tài khoản ngân hàng" placeholder="Nhập tài khoản ngân hàng"> </v-input>
-                        </div>
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="Tên ngân hàng" placeholder="Nhập tên ngân hàng"> </v-input>
-                        </div>
-                        <div class="form-group col l-3 m-3 c-12">
-                            <v-input label="Chi nhánh" placeholder="Nhập chi nhánh"> </v-input>
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <template #footer__left>
-                <v-button @click="showDialogAdd = false;" className="v-button__button-no-bg border" text="Hủy">
-                </v-button>
-            </template>
-            <template #footer__right>
-                <v-button className="v-button__button-no-bg border" text="Cất"></v-button>
-                <v-button text="Cất và thêm"></v-button>
-            </template>
-        </v-dialog>
-        <v-toast ref="toast" :maxMessage="10" :order="true"></v-toast>
-        <div class="table-scroll">
-            <v-table :columns="this.columns" :data="this.employeeList" :options="options">
+        <div class="content__main">
+            <v-table :columns="columns" :data="employeeList" :options="options" @action="handleAction">
             </v-table>
         </div>
+        <employee-form v-model="employeeFormData"></employee-form>
+        <v-dialog v-model="deleteConfirm" :header="false" icon="danger" dialogType="popup">
+            <template #body>
+                {{msg}}
+            </template>
+            <template #footer__left>
+                <v-button @click="closeConfirmHandle" className="v-button__button-no-bg border" text="Không">
+                </v-button>
+            </template>
+            <template #footer__right>
+                <v-button text="Có" @click="deleteEmployee"></v-button>
+            </template>
+        </v-dialog>
     </div>
 </template>
 <script>
-import VTable from '../../components/VTable.vue';
-
+import EmployeeForm from './EmployeeForm.vue'
 export default {
-    components: { VTable },
+    components: { EmployeeForm },
     data() {
         return {
-            showDialogDanger: false,
-            showDialoginfo: false,
-            showDialogAdd: false,
             options: [
                 { key: 10, value: '10 bản ghi trên 1 trang' },
                 { key: 20, value: '20 bản ghi trên 1 trang' },
                 { key: 30, value: '30 bản ghi trên 1 trang' },
                 { key: 50, value: '50 bản ghi trên 1 trang' },
                 { key: 100, value: '100 bản ghi trên 1 trang' },
-            ],
+            ], // giá trị hiển thị trên select option
+            employeeFormData: { // dữ liệu truyền vào form nhân viên để check xem là thêm mới hay sửa
+                showEmployeeForm: false,
+                mode: null,
+                data: null,
+            },
+            employeeList: {
+                isLoaded: false,
+            }, // danh sách nhân viên
+            deleteConfirm: false,
+            msg: '',
         };
     },
     methods: {
         showToast() {
             this.$root.$toast.info(`Message`, { timeout: 5000 });
-        }
+        },
+        /**
+         * @description: Bắt các sự kiện click vào các nút của table
+         * @param {string} action - Tên của action
+         * Author: AnhDV 16/09/2022
+         */
+        handleAction(action, data) {
+            const actionDefine = {
+                add: () => {
+                    this.employeeFormData = {
+                        showEmployeeForm: true,
+                        mode: 'add',
+                        data: null,
+                    };
+                },
+                edit: () => {
+                    this.employeeFormData = {
+                        showEmployeeForm: true,
+                        mode: 'edit',
+                        data: data,
+                    };
+                },
+                delete: () => {
+                    this.deleteConfirm = true;
+                    this.employeeFormData = {
+                        showEmployeeForm: false,
+                        mode: 'delete',
+                        data: data,
+                    };
+                    this.msg = `Bạn có thực sự muốn xóa Nhân viên <${data.employeeCode}> không?`;
+                },
+            };
+            actionDefine[action]();
+        },
+        /**
+         * @description: Hàm này dùng để đóng dialog xác nhận xóa
+         * Author: AnhDV 19/09/2022
+         */
+        closeConfirmHandle() {
+            this.deleteConfirm = false;
+            this.msg = '';
+        },
+        /**
+         * @description: Hàm này dùng để xóa nhân viên
+         * Author: AnhDV 19/09/2022
+         */
+        deleteEmployee() {
+            const self = this;
+            self.closeConfirmHandle();
+            const { employeeID, employeeCode } = self.employeeFormData.data;
+            self.$api.employee.deleteEmployee(employeeID).then((res) => {
+                if (res.status === 200) {
+                    self.$root.$toast.success(`Xóa nhân viên <${employeeCode}> thành công`, {
+                        timeout: 5000,
+                    });
+                    self.getEmployeeList();
+                } else {
+                    self.$root.$toast.error(`Xóa nhân viên <${employeeCode}> thất bại`, {
+                        timeout: 5000,
+                    });
+                }
+            });
+            self.employeeFormData = {};
+        },
+
+        /**
+         * @description: Hàm này dùng để lấy danh sách nhân viên
+         * @param: {any} 
+         * @return: {any} 
+         * Author: AnhDV 19/09/2022
+         */
+        getEmployeeList() {
+            const self = this;
+            self.$api.employee.getAllEmployees({
+                pageSize: 20,
+            }).then((res) => {
+                self.employeeList = {
+                    isLoaded: true,
+                    data: res.data,
+                }
+            })
+        },
     },
     created() {
-        this.employeeList = require('../../data/generate.json') || [];
+        this.getEmployeeList();
         this.columns = [
             {
                 title: '',
-                key: 'employeeId',
+                key: 'employeeID',
                 fixed: true,
                 checkbox: true,
+                width: 40,
             },
             {
                 title: 'Mã nhân viên',
                 key: 'employeeCode',
+                width: 150,
+                search: true,
             },
             {
                 title: 'Tên nhân viên',
                 key: 'employeeName',
+                width: 250,
+                search: true,
             },
             {
                 title: 'Giới tính',
                 key: 'gender',
                 type: 'gender',
+                width: 120,
             },
             {
                 title: 'Ngày sinh',
                 key: 'dateOfBirth',
                 textAlign: 'center',
                 type: 'date',
+                width: 150,
+            },
+            {
+                title: 'Địa chỉ',
+                key: 'employeeAddress',
+                width: 250,
+            },
+            {
+                title: 'Đơn vị',
+                key: 'departmentName',
+                width: 250,
+            },
+            {
+                title: 'Chức danh',
+                key: 'jobTitle',
+                width: 250,
             },
             {
                 title: 'Số CMND',
                 key: 'identityNumber',
+                width: 200,
             },
             {
-                title: 'Chức danh',
-                key: 'position',
+                title: 'Ngày cấp',
+                key: 'identityDate',
+                textAlign: 'center',
+                type: 'date',
+                width: 150,
             },
             {
-                title: 'Tên đơn vị',
-                key: 'department',
+                title: 'Nơi cấp',
+                key: 'identityPlace',
+                width: 250,
             },
             {
-                title: 'Số tài khoản',
-                key: 'bankAccount',
+                title: 'Số điện thoại',
+                key: 'phoneNumber',
+                width: 200,
+            },
+            {
+                title: 'Số điện thoại cố định',
+                key: 'telephoneNumber',
+                width: 200,
+            },
+            {
+                title: 'Email',
+                key: 'email',
+                width: 250,
+            },
+            {
+                title: 'Số tài khoản ngân hàng',
+                key: 'bankAccountNumber',
+                width: 250,
             },
             {
                 title: 'Tên ngân hàng',
                 key: 'bankName',
+                width: 250,
             },
             {
-                title: 'Chi nhánh TK ngân hàng',
-                key: 'bankAddress',
+                title: 'Chi nhánh ngân hàng',
+                key: 'bankBranch',
+                width: 250,
+            },
+            {
+                title: 'Là khách hàng',
+                key: 'isCustomer',
+                width: 150,
+            },
+            {
+                title: 'Là nhà cung cấp',
+                key: 'isSupplier',
+                width: 150,
+            },
+            {
+                title: 'Ngày tạo',
+                key: 'createdDate',
+                textAlign: 'center',
+                type: 'date',
+                width: 150,
+            },
+            {
+                title: 'Người tạo',
+                key: 'createdBy',
+                width: 250,
+            },
+            {
+                title: 'Ngày sửa',
+                key: 'modifiedDate',
+                textAlign: 'center',
+                type: 'date',
+                width: 150,
+            },
+            {
+                title: 'Người sửa',
+                key: 'modifiedBy',
+                width: 250,
             },
             {
                 title: 'Chức năng',
                 key: 'action',
                 fixed: true,
                 type: 'action',
+                width: 120,
             },
-        ];
+        ];// Tạo cột cho bảng để hiển thị dữ liệu lên bảng
     },
 }
 </script>
 
 <style lang="scss" scoped>
-.table-scroll {
-    background-color: #e9ebee;
-    overflow: auto;
-    max-height: calc(100vh - 228px);
-    position: relative;
-}
 
-.v-dialog__header {
-    padding-bottom: 32px;
-}
-
-.e-header {
-    align-items: center;
-
-    &__title {
-        font-size: 24px;
-        font-weight: 700;
-    }
-}
-
-.e-body {
-    &__gender {
-        height: 36px;
-        align-items: center;
-    }
-}
-
-.v-max-900 {
-    &.wide {
-        margin: 20px 0;
-        max-width: 900px;
-    }
-}
 </style>

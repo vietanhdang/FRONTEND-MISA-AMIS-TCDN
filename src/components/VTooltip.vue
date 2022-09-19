@@ -25,6 +25,10 @@ export default {
         }
     },
     methods: {
+        /**
+         * @description: Hàm này dùng để hiển thị tooltip khi hover vào
+         * Author: AnhDV 14/09/2022
+         */
         onMouseOver() {
             this.isShow = true;
             const { clientX, clientY } = event; // lấy tọa độ của chuột
@@ -52,6 +56,10 @@ export default {
                 }
             }
         },
+        /**
+         * @description: Hàm này dùng để ẩn tooltip khi hover ra
+         * Author: AnhDV 14/09/2022
+         */
         onMouseLeave() {
             this.isShow = false;
         }
@@ -62,15 +70,13 @@ export default {
 .tooltip {
     position: relative;
 
-    /* display: inline-block; */
     .tooltip-text {
         visibility: hidden;
-        width: 120px;
+        width: 100px;
         background-color: #555;
         color: #fff;
         text-align: center;
         border-radius: 4px;
-        padding: 4px;
         position: fixed;
         z-index: 9999;
         opacity: 0;
@@ -102,9 +108,8 @@ export default {
         left: 50%;
         margin-left: -60px;
 
-        /* 200/2 = 100 */
         &::after {
-            margin-left: -5px;
+            // margin-left: -5px;
             left: 50%;
             top: 100%;
             border-width: 5px;
@@ -136,9 +141,8 @@ export default {
         left: 50%;
         margin-left: -60px;
 
-        /* 120/2 = 60 */
         &::after {
-            margin-left: -5px;
+            // margin-left: -5px;
             bottom: 100%;
             left: 50%;
             border-width: 5px;

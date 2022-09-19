@@ -1,13 +1,20 @@
 <template>
-  <div id="app">
-    <TheHeader @toggleSidebar="toggleSidebar" :collapsed="collapsed" />
-    <div class="main">
-      <TheSidebar :collapsed="collapsed" />
-      <div class="content" :class="{ 'content--collapsed': collapsed }">
+  <div class="main">
+    <div class="menu-container">
+      <TheSidebar :collapsed="collapsed" @toggleSidebar="toggleSidebar" />
+    </div>
+    <div class="content-area">
+      <TheHeader @toggleSidebar="toggleSidebar" :collapsed="collapsed" />
+      <div class="content">
         <router-view />
       </div>
     </div>
   </div>
+  <!-- <div class="main">
+      <div class="content" :class="{ 'content--collapsed': collapsed }">
+      </div>
+    </div> -->
+
 </template>
 
 <script>
@@ -36,35 +43,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-@font-face {
-  font-family: "MISA Fonts Regular";
-  src: url("@/assets/fonts/notosans-regular.2cb88a13.woff2");
-}
-
-@font-face {
-  font-family: "MISA Fonts Bold";
-  src: url("@/assets/fonts/notosans-bold.3ede5aff.woff2")
-}
-
-$Misa-font-regular: "MISA Fonts Regular";
-$Misa-font-bold: "MISA Fonts Bold";
-
-* {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  font-size: 13px;
-  box-sizing: border-box;
-  font-family: $Misa-font-regular;
-  font-weight: 400;
-}
-
-.main {
-  width: 100%;
-  height: calc(100vh - 56px);
-  display: flex;
-}
-</style>

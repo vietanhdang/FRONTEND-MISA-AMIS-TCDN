@@ -148,8 +148,10 @@ export default {
         position: relative;
         width: 100%;
         text-align: left;
-        height: 36px;
-        line-height: 36px;
+        height: 32px;
+        line-height: 32px;
+        min-width: 200px;
+
     }
 
     &-select__label {
@@ -171,7 +173,7 @@ export default {
         color: $text-black;
         cursor: pointer;
         user-select: none;
-        padding: 0 46px 0 12px;
+        padding-left: 10px;
         border: 1px solid #bbbbbb;
         outline: none;
 
@@ -181,8 +183,8 @@ export default {
     }
 
     &-select__icon {
-        width: 38px;
-        height: 38px;
+        width: 32px;
+        height: 32px;
         position: absolute;
         right: 0;
         top: 0;
@@ -192,7 +194,6 @@ export default {
         border-radius: 0 4px 4px 0;
         cursor: pointer;
         outline: none;
-
 
         &:hover {
             background-color: $bg-grey-hover;
@@ -206,7 +207,7 @@ export default {
         overflow: hidden;
         position: absolute;
         background-color: $bg-white;
-        padding: 8px;
+        padding: 4px;
         left: 0;
         right: 0;
         z-index: 1;
@@ -219,7 +220,7 @@ export default {
             cursor: pointer;
             user-select: none;
             border-radius: 4px;
-            min-height: 36px;
+            min-height: 32px;
 
             &:hover {
                 background-color: $bg-grey-hover;

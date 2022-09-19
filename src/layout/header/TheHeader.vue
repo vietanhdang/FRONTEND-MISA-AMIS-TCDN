@@ -1,30 +1,21 @@
 <template>
-    <div class="header" :class="{'collapsed': collapsed}">
-        <div class="header__left">
-            <div class="header__left-menu"></div>
-            <div class="header__left-logo"></div>
-        </div>
-        <div class="header__right">
-            <div class="header__right__user">
-                <div class="header__right__user--info">
-                    <div class="header__right__avatar"></div>
-                    <div class="header__right__name">
-                        <p>Đặng Việt Anh</p>
-                    </div>
-                    <div class="header__right__setting">
-                    </div>
-                </div>
-                <div class="header__right__user--notification">
-                </div>
+    <div class="header">
+        <div class="d-flex align-items-center">
+            <div class="ms-24 ms-icon ms-icon-three-stripes ml-x-2" @click="toggleSidebar" v-if="!collapsed"></div>
+            <div class="ml-l-2 font-weight-600 font-size-13">CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC
             </div>
-            <div class="header__right__info">
-                <div class="header__right__menu" @click="toggleSidebar">
-                </div>
-                <v-combobox :data="[{ key: '1', value: 'CÔNG TY THHN SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC', },
-                { key: '2', value: 'CÔNG TY CỔ PHẦN MISA', },
-                { key: '3', value: 'CÔNG TY TNHH DỊCH VỤ AN PHÁT', },
-                ]" position="bottom" propKey="key" propValue="value" defaultSelected="2"
-                    :styleProps="['border: none']" />
+            <button class="pl-x-2 bg-color-white border-none">
+                <div class="ms-14 ms-icon ms-icon-chevron-big-down"></div>
+            </button>
+        </div>
+        <div class="d-flex align-items-center">
+            <v-tooltip content="Thông báo">
+                <div class="ms-24 ms-icon ms-icon-bell"></div>
+            </v-tooltip>
+            <div class="header__user d-flex align-items-center p-x-3 ml-r-3">
+                <div class="ms-32 ms-icon ms-round ms-icon-small-user ms-l-2"></div>
+                <div class="m-2 font-weight-600 font-size-13 cursor-pointer">Đặng Việt Anh</div>
+                <div class="ms-14 ms-icon ms-icon-chevron-down"></div>
             </div>
         </div>
     </div>
@@ -46,22 +37,3 @@ export default {
     },
 }
 </script>
-<style lang="scss" scoped>
-.header {
-
-    &.collapsed {
-        .header__left {
-            transition: width .3s ease-in-out;
-            width: 74px;
-
-            .header__left-logo {
-                display: none;
-            }
-        }
-
-        .content {
-            max-width: calc(100% - 74px);
-        }
-    }
-}
-</style>
