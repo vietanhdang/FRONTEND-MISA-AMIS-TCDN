@@ -13,9 +13,6 @@
                             <span :style="{'color': colorMessage[item.type]}">{{noticeMessage[item.type]}}!</span>
                             {{item.message}}
                         </div>
-                        <!-- <div class="v-toast__content__action" v-if="item.type === 'success'">
-                            <span>Hoàn tác</span>
-                        </div> -->
                     </div>
                     <div class="v-toast__content__button">
                         <div class="v-icon" :class="getIcon('x')" @click="removeMessage(item)"></div>

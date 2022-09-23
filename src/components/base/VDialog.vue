@@ -1,10 +1,9 @@
 <template>
-    <Transition name="fade">
-        <div class="v-dialog" v-if="modelValue" @keypress="onHandleKey">
-            <div class="v-dialog__overlay" ref="overlay"></div>
-            <div class="v-dialog__content" tabindex="-1" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
-                :class="{'v-dialog__content-form': dialogType === 'form'}" @mouseup="stopDrag">
-                <div class="v-dialog__header" v-if="header" @mousemove="stopDrag">
+    <v-modal ref="modal">
+        <div class="v-dialog" @keypress="onHandleKey">
+            <div class="v-dialog__content" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
+                @mouseup="stopDrag">
+                <div class="v-dialog__header" @mousemove="stopDrag">
                     <div class="v-dialog__title">
                         <slot name="title"></slot>
                     </div>
@@ -13,24 +12,19 @@
                             <div class="ms-24 ms-icon ms-icon-help"></div>
                         </v-tooltip>
                         <v-tooltip content="ĐÓNG (ESC)" :fixed="true" position="bottom">
-                            <div class="ms-24 ms-icon ms-icon-close" @click="$emit('update:modelValue', false)">
-                            </div>
+                            <div class="ms-24 ms-icon ms-icon-close" @click="$emit('close')"></div>
                         </v-tooltip>
                     </div>
                 </div>
-                <div class="v-dialog__body" v-if="dialogType !== 'form'">
-                    <div v-if="icon" :class="`ms-48 ms-icon ms-icon-${icon}`"></div>
-                    <div class="v-dialog__text" @mousemove="stopDrag">
-                        <slot name="body"></slot>
-                    </div>
-                </div>
-                <div class="v-dialog__body" v-else @mousemove="stopDrag">
+                <div class="v-dialog__body" @mousemove="stopDrag">
                     <slot name="body"></slot>
                 </div>
-                <div class="v-line"></div>
                 <div class="v-dialog__footer">
                     <div class="footer__left" @mousemove="stopDrag">
                         <slot name="footer__left"></slot>
+                    </div>
+                    <div class="footer__center" @mousemove="stopDrag">
+                        <slot name="footer__center"></slot>
                     </div>
                     <div class="footer__right" @mousemove="stopDrag">
                         <slot name="footer__right"></slot>
@@ -38,7 +32,7 @@
                 </div>
             </div>
         </div>
-    </Transition>
+    </v-modal>
 </template>
 
 <script>
@@ -46,22 +40,17 @@ import keycode from '@/utils/keycode';
 export default {
     name: "VDialog",
     props: {
-        modelValue: {
+        isShow: {
             type: Boolean,
-            default: false,
+            default: false
         },
-        header: {
-            type: Boolean,
-            default: true,
-        },
-        icon: {
-            type: String,
-            default: "",
-        },
-        dialogType: {
-            type: String,
-            default: "popup",
-        },
+    },
+    watch: {
+        isShow: function (val) {
+            if (val) {
+                this.show();
+            }
+        }
     },
     methods: {
         /**
@@ -113,10 +102,24 @@ export default {
         onHandleKeydown(event) {
             if (event.keyCode === keycode.ESC) {
                 console.log("ESC");
-                this.$emit("update:modelValue", false);
             }
-        }
+        },
+        /**
+         * @description: Hàm này dùng để hiển thị dialog
+         * Author: AnhDV 22/09/2022
+         */
+        show() {
+            this.$refs.modal.open();
+        },
+        /**
+         * @description: Hàm này dùng để ẩn dialog
+         * Author: AnhDV 22/09/2022
+         */
+        close() {
+            this.$refs.modal.close();
+        },
     },
+
 }
 </script>
 <style lang="scss">
@@ -155,9 +158,8 @@ export default {
         &__content {
             position: fixed;
             background-color: #fff;
-            border-radius: 4px;
+            border-radius: 2px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            width: 444px;
             min-width: 444px;
             padding: 32px;
             // cursor: grab;

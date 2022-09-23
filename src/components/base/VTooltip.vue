@@ -1,6 +1,7 @@
 <template>
     <div class="tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave">
-        <span class="tooltip-text" ref="tooltip" :class="isShow ? 'show' : ''">{{content}}</span>
+        <span v-if="content && showTooltip" class="tooltip-text" ref="tooltip" :class="isShow ? 'show' : ''"
+            :style="style">{{content}}</span>
         <slot></slot>
     </div>
 </template>
@@ -9,7 +10,9 @@
 <script>
 export default {
     props: {
-        content: String,
+        content: {
+            type: String,
+        },
         position: {
             type: String,
             default: 'right',
@@ -17,6 +20,18 @@ export default {
         fixed: {
             type: Boolean,
             default: false,
+        },
+        minWidth: {
+            type: Number,
+            default: 0,
+        },
+        maxWidth: {
+            type: Number,
+            default: 0,
+        },
+        showTooltip: {
+            type: Boolean,
+            default: true,
         },
     },
     data() {
@@ -29,13 +44,20 @@ export default {
          * @description: Hàm này dùng để hiển thị tooltip khi hover vào
          * Author: AnhDV 14/09/2022
          */
-        onMouseOver() {
+        onMouseOver(event) {
             this.isShow = true;
             const { clientX, clientY } = event; // lấy tọa độ của chuột
             const tooltip = this.$refs.tooltip;
+
             if (tooltip) {
-                if (this.fixed) { tooltip.style.position = 'absolute'; return; }
-                const { width, height } = tooltip.getBoundingClientRect(); // lấy ra tọa độ của tooltip
+                if (this.fixed) { // Nếu có truyền fixed vào thì set tọa độ cho tooltip
+                    tooltip.style.position = 'absolute';
+                    if (this.minWidth > 0) {
+                        tooltip.style.transform = `translate(-25%,-50%)`;
+                    }
+                    return;
+                }
+                const { width, height } = tooltip.getBoundingClientRect(); // lấy width và height của tooltip
                 switch (this.position) {
                     case 'top':
                         tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
@@ -53,6 +75,10 @@ export default {
                         tooltip.style.left = `${Math.round(clientX + 10)}px`;
                         tooltip.style.top = `${Math.round(clientY - height / 2)}px`;
                         break;
+                    case 'auto':
+                        tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
+                        tooltip.style.top = `${Math.round(clientY + 10)}px`;
+                        break;
                 }
             }
         },
@@ -62,6 +88,17 @@ export default {
          */
         onMouseLeave() {
             this.isShow = false;
+        }
+    },
+    computed: {
+        /**
+         * @description: Hàm này dùng để set style cho tooltip
+         * Author: AnhDV 14/09/2022
+         */
+        style() {
+            return {
+                minWidth: `${this.minWidth}px`,
+            }
         }
     }
 };
@@ -76,7 +113,6 @@ export default {
         background-color: #555;
         color: #fff;
         text-align: center;
-        border-radius: 4px;
         position: fixed;
         z-index: 9999;
         opacity: 0;

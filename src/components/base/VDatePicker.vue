@@ -3,8 +3,7 @@
         <div class="v-date__picker-label" v-if="label">
             {{ label }} <span v-if="required"> * </span>
         </div>
-
-        <date-picker :required="required" pickerType="date" format="DD/MM/yyyy" :locale="locale" :allowClear="false"
+        <date-picker :required="required" pickerType="date" format="DD/MM/yyyy" :locale="locale" :allowClear="true"
             :popupStyle="popupStyleCustom" :onChange="onChange" :value="defaultPickerValue">
             <template #nextIcon>
                 <div class="ms-24 ms-icon ms-icon-arrow-right"></div>
@@ -73,9 +72,11 @@ export default {
     },
     watch: {
         modelValue: {
-            handler: function (val) {
-                if (val) {
-                    this.defaultPickerValue = moment(formatDate(val), 'DD/MM/YYYY');
+            handler: function (newVal) {
+                if (newVal) {
+                    this.defaultPickerValue = moment(formatDate(newVal), 'DD/MM/YYYY');
+                } else {
+                    this.defaultPickerValue = null;
                 }
             },
             immediate: true,
@@ -83,7 +84,12 @@ export default {
     },
     methods: {
         onChange(dateString) {
-            this.$emit("update:modelValue", moment(dateString).format("YYYY-MM-DD"));
+            if (dateString) {
+                this.$emit("update:modelValue", moment(dateString).format("YYYY-MM-DD"));
+            } else {
+                this.$emit("update:modelValue", "");
+                this.defaultPickerValue = null;
+            }
         },
     },
 }
@@ -98,6 +104,7 @@ export default {
             }
 
             font-weight: 600;
+            font-family: "MISA Fonts Bold";
             margin-bottom: 8px;
 
             span {

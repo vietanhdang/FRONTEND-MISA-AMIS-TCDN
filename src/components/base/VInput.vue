@@ -5,12 +5,13 @@
                 {{ label }} <span v-if="required"> * </span>
             </label>
         </div>
-        <div class="v-input__input">
+        <div class="v-input__input" :class="inputClass">
+            <slot name="tooltip"></slot>
             <input ref="input" :type="type" :placeholder="placeholder"
                 :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id"
                 :checked="type === 'checkbox' || type === 'radio' ? (modelValue == value? true : false) : checked"
-                :value="type === 'checkbox' || type === 'radio' ? value : modelValue" :required="required" :name="name"
-                :disabled="disabled" :style="style" v-model="model">
+                :value="type === 'checkbox' || type === 'radio' ? value : modelValue" :name="name" :disabled="disabled"
+                :style="style" v-model="model">
             <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
                 <label class="label_custom" v-if="label_custom">{{label_custom}}</label>
             </label>
@@ -22,11 +23,6 @@
         </div>
     </div>
 </template>
-  <!-- <div class="error-tooltip">
-                <div class="error-tooltip__text">
-                    {{ error }}
-                </div>
-            </div> -->
 <script>
 export default {
     name: "VInput",
@@ -83,11 +79,6 @@ export default {
             required: false,
             default: () => [],
         },
-        error: {
-            type: String,
-            required: false,
-            default: "",
-        },
         outline: {
             type: Boolean,
             required: false,
@@ -106,10 +97,18 @@ export default {
             required: false,
             default: false,
         },
+        error: {
+            required: false,
+        },
+        inputClass: {
+            type: String,
+            required: false,
+        },
     },
     data() {
         return {
             model: this.modelValue,
+            showTooltip: false,
         };
     },
     watch: {
@@ -119,6 +118,7 @@ export default {
          */
         model(value) {
             this.$emit("update:modelValue", value);
+            this.showTooltip = false;
         },
 
         /**
@@ -157,41 +157,6 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-// .error {
-//     &-tooltip {
-//         display: flex;
-//         justify-content: center;
-//         align-items: center;
-//         min-width: 100%;
-//         max-width: 100%;
-//         position: absolute;
-//         top: 115%;
-
-//     }
-
-//     &-tooltip__text {
-//         background-color: #F06666;
-//         min-width: 40px;
-//         text-align: center;
-//         border-radius: 2px;
-//         font-size: 13px;
-//         font-weight: 500;
-//         color: #fff;
-//         position: relative;
-
-//         &:after {
-//             content: "";
-//             position: absolute;
-//             bottom: 100%;
-//             left: 50%;
-//             margin-left: -5px;
-//             border-width: 5px;
-//             border-style: solid;
-//             border-color: transparent transparent #F06666 transparent;
-//         }
-//     }
-// }
-
 .v {
     &-input {
         display: flex;
@@ -211,6 +176,7 @@ export default {
         }
 
         font-weight: 600;
+        font-family: "MISA Fonts Bold";
         margin-bottom: 8px;
 
         span {
@@ -233,7 +199,7 @@ export default {
         input {
             height: 32px;
             outline: none;
-            border-radius: 4px;
+            border-radius: 2px;
             border: 1px solid #bbbbbb;
             padding: 0 10px;
 
@@ -249,6 +215,11 @@ export default {
 
         .error {
             border: 1px solid red;
+
+            &:focus {
+                border: 1px solid red;
+            }
+
         }
     }
 
@@ -299,17 +270,17 @@ input[type="radio"] {
 
 @keyframes rotateRevert {
     100% {
-        transform: rotate(-90deg);
+        // transform: rotate(-90deg);
     }
 }
 
 input[type="checkbox"]+label:before {
     content: "";
     border: 1px solid #bbbbbb;
-    border-radius: 4px;
+    border-radius: 2px;
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     vertical-align: bottom;
     cursor: pointer;
     animation: rotateRevert 0.2s;
@@ -317,9 +288,9 @@ input[type="checkbox"]+label:before {
 
 input[type="checkbox"]:checked+label:before {
     border-color: $bg-green;
-    background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1500px -311px;
-    width: 20px;
-    height: 20px;
+    background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1501px -311px;
+    width: 18px;
+    height: 18px;
     animation: rotate 0.3s;
 }
 

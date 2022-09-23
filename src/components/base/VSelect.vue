@@ -36,10 +36,6 @@ export default {
             required: false,
             default: "bottom",
         },
-        default: {
-            required: false,
-            default: null,
-        },
         modelValue: {
             required: false,
             default: null,
@@ -68,9 +64,26 @@ export default {
             open: false,
             indexItemSelected: 0,
             indexItemFocus: null,
+            value: null,
         };
     },
+    watch: {
+        modelValue: {
+            handler: function (val) {
+                this.setValue(val);
+            },
+            immediate: true,
+        },
+    },
     methods: {
+        /**
+         * @description: Gán giá trị cho Select
+         * Author: AnhDV 23/09/2022
+         */
+        setValue(val) {
+            this.indexItemSelected = this.data.findIndex((item) => item[this.propKey] === val);
+            this.value = val;
+        },
         /**
          * Mở select box
          * Author: AnhDV 10/09/2022
@@ -102,6 +115,7 @@ export default {
             this.indexItemSelected = index;
             this.open = false;
             this.$emit("update:modelValue", option[this.propKey]);
+            this.$emit('change');
         },
         /**
          * @description: Xử lý khi nhấn phím lên xuống trong select box
@@ -128,16 +142,6 @@ export default {
                     break;
             }
         }
-
-
-    },
-    created() {
-        if (this.default) { // Nếu có truyền default thì tìm index của default trong data
-            this.indexItemSelected = this.data.findIndex(item => item[this.propKey] === this.default);
-        } else {
-            this.indexItemSelected = 0;
-        }
-        this.$emit("update:modelValue", this.data[this.indexItemSelected][this.propKey]); // Trả về giá trị của item được chọn
     },
 };
 </script>
@@ -148,10 +152,9 @@ export default {
         position: relative;
         width: 100%;
         text-align: left;
-        height: 32px;
-        line-height: 32px;
+        height: 30px;
+        line-height: 30px;
         min-width: 200px;
-
     }
 
     &-select__label {
@@ -160,6 +163,7 @@ export default {
         }
 
         font-weight: 600;
+        font-family: "MISA Fonts Bold";
         margin-bottom: 8px;
 
         span {
@@ -169,7 +173,7 @@ export default {
 
     &-select__selected {
         background-color: $bg-white;
-        border-radius: 4px;
+        border-radius: 2px;
         color: $text-black;
         cursor: pointer;
         user-select: none;
@@ -179,6 +183,7 @@ export default {
 
         &.open {
             border: 1px solid $bg-green;
+
         }
     }
 
@@ -191,7 +196,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 2px 2px 0;
         cursor: pointer;
         outline: none;
 
@@ -203,7 +208,7 @@ export default {
 
     &-select__items {
         color: $text-black;
-        border-radius: 4px;
+        border-radius: 2px;
         overflow: hidden;
         position: absolute;
         background-color: $bg-white;
@@ -219,8 +224,7 @@ export default {
             padding: 0 8px;
             cursor: pointer;
             user-select: none;
-            border-radius: 4px;
-            min-height: 32px;
+            border-radius: 2px;
 
             &:hover {
                 background-color: $bg-grey-hover;
@@ -230,16 +234,6 @@ export default {
                 background-color: $bg-green-hover !important;
                 color: $bg-white;
             }
-
-            // .v-select__items--checked {
-            //     background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1499px -309px;
-            //     width: 24px;
-            //     height: 24px;
-            //     position: absolute;
-            //     right: 0;
-            //     top: 6px;
-            //     right: 8px;
-            // }
         }
     }
 }

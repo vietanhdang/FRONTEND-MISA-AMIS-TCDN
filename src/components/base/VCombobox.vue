@@ -5,9 +5,10 @@
                 </span></label>
         </div>
         <div class="v-combobox__body">
-            <div class="v-combobox__selected" :class="{ isShowListData: isShowListData }" :style="style">
+            <div class="v-combobox__selected" :class="[{ isShowListData: isShowListData },{error: error}]"
+                :style="style">
                 <input ref="input" type="text" v-model="textInput" @click="showListData" :placeholder="placeholder"
-                    @blur="hideListData" @keydown="selecItemUpDown" :required="required" @focus="showListData()" />
+                    :required="required" @focus="showListData" @blur="hideListData" @keydown="selecItemUpDown" />
             </div>
             <div class="ms-32 v-combobox__icon" @click="showListData" tabindex="-1" @blur="hideListData"
                 @keydown="selecItemUpDown">
@@ -85,6 +86,9 @@ export default {
             required: false,
             default: null,
         },
+        error: {
+            required: false,
+        },
     },
     computed: {
         style() {
@@ -133,6 +137,11 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         hideListData() {
+            if (this.textInput === "" && this.keyItemSelected !== "") {
+                this.textInput = this.dataApi.find((item) => item[this.propKey] === this.keyItemSelected)[
+                    this.propValue
+                ];
+            }
             this.isShowListData = false; // Hide list data
         },
         /**
@@ -187,7 +196,7 @@ export default {
                         break;
                     case keycode.DOWN:
                         if (this.indexItemFocus === null) { // Nếu không có item nào được focus
-                            this.indexItemFocus = 0; // Focus vào item đầu tiên
+                            this.indexItemFocus = 0; // Focus item đầu tiên
                         } else {
                             this.indexItemFocus = this.indexItemFocus === this.filterData.length - 1 ? 0 : this.indexItemFocus + 1; // Focus vào item tiếp theo
                         }
@@ -197,7 +206,6 @@ export default {
                         } else { // Nếu vị trí của item được focus nhỏ hơn vị trí của box chứa dữ liệu thì scroll lên
                             this.$refs["combobox__data"].scrollTop = 0;
                         }
-
                         break;
                     case keycode.UP:
                         if (this.indexItemFocus === null) { // Nếu không có item nào được focus thì focus vào item cuối cùng
@@ -219,20 +227,20 @@ export default {
                         break;
                 }
             } catch (error) {
-
+                console.log(error);
             }
         },
     },
     created() {
-        if (this.propApi) { // Nếu có api truyền từ component cha thì gọi api
-            axios.get(this.propApi).then((res) => {
-                this.dataApi = res.data;
-                this.filterData = res.data;
-
-                if (this.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
-                    const index = this.dataApi.findIndex((item) => item[this.propKey] === this.modelValue); // Tìm index của item có key trùng với giá trị mặc định
+        const self = this;
+        if (self.propApi) {
+            axios.get(self.propApi).then((res) => {
+                self.dataApi = res.data;
+                self.filterData = res.data;
+                if (self.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
+                    const index = self.dataApi.findIndex((item) => item[self.propKey] === self.modelValue); // Tìm index của item có key trùng với giá trị mặc định
                     if (index !== -1) { // Nếu có item trùng với giá trị mặc định
-                        this.onHandleSelected(this.dataApi[index], index); // Lấy dữ liệu của item được focus
+                        self.onHandleSelected(self.dataApi[index], index); // Lấy dữ liệu của item được focus
                     }
                 }
             })
@@ -240,14 +248,34 @@ export default {
                     console.log(err);
                 });
         }
-        if (this.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
-            this.dataApi = this.data;
-            this.filterData = this.data;
+        if (self.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
+            self.dataApi = self.data;
+            self.filterData = self.data;
+        }
+    },
+    mounted() {
+        // this.textInput = "";
+        // this.indexItemSelected = -1;
+        // this.indexItemFocus = null;
+        // this.keyItemSelected = "";
+        // this.$emit("update:modelValue", "");
+    },
+    updated() {
+        if (!this.modelValue) {
+            this.textInput = "";
+            this.indexItemSelected = -1;
+            this.indexItemFocus = null;
+            this.keyItemSelected = "";
+            this.$emit("update:modelValue", "");
         }
     },
 }
 </script>
 <style lang="scss" scoped>
+.error {
+    border: 1px solid red !important;
+}
+
 .v-combobox {
     .v-combobox__label {
         label {
@@ -255,6 +283,7 @@ export default {
         }
 
         font-weight: 600;
+        font-family: "MISA Fonts Bold";
         margin-bottom: 8px;
 
         span {
@@ -272,7 +301,7 @@ export default {
 
         .v-combobox__selected {
             background-color: $bg-white;
-            border-radius: 4px;
+            border-radius: 2px;
             color: $text-black;
             user-select: none;
             height: 100%;
@@ -292,6 +321,8 @@ export default {
             &.isShowListData {
                 border: 1px solid $bg-green;
             }
+
+
         }
 
         .v-combobox__icon {
@@ -347,7 +378,7 @@ export default {
                 padding: 0 4px;
                 cursor: pointer;
                 user-select: none;
-                border-radius: 4px;
+                border-radius: 2px;
                 min-height: 32px;
                 line-height: 32px;
                 position: relative;

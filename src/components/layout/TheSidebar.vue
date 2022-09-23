@@ -24,14 +24,14 @@
                     </router-link>
                 </v-tooltip>
                 <v-tooltip content="Tiền mặt">
-                    <router-link to="/khach-hang" class="sidebar__item" data-tooltip="Tiền mặt">
+                    <a class="sidebar__item" data-tooltip="Tiền mặt">
                         <div class="sidebar__item--icon">
                             <div class="ms-icon ms-icon-cash"></div>
                         </div>
                         <div class="sidebar__item--text">
                             Tiền mặt
                         </div>
-                    </router-link>
+                    </a>
                 </v-tooltip>
                 <v-tooltip content="Tiền gửi">
                     <a class="sidebar__item" data-tooltip="Tiền gửi">
@@ -205,8 +205,7 @@ export default {
         }
 
         .sidebar__item--text {
-            font-size: 13px;
-            font-weight: 700 !important;
+            font-family: 'MISA Fonts Bold';
         }
     }
 
