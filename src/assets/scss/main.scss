@@ -1,7 +1,6 @@
 @import "variables";
 @import "grid";
 @import "form";
-@import "input";
 @import "header";
 @import "navbar";
 @import "content";
@@ -13,7 +12,8 @@
 @import "font";
 @import "datepicker";
 @import "display";
-@import "background";
+@import "color";
+@import "pagination";
 
 * {
   box-sizing: inherit;
@@ -51,11 +51,9 @@ body {
 }
 ::-webkit-scrollbar-track {
   background: $bg-white;
-  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb {
   background: #bdbdbd;
-  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: $bg-grey;

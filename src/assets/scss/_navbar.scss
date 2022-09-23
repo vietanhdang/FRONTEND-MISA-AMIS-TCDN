@@ -13,8 +13,7 @@
     padding: 24px;
   }
   &__content {
-    padding-top: 8px;
-    padding-bottom: 14px;
+    padding: 14px 0;
   }
   &__logo {
     width: auto;
@@ -42,9 +41,11 @@
   }
   &__item--icon {
     margin-right: 8px;
+    display: flex;
+    align-items: center;
     div {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 20px;
       opacity: 0.5;
     }
   }
