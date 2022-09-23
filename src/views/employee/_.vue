@@ -1,7 +1,7 @@
-<template>
-    <div>
-        <v-dialog ref="dialog" :isShow="modelValue" @close="closeFormHandle">
-            <template #title>
+<!-- <template>
+    <div ref="employeeForm">
+        <v-dialog v-model="closeFormHandler" :header="true" icon="info" dialogType="form">
+            <template #title v-if="isLoaded">
                 <div class="row e-header">
                     <div class="e-header__title col font-weight-700">
                         Thông tin nhân viên
@@ -14,8 +14,8 @@
                     </div>
                 </div>
             </template>
-            <template #body>
-                <div class="grid wide v-max-900">
+            <template #body v-if="isLoaded">
+                <div class="grid wide v-max-900" ref="employeeForm">
                     <div class="row">
                         <div class="col l-6 md-6 c-12">
                             <div class="row sm-gutter">
@@ -132,39 +132,58 @@
                 </div>
             </template>
             <template #footer__left>
-                <v-button buttonType="secondary" @click="closeFormHandle(false)"
-                    className="v-button__button-no-bg border" text="Hủy">
+                <v-button buttonType="secondary" @click="closeDialog" className="v-button__button-no-bg border"
+                    text="Hủy">
                 </v-button>
             </template>
             <template #footer__right>
-                <v-button @click="saveHandler(true)" text="Cất" buttonType="secondary"></v-button>
-                <v-button text="Cất và thêm" @click="saveHandler(false)"></v-button>
+                <v-button @click="saveHandler()" text="Cất" buttonType="secondary"></v-button>
+                <v-button text="Cất và thêm" @click="saveHandler()"></v-button>
+                <button @focus="focusFirstInput"></button>
+            </template>
+        </v-dialog>
+        <v-dialog v-model="closeFormConfirm" :header="false" icon="info" dialogType="popup" v-if="closeFormConfirm">
+            <template #body>
+                Dữ liệu đã bị thay đổi. Bạn có muốn cất không?
+            </template>
+            <template #footer__left>
+                <v-button @click="closeFormConfirm=false" className="v-button__button-no-bg border" text="Hủy">
+                </v-button>
+            </template>
+            <template #footer__right>
+                <v-button className="v-button__button-no-bg border" @click="closeDialog" text="Không"></v-button>
+                <v-button text="Có"></v-button>
+            </template>
+        </v-dialog>
+        <v-dialog v-model="errorFormHandler.status" :header="false" :icon="errorFormHandler.icon" dialogType="popup"
+            v-if="errorFormHandler.status">
+            <template #body>
+                {{errorFormHandler.message}}
+            </template>
+            <template #footer__center>
+                <v-button text="Đồng ý" @click="errorFormHandler.status = false"></v-button>
             </template>
         </v-dialog>
         <v-toast ref="toast" :showProgress="true"></v-toast>
-        <v-popup ref="popup"></v-popup>
     </div>
 </template>
 
 <script>
-// import message from '@/utils/message';
+import message from '@/utils/message';
 export default {
+
     name: "EmployeeForm",
     props: {
         modelValue: {
-            type: Boolean,
-            default: false
-        },
-        data: {
             type: Object,
-            default: () => {
-                return {};
-            }
-        }
+        },
     },
     data() {
         return {
+            employeeFormData: {}, // lưu thông tin form bao gồm trạng thái form và dữ liệu
             dataChanged: false, // để kiểm tra xem dữ liệu có thay đổi hay không
+            closeFormHandler: false, // để kiểm tra xem có đóng form hay không
+            closeFormConfirm: false, // để hiển thị dialog xác nhận đóng form
             isLoaded: true, // để kiểm tra xem dữ liệu đã được load hay chưa
             employee: {
                 employeeID: "",
@@ -172,7 +191,7 @@ export default {
                 employeeName: "",
                 dateOfBirth: "",
                 employeeAddress: "",
-                gender: 1,
+                gender: 0,
                 departmentID: "",
                 departmentName: "",
                 jobTitle: "",
@@ -185,39 +204,68 @@ export default {
                 bankAccountNumber: "",
                 bankName: "",
                 bankBranch: "",
-                isCustomer: false,
-                isSupplier: false,
+                isCustomer: "",
+                isSupplier: "",
                 createdDate: "",
                 createdBy: "",
                 modifiedDate: "",
                 modifiedBy: ""
             },
+            errorFormHandler: {
+                status: false,
+                message: "",
+                icon: "danger",
+            },
             attemptSubmit: false,
         };
     },
     watch: {
-        modelValue: {
-            // lắng nghe sự thay đổi của props modelValue truyền từ component cha
-            handler: async function (val) {
-                const self = this;
-                self.employee = {
-                    ... this.data.employee,
-                    isCustomer: false,
-                    isSupplier: false,
-                    gender: 1,
-                };
-                if (val) {
-                    const { mode, employee } = self.data;
-                    switch (mode) {
-                        case "add":
-                            self.employee.employeeCode = employee.employeeCode;
-                            break;
-                        case "edit":
-                            self.employee = employee;
-                            break;
-                    }
+        modelValue: { // theo dõi sự thay đổi của modelValue
+            handler: function (val) {
+                let self = this;
+                self.employeeFormData = val; // gán giá trị modelValue cho employeeFormData để emit ngược lại
+                let { showEmployeeForm, mode, data } = self.employeeFormData; // lấy giá trị showEmployeeForm, mode, data từ employeeFormData
+                self.closeFormHandler = showEmployeeForm; // gán giá trị showEmployeeForm cho closeFormHandler để xử lý sự kiện đóng form
+                if (mode === "add") { // nếu mode là add thì gán giá trị mặc định cho employee
+                    self.$api.employee.getNewEmployeeCode()
+                        .then((res) => {
+                            self.employee.employeeCode = res.data; // gán giá trị employeeCode từ api
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else if (mode === "edit") { // nếu mode là edit thì gán giá trị data cho employee
+                    this.isLoaded = false;
+                    self.$api.employee.getEmployeeById(data.employeeID)
+                        .then((res) => {
+                            self.employee = res.data; // gán giá trị employee từ api
+                            self.$nextTick(() => {
+                                self.isLoaded = true;
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
                 }
             },
+            deep: true,
+        },
+        employee: { // theo dõi sự thay đổi của employee
+            handler: function () {
+                this.dataChanged = true; // nếu employee thay đổi thì gán dataChanged = true
+            },
+            deep: true,
+        },
+        closeFormHandler: {
+            handler: function (val) {
+                let { showEmployeeForm } = this.employeeFormData; // lấy giá trị showEmployeeForm từ employeeFormData
+                if (!showEmployeeForm) return false; // nếu showEmployeeForm = false (tức là nhấn nút hủy thì không làm gì)
+                if (!val && this.dataChanged) { // nếu val = false (tức là nhấn nút đóng form) và dataChanged = true (tức là có sự thay đổi dữ liệu) thì hiển thị dialog xác nhận
+                    this.closeFormHandler = true; // gán closeFormHandler = true để không tắt dialog
+                    this.closeFormConfirm = true;  // hiển thị dialog xác nhận
+                }
+            },
+            deep: true,
         },
     },
     computed: {
@@ -233,60 +281,48 @@ export default {
     },
     methods: {
         /**
-         * @description: Hàm xử lý sự kiện đóng form nhân viên
-         * @param {boolean} foceClose: có bắt buộc đóng form hay không
-         * Author: AnhDV 22/09/2022
+         * @description: Hàm để focus lại vào input đầu tiên của form
+         * Author: AnhDV 21/09/2022
          */
-        async closeFormHandle(foceClose = true) {
-            const self = this;
-            if (foceClose) {
-                const confirm = await self.$refs.popup.show({
-                    message: "Dữ liệu đã bị thay đổi bạn có muốn cất không?",
-                    icon: 'info',
-                    okButton: "Có",
-                    cancelButton: "Không",
-                    closeButton: "Hủy",
-                });
-                if (confirm) {
-                    this.resetForm();
-                } else {
-                    self.$refs.dialog.close();
-                    self.$emit("update:modelValue", false);
-                }
-            } else {
-                this.resetForm();
-                self.$refs.dialog.close();
-                self.$emit("update:modelValue", false);
-            }
+        focusFirstInput() {
+            this.$refs.employeeForm.querySelector("input").focus();
+        },
+        /**
+         * @description: Hàm này dùng để đóng dialog
+         * Author: AnhDV 16/09/2022
+         */
+        closeDialog() {
+            this.employeeFormData = {
+                ...this.employeeFormData,
+                showEmployeeForm: false,
+                mode: null,
+                data: null,
+            } // gán giá trị showEmployeeForm, mode = false, null
+            this.employee = {};
+            this.closeFormConfirm = false; // tắt dialog xác nhận
+            this.$emit("update:modelValue", this.employeeFormData); // emit giá trị employeeFormData cho modelValue
         },
         /**
          * @description: Hàm này dùng để cập nhật nhân viên
          * @param: {any}
          * Author: AnhDV 19/09/2022
          */
-        async updateEmployee(isClose) {
+        updateEmployee() {
             let self = this;
-            await self.$api.employee.updateEmployee(self.employee)
+            self.$api.employee.updateEmployee(self.employee)
                 .then((res) => {
-                    if (res.status === 200) {
-                        self.$emit("updateEmployee", self.employee); // emit giá trị employee vừa cập nhật
-                        self.$root.$toast.success(`Cập nhật nhân viên <${self.employee.employeeCode}> thành công`, {
-                            timeout: 5000,
-                        });
-                        if (!isClose) {
-                            self.resetForm();
-                        } else {
-                            self.closeFormHandle(false);
-                        }
-
-                    }
-                })
-                .catch(() => {
-                    self.$refs.popup.show({
-                        message: `Vui lòng kiểm tra lại thông tin`,
-                        icon: 'danger',
-                        hideButton: true,
+                    self.$emit("updateEmployee", res.data); // emit giá trị employee vừa cập nhật
+                    self.$root.$toast.success(`Cập nhật nhân viên <${self.employee.employeeCode}> thành công`, {
+                        timeout: 5000,
                     });
+                    self.closeDialog(); // đóng dialog
+                })
+                .catch((err) => {
+                    this.errorFormHandler = {
+                        status: true,
+                        icon: "danger",
+                        message: `${message(err, self.employee.employeeCode)}. Vui lòng thử lại`,
+                    };
                 });
         },
         /**
@@ -294,69 +330,64 @@ export default {
         * @param: {any} 
         * Author: AnhDV 19/09/2022
         */
-        async insertEmployee(isClose) {
+        insertEmployee() {
             let self = this;
-            await self.$api.employee.insertEmployee(self.employee)
+            self.$api.employee.insertEmployee(self.employee)
                 .then((res) => {
                     self.$emit("insertEmployee", res.data); // emit giá trị employee vừa thêm mới
-                    self.$root.$toast.success(`Cập nhật nhân viên <${self.employee.employeeCode}> thành công`, {
+                    self.$root.$toast.success(`Thêm mới nhân viên <${self.employee.employeeCode}> thành công`, {
                         timeout: 5000,
                     });
-                    if (!isClose) {
-                        self.resetForm();
-                    } else {
-                        self.closeFormHandle(false);
-                    }
+                    self.closeDialog(); // đóng dialog
                 })
-                .catch(() => {
-                    self.$refs.popup.show({
-                        message: `Vui lòng kiểm tra lại thông tin`,
-                        icon: 'danger',
-                        hideButton: true,
-                    });
+                .catch((err) => {
+                    this.errorFormHandler = {
+                        status: true,
+                        icon: "danger",
+                        message: `${err}. Vui lòng thử lại`,
+                    };
                 });
         },
         /**
          * @description: Hàm này dùng để xử lý sự kiện cất
-         * @param: {boolean} isClose: có đóng form hay không
          * Author: AnhDV 19/09/2022
          */
-        saveHandler(isClose) {
+        saveHandler() {
             let self = this;
-            let { mode } = self.data;
+            let { mode } = self.employeeFormData; // lấy giá trị mode từ employeeFormData
             self.attemptSubmit = true;
+            self.errorFormHandler = {
+                icon: "error",
+                message: "",
+            };
             if (self.missingCode) {
+                self.errorFormHandler.message = "Mã nhân viên không được để trống";
+                self.errorFormHandler.status = true;
                 return false;
             }
             if (self.missingName) {
+                self.errorFormHandler.message = "Tên không được để trống";
+                self.errorFormHandler.status = true;
                 return false;
             }
             if (self.missingDepartment) {
+                self.errorFormHandler.message = "Đơn vị không được để trống";
+                self.errorFormHandler.status = true;
                 return false;
             }
             Object.keys(self.employee).forEach((key) => {
-                if (!self.employee[key]) {
+                if (self.employee[key] === "") {
                     delete self.employee[key];
                 }
             });
             if (mode === "add") { // nếu mode là add thì gọi hàm thêm mới
-                self.insertEmployee(isClose);
+                self.insertEmployee();
             } else if (mode === "edit") { // nếu mode là edit thì gọi hàm cập nhật
-                self.updateEmployee(isClose);
+                self.updateEmployee();
             }
         },
-        /**
-         * @description: Hàm này dùng để reset form thêm mới
-         * Author: AnhDV 22/09/2022
-         */
-        async resetForm() {
-            let self = this;
-            self.attemptSubmit = false;
-            self.employee = {};
-            const employeeCode = await self.$api.employee.getNewEmployeeCode();
-            self.employee.employeeCode = employeeCode.data;
-        },
     },
+
 };
 </script>
 
@@ -384,7 +415,7 @@ export default {
 .v-max-900 {
     &.wide {
         margin: 20px 0;
-        max-width: 800px;
+        max-width: 900px;
     }
 }
-</style>
+</style> -->
