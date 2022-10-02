@@ -1,54 +1,49 @@
 <template>
     <div>
-        <v-dialog ref="dialog" :isShow="modelValue" @close="closeFormHandle">
+        <!-- Khu vực hiển thị dialog form thêm hoặc sửa nhân viên -->
+        <v-dialog :isShow="modelValue" @close="closeFormHandle">
             <template #title>
                 <div class="row e-header">
                     <div class="e-header__title col font-weight-700">
-                        Thông tin nhân viên
+                        {{title}} nhân viên
                     </div>
                     <div class="col">
-                        <v-input type="checkbox" label_custom="Là khách hàng" v-model="employee.isCustomer"></v-input>
+                        <v-input type="checkbox" label_custom="Là khách hàng" v-model="employee.isCustomer"
+                            :value="true"></v-input>
                     </div>
                     <div class="col">
-                        <v-input type="checkbox" label_custom="Là nhà cung cấp" v-model="employee.isSupplier"></v-input>
+                        <v-input type="checkbox" label_custom="Là nhà cung cấp" v-model="employee.isSupplier"
+                            :value="true"></v-input>
                     </div>
                 </div>
             </template>
             <template #body>
-                <div class="grid wide v-max-900">
+                <div class="grid wide v-max-900" ref="employeeForm">
                     <div class="row">
                         <div class="col l-6 md-6 c-12">
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 md-5 c-5">
-                                    <v-tooltip content="Mã nhân viên không được để trống" :minWidth="220"
-                                        :showTooltip="missingCode && attemptSubmit" :fixed="true" position="bottom">
-                                        <v-input label="Mã" :focus="true" v-model="employee.employeeCode"
-                                            :required="true" :error="missingCode && attemptSubmit" ref-="firstInput">
-                                        </v-input>
-                                    </v-tooltip>
+                                    <v-input label="Mã" :focus="true" v-model="employee.employeeCode"
+                                        :error="missingCode" ref-="firstInput" :required="true"
+                                        errorMessage="Mã không được để trống">
+                                    </v-input>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-7">
-                                    <v-tooltip content="Tên không được để trống" :minWidth="200"
-                                        :showTooltip="missingName && attemptSubmit" :fixed="true" position="bottom">
-                                        <v-input label="Tên" v-model="employee.employeeName" :required="true"
-                                            :error="missingName && attemptSubmit">
-                                        </v-input>
-                                    </v-tooltip>
+                                    <v-input label=" Tên" v-model="employee.employeeName" :error="missingName"
+                                        :required="true" errorMessage="Tên không được để trống">
+                                    </v-input>
                                 </div>
                                 <div class="form-group col l-12 md-12 c-12">
-                                    <v-tooltip content="Đơn vị không được để trống" :minWidth="200"
-                                        :showTooltip="missingDepartment && attemptSubmit" :fixed="true"
-                                        position="bottom">
-                                        <v-combobox position="bottom" propKey="departmentID"
-                                            v-model="employee.departmentID" propValue="departmentName" label="Đơn vị"
-                                            :defaultSelected="employee.departmentID"
-                                            propApi="https://localhost:7033/api/v1/departments" :required="true"
-                                            :error="missingDepartment && attemptSubmit">
-                                            <template #item="item">
-                                                {{item.option['departmentCode']}} - {{item.option['departmentName']}}
-                                            </template>
-                                        </v-combobox>
-                                    </v-tooltip>
+                                    <v-combobox position="bottom" propKey="departmentID" v-model="employee.departmentID"
+                                        propValue="departmentName" label="Đơn vị"
+                                        errorMessage="Đơn vị không được để trống"
+                                        v-model:textInput="employee.departmentName"
+                                        propApi="https://localhost:7033/api/v1/departments" :required="true"
+                                        :error="missingDepartment">
+                                        <template #item="item">
+                                            {{item.option['departmentCode']}} - {{item.option['departmentName']}}
+                                        </template>
+                                    </v-combobox>
                                 </div>
                                 <div class="form-group col l-12 md-12 c-12">
                                     <v-input label="Chức danh" v-model="employee.jobTitle">
@@ -63,20 +58,19 @@
                                     </v-date-picker>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-12">
-                                    <label class="label form-control font-weight-700">Giới tính</label>
+                                    <label class="label form-control font-weight-700">Giới tính
+                                    </label>
                                     <div class="row sm-gutter e-body__gender">
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Nam" :value="1"
-                                                v-model="employee.gender">
+                                            <v-input type="radio" label_custom="Nam" :value=1 v-model="employee.gender">
                                             </v-input>
                                         </div>
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Nữ" :value="0"
-                                                v-model="employee.gender">
+                                            <v-input type="radio" label_custom="Nữ" :value=0 v-model="employee.gender">
                                             </v-input>
                                         </div>
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Khác" :value="2"
+                                            <v-input type="radio" label_custom="Khác" :value=2
                                                 v-model="employee.gender">
                                             </v-input>
                                         </div>
@@ -139,33 +133,30 @@
             <template #footer__right>
                 <v-button @click="saveHandler(true)" text="Cất" buttonType="secondary"></v-button>
                 <v-button text="Cất và thêm" @click="saveHandler(false)"></v-button>
+                <div style="max-width: 0; max-height: 0; overflow: hidden;">
+                    <input @focus="returnFocus()" />
+                </div>
             </template>
         </v-dialog>
-        <v-toast ref="toast" :showProgress="true"></v-toast>
+        <!-- Khu vực hiển thị popup cảnh báo -->
         <v-popup ref="popup"></v-popup>
     </div>
 </template>
 
 <script>
-// import message from '@/utils/message';
+import { isNullOrEmpty } from '@/utils/validate';
+import { mapGetters } from 'vuex';
+import Enum from "@/utils/enum";
 export default {
     name: "EmployeeForm",
     props: {
-        modelValue: {
+        modelValue: { // dùng để đóng mở form
             type: Boolean,
             default: false
         },
-        data: {
-            type: Object,
-            default: () => {
-                return {};
-            }
-        }
     },
     data() {
         return {
-            dataChanged: false, // để kiểm tra xem dữ liệu có thay đổi hay không
-            isLoaded: true, // để kiểm tra xem dữ liệu đã được load hay chưa
             employee: {
                 employeeID: "",
                 employeeCode: "",
@@ -196,40 +187,33 @@ export default {
         };
     },
     watch: {
-        modelValue: {
-            // lắng nghe sự thay đổi của props modelValue truyền từ component cha
-            handler: async function (val) {
-                const self = this;
-                self.employee = {
-                    ... this.data.employee,
-                    isCustomer: false,
-                    isSupplier: false,
-                    gender: 1,
-                };
-                if (val) {
-                    const { mode, employee } = self.data;
-                    switch (mode) {
-                        case "add":
-                            self.employee.employeeCode = employee.employeeCode;
-                            break;
-                        case "edit":
-                            self.employee = employee;
-                            break;
-                    }
-                }
-            },
+        getMode: async function (value) {
+            const self = this;
+            switch (value) {
+                case Enum.FORM_MODE.ADD:
+                    self.title = "Thêm mới";
+                    self.resetForm();
+                    break;
+                case Enum.FORM_MODE.EDIT:
+                    self.title = "Cập nhật";
+                    await self.getEmployeeById();
+                    break;
+                default:
+                    break;
+            }
         },
     },
     computed: {
         missingCode() { // kiểm tra xem employeeCode có bị thiếu hay không
-            return this.employee.employeeCode === "";
+            return isNullOrEmpty(this.employee.employeeCode) && this.attemptSubmit;
         },
         missingName() { // kiểm tra xem employeeName có bị thiếu hay không
-            return this.employee.employeeName === "";
+            return isNullOrEmpty(this.employee.employeeName) && this.attemptSubmit;
         },
         missingDepartment() { // kiểm tra xem departmentID có bị thiếu hay không
-            return this.employee.departmentID === "";
+            return isNullOrEmpty(this.employee.departmentID) && this.attemptSubmit;
         },
+        ...mapGetters(["getMode", "getEmployeeId"]),
     },
     methods: {
         /**
@@ -238,56 +222,57 @@ export default {
          * Author: AnhDV 22/09/2022
          */
         async closeFormHandle(foceClose = true) {
-            const self = this;
-            if (foceClose) {
-                const confirm = await self.$refs.popup.show({
-                    message: "Dữ liệu đã bị thay đổi bạn có muốn cất không?",
-                    icon: 'info',
-                    okButton: "Có",
-                    cancelButton: "Không",
-                    closeButton: "Hủy",
-                });
-                if (confirm) {
-                    this.resetForm();
+            try {
+                const self = this;
+                if (foceClose) {
+                    const confirm = await self.$refs.popup.show({
+                        message: "Dữ liệu đã bị thay đổi bạn có muốn cất không?",
+                        icon: 'info',
+                        okButton: "Có",
+                        cancelButton: "Không",
+                        closeButton: "Hủy",
+                    });
+                    if (confirm) {
+                        this.resetForm();
+                    } else {
+                        self.$emit("update:modelValue", false);
+                        self.$store.dispatch("setMode", null);
+                    }
                 } else {
-                    self.$refs.dialog.close();
+                    this.resetForm();
                     self.$emit("update:modelValue", false);
+                    self.$store.dispatch("setMode", null);
                 }
-            } else {
-                this.resetForm();
-                self.$refs.dialog.close();
-                self.$emit("update:modelValue", false);
+            } catch (error) {
+                console.log(error);
             }
         },
         /**
          * @description: Hàm này dùng để cập nhật nhân viên
-         * @param: {any}
+         * @param: {boolean} isClose: có đóng form sau khi cập nhật hay không
          * Author: AnhDV 19/09/2022
          */
         async updateEmployee(isClose) {
             let self = this;
-            await self.$api.employee.updateEmployee(self.employee)
-                .then((res) => {
-                    if (res.status === 200) {
-                        self.$emit("updateEmployee", self.employee); // emit giá trị employee vừa cập nhật
-                        self.$root.$toast.success(`Cập nhật nhân viên <${self.employee.employeeCode}> thành công`, {
-                            timeout: 5000,
-                        });
-                        if (!isClose) {
-                            self.resetForm();
-                        } else {
-                            self.closeFormHandle(false);
-                        }
-
+            try {
+                const response = await self.$api.employee.updateEmployee(self.employee); // gọi api update nhân viên
+                if (response.status === 200) {
+                    self.$emit("updateEmployee", self.employee); // emit giá trị employee vừa cập nhật
+                    if (!isClose) {
+                        self.$store.dispatch("setMode", Enum.FORM_MODE.ADD); // đổi mode thành thêm mới
+                    } else {
+                        self.closeFormHandle(false);
                     }
-                })
-                .catch(() => {
-                    self.$refs.popup.show({
-                        message: `Vui lòng kiểm tra lại thông tin`,
-                        icon: 'danger',
-                        hideButton: true,
-                    });
+                }
+
+            } catch (error) {
+                self.$refs.popup.show({
+                    message: `Có lỗi xảy ra vui lòng thử lại`,
+                    icon: 'danger',
+                    hideButton: true,
                 });
+                console.log(error);
+            }
         },
         /**
         * @description: Hàm này dùng để thêm mới nhân viên
@@ -296,53 +281,23 @@ export default {
         */
         async insertEmployee(isClose) {
             let self = this;
-            await self.$api.employee.insertEmployee(self.employee)
-                .then((res) => {
-                    self.$emit("insertEmployee", res.data); // emit giá trị employee vừa thêm mới
-                    self.$root.$toast.success(`Cập nhật nhân viên <${self.employee.employeeCode}> thành công`, {
-                        timeout: 5000,
-                    });
-                    if (!isClose) {
+            try {
+                const response = await self.$api.employee.insertEmployee(self.employee);
+                if (response.status === 201) {
+                    self.employee.employeeID = response.data;
+                    self.$emit("insertEmployee", self.employee); // emit giá trị employee vừa thêm mới
+                    if (!isClose) { // nếu không đóng form thì reset lại form
                         self.resetForm();
-                    } else {
+                    } else { // nếu đóng form thì đóng form
                         self.closeFormHandle(false);
                     }
-                })
-                .catch(() => {
-                    self.$refs.popup.show({
-                        message: `Vui lòng kiểm tra lại thông tin`,
-                        icon: 'danger',
-                        hideButton: true,
-                    });
-                });
-        },
-        /**
-         * @description: Hàm này dùng để xử lý sự kiện cất
-         * @param: {boolean} isClose: có đóng form hay không
-         * Author: AnhDV 19/09/2022
-         */
-        saveHandler(isClose) {
-            let self = this;
-            let { mode } = self.data;
-            self.attemptSubmit = true;
-            if (self.missingCode) {
-                return false;
-            }
-            if (self.missingName) {
-                return false;
-            }
-            if (self.missingDepartment) {
-                return false;
-            }
-            Object.keys(self.employee).forEach((key) => {
-                if (!self.employee[key]) {
-                    delete self.employee[key];
                 }
-            });
-            if (mode === "add") { // nếu mode là add thì gọi hàm thêm mới
-                self.insertEmployee(isClose);
-            } else if (mode === "edit") { // nếu mode là edit thì gọi hàm cập nhật
-                self.updateEmployee(isClose);
+            } catch (error) {
+                self.$refs.popup.show({
+                    message: error.response.data.userMsg,
+                    icon: 'danger',
+                    hideButton: true,
+                });
             }
         },
         /**
@@ -350,12 +305,113 @@ export default {
          * Author: AnhDV 22/09/2022
          */
         async resetForm() {
-            let self = this;
-            self.attemptSubmit = false;
-            self.employee = {};
-            const employeeCode = await self.$api.employee.getNewEmployeeCode();
-            self.employee.employeeCode = employeeCode.data;
+            try { // reset lại form
+                let self = this;
+                const employeeCode = await self.$api.employee.getNewEmployeeCode(); // lấy mã nhân viên mới
+                if (employeeCode.data) { // nếu có mã nhân viên mới thì gán vào
+                    self.attemptSubmit = false; // reset lại trạng thái submit
+                    self.employee = { // gán giá trị mặc định cho employee
+                        employeeCode: employeeCode.data,
+                        gender: 1,
+                        isCustomer: false,
+                        isSupplier: false,
+                    };
+                }
+            } catch (error) {
+                console.log(error);
+            }
         },
+        /**
+         * @description: Hàm này dùng để lấy thông tin chi tiết nhân viên theo id và gán vào employee
+         * Author: AnhDV 22/09/2022
+         */
+        async getEmployeeById() {
+            try {
+                let self = this;
+                const response = await self.$api.employee.getEmployeeById(self.getEmployeeId);
+                if (response.data) {
+                    self.employee = response.data;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        /**
+         * @description: Hàm này dùng để xử lý sự kiện cất
+         * @param: {boolean} isClose: có đóng form hay không
+         * Author: AnhDV 19/09/2022
+         */
+        saveHandler(isClose) {
+            try {
+                let self = this;
+                self.attemptSubmit = true;
+                let isSummited = true;
+                // let indexError = 0;
+                // const validateFields = [{
+                //     name: "employeeCode",
+                //     message: "Mã nhân viên không được để trống"
+                // }, {
+                //     name: "employeeName",
+                //     message: "Tên nhân viên không được để trống"
+                // }, {
+                //     name: "departmentID",
+                //     message: "Đơn vị không được để trống"
+                // }];
+                // validateFields.forEach((field, index) => {
+                //     if (isNullOrEmpty(self.employee[field.name], true)) {
+                //         self.employee[field.name] = ""; // set giá trị mặc định cho trường bị thiếu để hiển thị lỗi
+                //         isSummited = false;
+                //         // lấy ra vị trí đâu tiên bị lỗi để focus vào
+                //         if (indexError === 0) {
+                //             indexError = index;
+                //         }
+                //     } else {
+                //         indexError = 0;
+                //         self.employee[field.name] = self.employee[field.name].trim();
+                //     }
+                // });
+                // nếu không có trường nào bị thiếu thì thực hiện cất
+                if (isSummited) {
+                    Object.keys(self.employee).forEach((key) => {
+                        // xóa các trường không cần thiết
+                        if (self.employee[key] == null || self.employee[key] === "") {
+                            delete self.employee[key];
+                        }
+                    });
+                    switch (self.getMode) {
+                        case Enum.FORM_MODE.ADD:
+                            self.insertEmployee(isClose);
+                            break;
+                        case Enum.FORM_MODE.EDIT:
+                            self.updateEmployee(isClose);
+                            break;
+                    }
+                } else {
+                    // self.$refs.popup.show({
+                    //     message: validateFields[indexError].message,
+                    //     icon: 'error',
+                    //     hideButton: true,
+                    // });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        /**
+        * @description: Hàm này dùng để focus vào trường đầu tiên 
+        * Author: AnhDV 02/10/2022
+        */
+        returnFocus() {
+            try {
+                let self = this;
+                self.$refs.employeeForm.querySelector("input").focus();
+            } catch (error) {
+                console.log(error);
+            }
+        },
+    },
+    updated() {
+        console.log(this.getMode);
     },
 };
 </script>
