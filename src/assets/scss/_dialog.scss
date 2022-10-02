@@ -11,11 +11,11 @@
   &__modal {
     height: auto;
     position: absolute;
-    background-color: #ffffff;
+    background-color: $white;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 2px;
+    border-radius: 4px;
     overflow: hidden;
   }
   &__modal__form {
@@ -45,15 +45,13 @@
   }
   &__header__help {
     background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -89px -145px;
-    width: 24px;
-    height: 24px;
+    @include box(24px);
     margin-right: 6px;
     cursor: pointer;
   }
   &__header__close {
     background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -143px -145px;
-    width: 24px;
-    height: 24px;
+    @include box(24px);
     cursor: pointer;
   }
   &__body {
@@ -72,15 +70,13 @@
     min-height: 48px;
   }
   &__footer {
-    display: flex;
+    @include flex-align-center;
     justify-content: space-between;
-    align-items: center;
   }
   &__footer__left {
   }
   &__footer__right {
-    display: flex;
-    align-items: center;
+    @include flex-align-center;
     justify-content: flex-end;
   }
   &__body--text {
@@ -99,7 +95,7 @@
   &-popup {
     font-size: 24px;
     font-weight: 700;
-    color: $text-black;
+    color: $black;
   }
 }
 
@@ -113,19 +109,10 @@
 .icon {
   &-danger {
     background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -592px -456px;
-    width: 48px;
-    height: 48px;
+    @include box(48px);
   }
   &-info {
     background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -826px -456px;
-    width: 48px;
-    height: 48px;
+    @include box(48px);
   }
-}
-
-.warning {
-  color: #ffc400;
-}
-.danger {
-  color: #ea2b2b;
 }

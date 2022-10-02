@@ -1,60 +1,103 @@
-/* BEM 
-Block Elements Modifiers
-B__E--M
-*/
-#toast-wrapper {
-  position: fixed;
-  right: 20px;
-  top: 20px;
-  .toast {
-    display: flex;
-    align-items: center;
-    background-color: #ffffff;
-    border-radius: 2px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-    height: 48px;
-    line-height: 48px;
-    margin-top: 18px;
-    min-width: 300px;
-    .toast__icon {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin-left: 18px;
-      i {
-        font-size: 14px;
+.v {
+  &-toast {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 9999;
+    font-size: 14px;
+
+    &-icon {
+      &-success {
+        background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -1602px -258px;
+        @include box(20px);
       }
-      flex-shrink: 0;
-    }
-    .toast__text {
-      margin: 0 12px;
-      flex-shrink: 0;
-    }
-    .toast__button {
-      margin: 0 16px;
-      width: 24px;
-      height: 24px;
-      text-align: center;
-      font-size: 24px;
-      line-height: 24px;
-      cursor: pointer;
-      flex-shrink: 0;
-      margin-left: auto;
+
+      &-error {
+        background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -538px -146px;
+        @include box(20px);
+      }
+
+      &-warning {
+        background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -593px -145px;
+        @include box(23px);
+      }
+
+      &-info {
+        background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -873px -145px;
+        @include box(22px);
+      }
+
+      &-x {
+        background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -1178px -362px;
+        @include box(12px);
+      }
     }
   }
+
+  &-toast__content {
+    @include flex-align-center;
+    background-color: $bg-toast;
+    border-radius: 4px;
+    box-shadow: $bg-box-shadow;
+    height: 56px;
+    margin-top: 18px;
+    max-width: 650px;
+    min-width: 450px;
+    padding: 16px;
+  }
+
+  &-toast__content__icon {
+    @include box(24px);
+    @include flex-center;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.info {
+      background-color: $bg-toast-info;
+    }
+  }
+
+  &-toast__content__text {
+    @include flex-align-center;
+    padding: 0 16px 0 8px;
+    flex-shrink: 0;
+    flex: 1;
+    justify-content: space-between;
+    span {
+      font-weight: 600;
+    }
+  }
+
+  &-toast__content__message {
+  }
+
+  &-toast__content__action {
+    span {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
+  &-toast__content__button {
+    @include box(16px);
+    @include flex-center;
+    text-align: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
   @keyframes slideIn {
     from {
       opacity: 0;
       transform: translateX(calc(100% + 20px));
     }
+
     to {
       opacity: 1;
       transform: translateX(0px);
     }
   }
+
   @keyframes fadeOut {
     to {
       opacity: 0;

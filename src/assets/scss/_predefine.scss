@@ -1,0 +1,30 @@
+/* spacing 
+============================================================================================ */
+@include generate-class-spacing("margin", "ms", 0.75rem);
+@include generate-class-spacing("padding", "ms", 0.75rem);
+@include generate-class-spacing("margin", "m", 1rem);
+@include generate-class-spacing("padding", "p", 1rem);
+@include generate-class-spacing("margin", "ml", 1.25rem);
+@include generate-class-spacing("padding", "pl", 1.25rem);
+
+/* color
+============================================================================================ */
+.bg {
+  &-color {
+    &-white {
+      background-color: $white;
+    }
+    &-grey {
+      background-color: $grey-300 !important;
+    }
+    &-transparent {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.border {
+  &-none {
+    border: none !important;
+  }
+}

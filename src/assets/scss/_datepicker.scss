@@ -53,7 +53,7 @@
           transition: none !important;
           &:hover {
             border-radius: 50%;
-            border: 1px solid #2ca01c;
+            border: 1px solid $bg-green;
             line-height: 36px !important;
           }
         }
@@ -75,7 +75,7 @@
         &-selected {
           visibility: visible;
           .ant-picker-cell-inner {
-            color: #2ca01c !important;
+            color: $bg-green !important;
             background-color: rgba(44, 160, 28, 0.2) !important;
             border-radius: 50% !important;
             font-weight: 600 !important;
@@ -103,18 +103,18 @@
     }
     &-cell-inner {
       text-align: center;
-      color: #fff;
+      color: $white;
       font-weight: 600;
       font-size: 14px;
       &:hover {
-        background: #fff;
-        color: #2ca01c !important;
-        border-radius: 2px;
+        background: $white;
+        color: $bg-green !important;
+        border-radius: 4px;
       }
     }
     &-cell-selected {
       .ant-picker-cell-inner {
-        background-color: #fff;
+        background-color: $white;
         color: #08bf1e;
         border-radius: 20px;
       }
@@ -139,20 +139,20 @@
     }
     &-cell-inner {
       text-align: center;
-      color: #fff;
+      color: $white;
       font-weight: 600;
       font-size: 13px;
       text-transform: capitalize;
       white-space: nowrap;
       &:hover {
-        background: #fff;
-        color: #2ca01c !important;
+        background: $white;
+        color: $bg-green !important;
         border-radius: 2px;
       }
     }
     &-cell-selected {
       .ant-picker-cell-inner {
-        background-color: #fff;
+        background-color: $white;
         color: #08bf1e;
         border-radius: 20px;
       }
@@ -177,21 +177,21 @@
     }
     &-cell-inner {
       text-align: center;
-      color: #fff;
+      color: $white;
       font-weight: 600;
       font-size: 13px;
       text-transform: capitalize;
       white-space: nowrap;
       &:hover {
-        background: #fff;
-        color: #2ca01c !important;
-        border-radius: 2px;
+        background: $white;
+        color: $bg-green !important;
+        border-radius: 4px;
       }
     }
 
     &-cell-selected {
       .ant-picker-cell-inner {
-        background-color: #fff;
+        background-color: $white;
         color: #08bf1e;
         border-radius: 20px;
       }
@@ -200,14 +200,14 @@
 }
 .ant {
   &-picker {
-    border-radius: 2px;
-    border: 1px solid #bbbbbb;
+    border-radius: 4px;
+    border: 1px solid $border-grey;
     width: 100%;
     padding: 0 !important;
     height: 32px;
     font-family: $Misa-font-regular !important;
     &:hover {
-      border: 1px solid #bbbbbb;
+      border: 1px solid $border-grey;
     }
     &-header {
       border-bottom: none;
@@ -215,7 +215,7 @@
         text-transform: capitalize;
         font-weight: 600;
         &:hover {
-          color: #2ca01c !important;
+          color: $bg-green !important;
         }
       }
     }
@@ -232,10 +232,17 @@
         height: 32px;
         &::placeholder {
           font-size: 12px;
-          color: #bbbbbb;
+          color: $border-grey;
           font-style: italic;
         }
       }
+    }
+    &-clear {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     &-suffix {
       display: flex;
@@ -248,7 +255,7 @@
       }
     }
     &:active {
-      border: 1px solid #bbbbbb;
+      border: 1px solid $border-grey;
     }
     &-focused {
       border: 1px solid #019160 !important;
@@ -260,7 +267,7 @@
       border-top: 1px solid #e0e0e0 !important;
     }
     &-today-btn {
-      color: #2ca01c !important;
+      color: $bg-green !important;
     }
   }
 }

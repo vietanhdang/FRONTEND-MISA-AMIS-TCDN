@@ -1,16 +1,16 @@
 .ant-pagination {
   &.mini {
     a {
-      color: #000;
+      color: $black;
     }
     .ant-pagination {
       &-item {
         a {
-          color: #000;
+          color: $black;
           padding: 0 6.5px !important;
         }
         &-active {
-          border: 1px solid #e0e0e0;
+          border: 1px solid $grey-300;
           font-weight: 700;
         }
       }
@@ -21,7 +21,9 @@
         margin-left: 13px;
       }
       &-disabled {
-        color: #9e9e9e !important;
+        a {
+          color: $grey-500 !important;
+        }
       }
     }
   }

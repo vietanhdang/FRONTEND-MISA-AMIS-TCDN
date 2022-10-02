@@ -1,14 +1,24 @@
 .sidebar {
-  width: auto;
-  height: 100%;
-  border-right: 1px solid #e5e5e5;
-  color: $text-white;
-  background-color: #393a3d;
+  @include box(auto, 100%);
+  color: $white;
+  background-color: $bg-sidebar;
   overflow-y: auto;
   flex-shrink: 0;
+  &.collapsed {
+    width: 52px;
+    .sidebar__header {
+      display: none;
+    }
+    .sidebar__item__list {
+      .sidebar__item {
+        .sidebar__item--text {
+          display: none;
+        }
+      }
+    }
+  }
   &__header {
-    display: flex;
-    align-items: center;
+    @include flex-align-center;
     height: 48px;
     padding: 24px;
   }
@@ -23,29 +33,25 @@
   }
   &__item__list {
     a {
-      color: #fff;
+      color: $text-sidebar;
     }
   }
   &__item {
-    width: auto;
-    height: 42px;
+    @include box(auto, 42px);
     padding: 0 14px 0 8px;
     border-left: 6px transparent solid;
     text-decoration: none;
-    display: flex;
     cursor: pointer;
-    align-items: center;
+    @include flex-align-center;
     &:hover {
-      background-color: rgba(#d4d7dc, 0.2);
+      background-color: $text-sidebar-hover;
     }
   }
   &__item--icon {
     margin-right: 8px;
-    display: flex;
-    align-items: center;
+    @include flex-align-center;
     div {
-      width: 22px;
-      height: 20px;
+      @include box(22px, 20px);
       opacity: 0.5;
     }
   }

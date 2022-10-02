@@ -1,31 +1,22 @@
+//  Bao gồm các biến và mixin
 @import "variables";
+@import "mixins";
+@import "reset";
+@import "predefine";
+
 @import "grid";
 @import "form";
 @import "header";
-@import "navbar";
+@import "sidebar";
 @import "content";
 @import "dialog";
 @import "toast";
 @import "icons";
-@import "spacing";
 @import "dialog";
 @import "font";
 @import "datepicker";
 @import "display";
-@import "color";
 @import "pagination";
-
-* {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  font-size: 13px;
-  box-sizing: border-box;
-  font-family: $Misa-font-regular;
-  font-weight: 400;
-}
 
 .main {
   width: 100%;
@@ -33,16 +24,31 @@ body {
   position: relative;
   display: flex;
 }
-.menu {
-  &-container {
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
-.content {
-  &-area {
-    flex: 1;
-    min-height: 0;
-    min-width: 0;
-  }
+*[data-title]:hover::after {
+  content: attr(data-title);
+  background-color: #505050;
+  color: #ffffff;
+  width: max-content;
+  position: absolute;
+  padding: 0px 4px;
+  top: calc(90%);
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 999;
+  animation: fadein 0.2s;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 ::-webkit-scrollbar {
@@ -50,7 +56,7 @@ body {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: $bg-white;
+  background: $white;
 }
 ::-webkit-scrollbar-thumb {
   background: #bdbdbd;
