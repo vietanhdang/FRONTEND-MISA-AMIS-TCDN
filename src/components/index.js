@@ -10,8 +10,11 @@ import VTable from "./base/VTable";
 import VModal from "./base/VModal";
 import VPopup from "./base/VPopup";
 import VDatePicker from "./base/VDatePicker";
+import VMenu from "./base/VMenu";
+import VRouterLink from "./base/VRouterLink";
 import TheHeader from "./layout/TheHeader";
 import TheSidebar from "./layout/TheSidebar";
+import VLoading from "./base/VLoading";
 export default {
   VButton,
   VInput,
@@ -26,4 +29,7 @@ export default {
   TheSidebar,
   VModal,
   VPopup,
+  VMenu,
+  VRouterLink,
+  VLoading,
 };
