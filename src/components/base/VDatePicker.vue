@@ -23,17 +23,17 @@
                 </div>
             </template>
         </date-picker>
-
     </div>
 </template>
 
 <script>
 import DatePicker from 'ant-design-vue/es/date-picker/moment';
 import "ant-design-vue/lib/date-picker/style/css";
-import moment from 'moment';
 import locale from "ant-design-vue/lib/date-picker/locale/vi_VN"; // gọi locale tiếng việt cho datepicker
-import { formatDate } from '@/utils/format';
-locale.lang = {
+import moment from 'moment'; // gọi moment để format date
+import { formatDate } from '@/utils/format'; // gọi hàm format date
+
+locale.lang = { // format lại locale cho datepicker
     ...locale.lang,
     monthFormat: "MMMM",
     dateFormat: "DD/MM/yyyy",
@@ -62,11 +62,6 @@ export default {
     data() {
         return {
             locale,
-            popupStyleCustom: {
-                width: "auto",
-                height: "auto",
-                zIndex: 9999,
-            },
             defaultPickerValue: null,
         };
     },
@@ -83,32 +78,46 @@ export default {
         },
     },
     methods: {
+        /**
+         * @description: Hàm này dùng để format lại date khi chọn date
+         * @param: {dateString} - moment date
+         * Author: AnhDV 02/10/2022
+         */
         onChange(dateString) {
-            if (dateString) {
-                this.$emit("update:modelValue", moment(dateString).format("YYYY-MM-DD"));
-            } else {
-                this.$emit("update:modelValue", "");
-                this.defaultPickerValue = null;
+            try {
+                if (dateString) {
+                    this.$emit("update:modelValue", moment(dateString).format("YYYY-MM-DD"));
+                } else {
+                    this.$emit("update:modelValue", "");
+                    this.defaultPickerValue = null;
+                }
+            } catch (error) {
+                console.log(error);
             }
         },
     },
-}
+    created() {
+        this.popupStyleCustom = { // style cho popup datepicker
+            width: "auto",
+            height: "auto",
+            zIndex: 9999,
+        };
+    },
+};
 </script>
 
 <style lang="scss" scoped>
 .v {
     &-date__picker {
         &-label {
-            label {
-                cursor: pointer;
-            }
-
+            cursor: pointer;
             font-weight: 600;
+
             font-family: "MISA Fonts Bold";
             margin-bottom: 8px;
 
             span {
-                color: red;
+                color: $border-red;
             }
         }
     }

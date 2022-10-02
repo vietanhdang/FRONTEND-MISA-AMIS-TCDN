@@ -2,9 +2,11 @@
     <div class="header">
         <div class="d-flex align-items-center">
             <div class="ms-24 ms-icon ms-icon-three-stripes ml-x-2" @click="toggleSidebar" v-if="!collapsed"></div>
-            <div class="ml-l-2 font-weight-600 font-size-13">CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC
+            <div class="cursor-pointer ml-l-2 font-weight-600 font-size-13 ">CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ
+                QUI PHÚC
+               
             </div>
-            <button class="pl-x-2 bg-color-white border-none">
+            <button class="pl-x-2 bg-color-white border-none ">
                 <div class="ms-14 ms-icon ms-icon-chevron-big-down"></div>
             </button>
         </div>

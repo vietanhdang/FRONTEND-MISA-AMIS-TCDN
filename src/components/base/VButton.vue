@@ -1,7 +1,7 @@
 <template>
     <div class="v-button">
         <button class="v-button__button" :type="type" :class="[buttonType,className]" :disabled="disabled"
-            :style="style" @blur="$emit('blur')">
+            :tabindex="tabIndex" :style="style" @blur="$emit('blur')">
             <div class="v-button__icon" v-if="icon">
                 <div :class="icon"></div>
             </div>
@@ -58,7 +58,7 @@ export default {
         },
         backgroundColorFocus: { // Background color focus của button
             type: String,
-            default: "#2ca01c",
+            default: "#118044",
         },
         color: { // Màu chữ của button
             type: String,
@@ -76,6 +76,14 @@ export default {
         buttonType: {
             type: String,
             default: "primary",
+        },
+        tabIndex: {
+            type: Number,
+            default: 0,
+        },
+        focus: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {
@@ -112,7 +120,7 @@ export default {
             justify-content: center;
             height: v-bind(height);
             width: v-bind(width);
-            border-radius: 3px;
+            border-radius: 4px;
             background-color: v-bind(backgroundColor);
             color: v-bind(color);
             outline: none;
@@ -131,6 +139,7 @@ export default {
 
             &:focus {
                 background-color: v-bind(backgroundColorFocus);
+                outline: none;
             }
 
             &.secondary {

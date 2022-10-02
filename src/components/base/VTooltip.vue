@@ -1,5 +1,6 @@
 <template>
-    <div class="tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave">
+    <div class="tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave"
+        ref="tooltipParent">
         <span v-if="content && showTooltip" class="tooltip-text" ref="tooltip" :class="isShow ? 'show' : ''"
             :style="style">{{content}}</span>
         <slot></slot>
@@ -8,6 +9,7 @@
   
   
 <script>
+// import _ from 'lodash'
 export default {
     props: {
         content: {
@@ -15,7 +17,7 @@ export default {
         },
         position: {
             type: String,
-            default: 'right',
+            default: 'auto',
         },
         fixed: {
             type: Boolean,
@@ -24,6 +26,10 @@ export default {
         minWidth: {
             type: Number,
             default: 0,
+        },
+        equalWidth: {
+            type: Boolean,
+            default: false,
         },
         maxWidth: {
             type: Number,
@@ -36,7 +42,8 @@ export default {
     },
     data() {
         return {
-            isShow: false
+            isShow: false,
+            tooltipWidth: 0,
         }
     },
     methods: {
@@ -48,7 +55,6 @@ export default {
             this.isShow = true;
             const { clientX, clientY } = event; // lấy tọa độ của chuột
             const tooltip = this.$refs.tooltip;
-
             if (tooltip) {
                 if (this.fixed) { // Nếu có truyền fixed vào thì set tọa độ cho tooltip
                     tooltip.style.position = 'absolute';
@@ -57,8 +63,14 @@ export default {
                     }
                     return;
                 }
+                if (this.equalWidth) {
+                    tooltip.style.position = 'absolute';
+                    tooltip.style.bottom = '-25%';
+                    return;
+                }
+                // tạo tooltip ở dưới vị trí của chuột
                 const { width, height } = tooltip.getBoundingClientRect(); // lấy width và height của tooltip
-                switch (this.position) {
+                switch (this.position) { // set tọa độ cho tooltip
                     case 'top':
                         tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
                         tooltip.style.top = `${Math.round(clientY - height - 10)}px`;
@@ -75,9 +87,10 @@ export default {
                         tooltip.style.left = `${Math.round(clientX + 10)}px`;
                         tooltip.style.top = `${Math.round(clientY - height / 2)}px`;
                         break;
-                    case 'auto':
-                        tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
-                        tooltip.style.top = `${Math.round(clientY + 10)}px`;
+                    default:
+                        tooltip.style.position = 'fixed';
+                        tooltip.style.top = `${clientY + 10}px`;
+                        tooltip.style.left = `${clientX + 10}px`;
                         break;
                 }
             }
@@ -97,10 +110,10 @@ export default {
          */
         style() {
             return {
-                minWidth: `${this.minWidth}px`,
+                minWidth: `${this.equalWidth ? this.tooltipWidth : this.minWidth}px`,
             }
         }
-    }
+    },
 };
 </script>
 <style scoped lang="scss">
@@ -110,8 +123,8 @@ export default {
     .tooltip-text {
         visibility: hidden;
         width: 100px;
-        background-color: #555;
-        color: #fff;
+        background-color: $grey-700;
+        color: $white;
         text-align: center;
         position: fixed;
         z-index: 9999;
@@ -150,7 +163,7 @@ export default {
             top: 100%;
             border-width: 5px;
             border-style: solid;
-            border-color: #555 transparent transparent transparent;
+            border-color: $grey-700 transparent transparent transparent;
         }
     }
 }
@@ -166,7 +179,7 @@ export default {
             right: 100%;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent #555 transparent transparent;
+            border-color: transparent $grey-700 transparent transparent;
         }
     }
 }
@@ -175,7 +188,7 @@ export default {
     .tooltip-text {
         top: 125%;
         left: 50%;
-        margin-left: -60px;
+        margin-left: -50px;
 
         &::after {
             // margin-left: -5px;
@@ -183,7 +196,7 @@ export default {
             left: 50%;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent #555 transparent;
+            border-color: transparent transparent $grey-700 transparent;
         }
     }
 }
@@ -199,7 +212,7 @@ export default {
             left: 100%;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent transparent #555;
+            border-color: transparent transparent transparent $grey-700;
         }
     }
 }

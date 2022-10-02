@@ -1,18 +1,20 @@
 <template>
-    <div class="v-combobox">
+    <div class="v-combobox" :data-title="`${error ?  errorMessage : ''}`">
         <div class="v-combobox__label" v-if="label">
+            <!-- Nếu có label thì hiển thị và nếu click vào label thì focus vào input -->
             <label @click="showListData();$refs.input.focus()">{{ label }} <span v-if="required"> *
-                </span></label>
+                </span>
+            </label>
         </div>
         <div class="v-combobox__body">
             <div class="v-combobox__selected" :class="[{ isShowListData: isShowListData },{error: error}]"
                 :style="style">
                 <input ref="input" type="text" v-model="textInput" @click="showListData" :placeholder="placeholder"
-                    :required="required" @focus="showListData" @blur="hideListData" @keydown="selecItemUpDown" />
-            </div>
-            <div class="ms-32 v-combobox__icon" @click="showListData" tabindex="-1" @blur="hideListData"
-                @keydown="selecItemUpDown">
-                <div class="icon-arrow-down"></div>
+                    :disabled="selectBox" @focus="showListData" @blur="hideListData" @keydown="selecItemUpDown" />
+                <div class="v-combobox__icon" tabindex="-1" @click="showListData" @blur="hideListData"
+                    @keydown="selecItemUpDown">
+                    <div class="icon-arrow-down"></div>
+                </div>
             </div>
             <div class="v-select__list" v-if="isShowListData" :style="[position === 'top' ? { bottom: '100%' } : {}]"
                 ref="combobox__data">
@@ -25,7 +27,8 @@
                     <slot name="item" :option="option" :index="index">
                         {{ option[propValue] }}
                     </slot>
-                    <div :class="{ 'v-select__items--checked': option[propKey] === keyItemSelected }"></div>
+                    <div v-if="selectBox" :class="{ 'v-select__items--checked': option[propKey] === keyItemSelected }">
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,64 +36,78 @@
 </template>
 <script>
 /* eslint-disable */
+/* eslint-disable */
 import { removeVietnameseTones } from '@/utils/format';
 import axios from 'axios';
-import keycode from '@/utils/keycode';
+import Enum from '@/utils/enum';
+const keycode = Enum.KEY_CODE;
 export default {
     name: "VCombobox",
     props: {
-        data: {
+        data: { // Danh sách dữ liệu
             type: Array,
             required: false
         },
-        placeholder: {
+        placeholder: { // Placeholder của input
             type: String,
             required: false,
             default: "",
         },
-        position: {
+        position: { // Vị trí hiển thị danh sách dữ liệu
             type: String,
             required: false,
             default: "bottom",
         },
-        label: {
+        label: { // Label của combobox
             type: String,
             required: false,
             default: null,
         },
-        required: {
+        required: { // Bắt buộc nhập
             type: Boolean,
             required: false,
             default: false,
         },
-        modelValue: {
-            type: String,
+        selectBox: { // Nếu là select box thì không cho gõ text
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        modelValue: { // Giá trị của combobox
             required: false,
             default: null,
         },
-        propKey: {
+        propKey: { // Key của dữ liệu
             required: false,
             default: "key",
         },
-        propValue: {
+        propValue: { // Value của dữ liệu
             required: false,
             default: "value",
         },
-        styleProps: {
+        styleProps: { // Style của combobox
             type: Array,
             required: false,
             default: () => [],
         },
-        propApi: {
+        propApi: { // Nếu có api thì lấy dữ liệu từ api
             type: String,
             required: false,
             default: null,
         },
-        error: {
+        error: { // Hiển thị lỗi
+            required: false,
+            default: false,
+        },
+        errorMessage: { // Hiển thị lỗi
             required: false,
         },
     },
     computed: {
+        /**
+         * @description: Tạo style cho combobox
+         * Author: AnhDV 25/09/2022
+         */
         style() {
             let styleProps = {};
             if (this.styleProps.length > 0) {
@@ -107,7 +124,7 @@ export default {
     },
     data() {
         return {
-            isShowListData: false,
+            isShowListData: false, // Hiển thị danh sách dữ liệu
             indexItemFocus: null, // index item focus
             indexItemSelected: -1, // index item selected
             keyItemSelected: "", // key item focus
@@ -118,17 +135,24 @@ export default {
         };
     },
     watch: {
-        /**
-         * Watch input text change and filter data
-         * Author: ANHDV - 08/09/2022 
-         */
-        textInput() {
+        textInput() { // Nếu có text input thì filter data theo text input và lưu lại vào filterData
             this.filterData = this.dataApi.filter((option) =>
                 removeVietnameseTones(option[this.propValue])
                     .toLowerCase()
                     .includes(removeVietnameseTones(this.textInput).toLowerCase())
             );
             this.indexItemFocus = null;
+        },
+        keyItemSelected(newVal) {
+            if (newVal === null) {
+                this.$emit("update:modelValue", "");
+            }
+        },
+        modelValue(newVal) {
+            if (newVal === null) {
+                this.keyItemSelected = "";
+                this.textInput = "";
+            }
         },
     },
     methods: {
@@ -137,26 +161,37 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         hideListData() {
-            if (this.textInput === "" && this.keyItemSelected !== "") {
-                this.textInput = this.dataApi.find((item) => item[this.propKey] === this.keyItemSelected)[
-                    this.propValue
-                ];
+            const self = this;
+            try {
+                if (self.textInput === "") {  // Nếu text input không có giá trị thì set lại giá trị cho combobox
+                    self.resetCombobox();
+                } else {
+                    if (self.indexItemSelected != null) { // Nếu text input có giá trị và có index selected thì set lại giá trị cho combobox
+                        self.onHandleSelected(self.dataApi[self.indexItemSelected], self.indexItemSelected);
+                    }
+                }
+                this.isShowListData = false; // Hide list data
+            } catch (error) {
+                console.log(error);
             }
-            this.isShowListData = false; // Hide list data
         },
         /**
          * @description: Hàm này dùng để hiển thị danh sách dữ liệu
          * Author: ANHDV - 08/09/2022 
          */
         showListData() {
-            this.isShowListData = true; // Chuyển trạng thái hiển thị danh sách dữ liệu
-            this.filterData = this.dataApi; // Gán dữ liệu đã lọc bằng dữ liệu từ api
-            if (this.indexItemSelected !== -1 && this.scrollY !== 0) {
-                this.$nextTick(() => { // Đợi DOM render xong thì mới scroll đến vị trí đã chọn
-                    this.$refs["combobox__data"].scrollTop = this.scrollY;
-                });
+            const self = this;
+            try {
+                self.isShowListData = true; // Chuyển trạng thái hiển thị danh sách dữ liệu
+                self.filterData = self.dataApi; // Gán dữ liệu đã lọc bằng dữ liệu từ api
+                if (self.indexItemSelected !== -1 && self.scrollY !== null) {
+                    self.$nextTick(() => { // Đợi DOM render xong thì mới scroll đến vị trí đã chọn
+                        self.$refs["combobox__data"].scrollTop = self.scrollY;
+                    });
+                }
+            } catch (error) {
+                console.log(error);
             }
-
         },
         /**
          * @description: Hàm này dùng để lấy dữ liệu khi click vào item hoặc nhấn enter
@@ -165,36 +200,42 @@ export default {
          * Author: ANHDV - 08/09/2022 
          */
         onHandleSelected(option, index) {
+            const self = this;
             try {
-                this.scrollY = this.$refs["combobox__data"].scrollTop; // Lấy vị trí scroll Y của item được chọn
+                const value = option[self.propValue];
+                self.textInput = value; // Gán giá trị cho textInput
+                self.indexItemSelected = index; // Gán index của item được chọn
+                self.indexItemFocus = index; // Gán index của item được focus
+                self.keyItemSelected = option[self.propKey]; // Gán key của item được chọn
+                self.isShowListData = false; // Ẩn danh sách dữ liệu
+                self.$emit("update:modelValue", self.keyItemSelected); // Emit giá trị của item được chọn
+                self.$emit("update:textInput", value); // Emit giá trị của text input
+                // self.$emit("update:modelValue", self.dataApi[index][self.propKey]); // Emit dữ liệu lên component cha
             } catch (error) {
-                this.scrollY = 0;
+                console.log(error);
             }
-            const value = option[this.propValue];
-            this.textInput = value; // Gán giá trị cho textInput
-            this.indexItemSelected = index; // Gán index của item được chọn
-            this.indexItemFocus = index; // Gán index của item được focus
-            this.keyItemSelected = option[this.propKey]; // Gán key của item được chọn
-            this.isShowListData = false; // Ẩn danh sách dữ liệu
-            this.$emit("update:modelValue", this.dataApi[index][this.propKey]); // Emit dữ liệu lên component cha
+            try {
+                self.scrollY = self.$refs["combobox__data"].scrollTop; // Lấy vị trí scroll Y của item được chọn
+            } catch (error) {
+            }
         },
         /**
          * @description: Hàm này dùng để chọn item khi nhấn phím mũi tên lên, xuống, enter, esc
          * Author: ANHDV - 08/09/2022 
          */
         selecItemUpDown(event) {
-            if (!this.isShowListData) return false;
-            const keyCodePress = event.keyCode;
+            if (!this.isShowListData) return false; // Nếu danh sách dữ liệu đang ẩn thì không xử lý
+            const keyCodePress = event.keyCode; // Lấy mã phím được nhấn
             try {
                 const heightOfBox = this.$refs["combobox__data"].offsetHeight - 16 // Lấy chiều cao của box chứa dữ liệu
                 switch (keyCodePress) {
                     case keycode.ENTER:
                         if (this.indexItemFocus !== null) { // Nếu có item được focus
                             this.onHandleSelected(this.filterData[this.indexItemFocus], this.indexItemFocus); // Lấy dữ liệu của item được focus
-                            this.$emit("update:modelValue", this.filterData[this.indexItemFocus][this.propKey]); // Emit dữ liệu lên component cha
+                            // this.$emit("update:modelValue", this.filterData[this.indexItemFocus][this.propKey]); // Emit dữ liệu lên component cha
                         }
                         break;
-                    case keycode.DOWN:
+                    case keycode.ARROW_DOWN:
                         if (this.indexItemFocus === null) { // Nếu không có item nào được focus
                             this.indexItemFocus = 0; // Focus item đầu tiên
                         } else {
@@ -207,7 +248,7 @@ export default {
                             this.$refs["combobox__data"].scrollTop = 0;
                         }
                         break;
-                    case keycode.UP:
+                    case keycode.ARROW_UP:
                         if (this.indexItemFocus === null) { // Nếu không có item nào được focus thì focus vào item cuối cùng
                             this.indexItemFocus = this.filterData.length - 1;
                         } else { // Nếu có item được focus thì focus vào item trước đó
@@ -230,50 +271,49 @@ export default {
                 console.log(error);
             }
         },
+        /**
+         * @description: Hàm này dùng để reset lại combobox
+         * Author: AnhDV 25/09/2022
+         */
+        resetCombobox() {
+            this.textInput = ""; // Reset lại text input
+            this.indexItemSelected = null; // Reset lại index item được chọn
+            this.indexItemFocus = null; // Reset lại index item được focus
+            this.keyItemSelected = null; // Reset lại key item được chọn
+            this.filterData = []; // Reset lại dữ liệu lọc
+        },
     },
-    created() {
+    /**
+     * @description: Hook khởi tạo để gán giá trị vào combo box
+     * Author: AnhDV 25/09/2022
+     */
+    async created() {
         const self = this;
-        if (self.propApi) {
-            axios.get(self.propApi).then((res) => {
-                self.dataApi = res.data;
-                self.filterData = res.data;
-                if (self.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
-                    const index = self.dataApi.findIndex((item) => item[self.propKey] === self.modelValue); // Tìm index của item có key trùng với giá trị mặc định
-                    if (index !== -1) { // Nếu có item trùng với giá trị mặc định
-                        self.onHandleSelected(self.dataApi[index], index); // Lấy dữ liệu của item được focus
-                    }
+        try {
+            if (self.propApi) { // Nếu có prop api thì gọi api lấy dữ liệu
+                const response = await axios.get(self.propApi);
+                self.dataApi = response.data;
+                self.filterData = response.data;
+            }
+            if (self.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
+                self.dataApi = self.data;
+                self.filterData = self.data;
+            }
+            if (self.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
+                const index = self.dataApi.findIndex((item) => item[self.propKey] === self.modelValue); // Tìm index của item có key trùng với giá trị mặc định
+                if (index !== -1) { // Nếu tồn tại item có key trùng với giá trị mặc định
+                    self.onHandleSelected(self.dataApi[index], index); // Lấy dữ liệu của item được focus
                 }
-            })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
-        if (self.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
-            self.dataApi = self.data;
-            self.filterData = self.data;
-        }
-    },
-    mounted() {
-        // this.textInput = "";
-        // this.indexItemSelected = -1;
-        // this.indexItemFocus = null;
-        // this.keyItemSelected = "";
-        // this.$emit("update:modelValue", "");
-    },
-    updated() {
-        if (!this.modelValue) {
-            this.textInput = "";
-            this.indexItemSelected = -1;
-            this.indexItemFocus = null;
-            this.keyItemSelected = "";
-            this.$emit("update:modelValue", "");
+            }
+        } catch (error) {
+            console.log(error);
         }
     },
 }
 </script>
 <style lang="scss" scoped>
 .error {
-    border: 1px solid red !important;
+    border: 1px solid $red-500 !important;
 }
 
 .v-combobox {
@@ -287,70 +327,66 @@ export default {
         margin-bottom: 8px;
 
         span {
-            color: red;
+            color: $border-red;
         }
     }
 
     .v-combobox__body {
-        position: relative;
         width: 100%;
         text-align: left;
         outline: none;
-        height: 32px;
         box-sizing: border-box;
+        min-height: 32px;
+        border-radius: 4px;
+        background-color: $white;
+        position: relative;
 
         .v-combobox__selected {
-            background-color: $bg-white;
-            border-radius: 2px;
-            color: $text-black;
+            background-color: $white;
+            border-radius: 4px;
+            color: $black;
             user-select: none;
-            height: 100%;
-            width: 100%;
-            padding: 0 36px 0 10px;
-            border: 1px solid #bbbbbb;
+            padding: 0 0 0 10px;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            border: 1px solid $border-grey;
             outline: none;
+            box-sizing: border-box;
 
             input {
                 border: none;
                 outline: none;
-                width: 100%;
-                height: 100%;
                 padding: 0;
+                background-color: transparent;
             }
 
             &.isShowListData {
                 border: 1px solid $bg-green;
             }
-
-
         }
 
         .v-combobox__icon {
-            width: 32px;
+            min-width: 32px;
             height: 32px;
-            position: absolute;
-            right: 0;
-            top: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0 4px 4px 0;
             cursor: pointer;
             outline: none;
-
 
             &:hover {
                 background-color: $bg-grey-hover;
             }
 
             .icon-arrow-down {
-                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
+                background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -560px -359px;
                 width: 16px;
                 height: 16px;
             }
 
             .icon-arrow-up {
-                background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -560px -359px;
+                background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -560px -359px;
                 width: 16px;
                 height: 16px;
                 transform: rotate(180deg);
@@ -359,11 +395,11 @@ export default {
 
         .hover {
             background-color: $bg-green-hover !important;
-            color: $text-white !important;
+            color: $white !important;
         }
 
         .v-select__list {
-            color: $text-black;
+            color: $black;
             position: absolute;
             background-color: $bg-white;
             padding: 8px;
@@ -378,7 +414,7 @@ export default {
                 padding: 0 4px;
                 cursor: pointer;
                 user-select: none;
-                border-radius: 2px;
+                border-radius: 4px;
                 min-height: 32px;
                 line-height: 32px;
                 position: relative;
@@ -391,9 +427,8 @@ export default {
                     background-color: $bg-grey-hover;
                 }
 
-
                 .v-select__items--checked {
-                    background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1499px -309px;
+                    background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -1499px -309px;
                     width: 24px;
                     height: 24px;
                     position: absolute;
@@ -406,3 +441,4 @@ export default {
     }
 }
 </style>
+    

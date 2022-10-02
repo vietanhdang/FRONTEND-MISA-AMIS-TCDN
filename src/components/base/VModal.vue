@@ -1,6 +1,6 @@
 <template>
     <transition name="fade">
-        <div class="modal" v-if="isVisible">
+        <div class="modal" v-if="isVisible || isShow">
             <div class="modal-content">
                 <slot></slot>
             </div>
@@ -11,6 +11,12 @@
 <script>
 export default {
     name: "VModal",
+    props: {
+        isShow: {
+            type: Boolean,
+            default: false,
+        },
+    },
     data: () => ({
         isVisible: false,
     }),
@@ -24,13 +30,14 @@ export default {
             this.isVisible = false
         },
     },
+
 }
 </script>
 
 <style  lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s ease;
+    transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
@@ -51,8 +58,8 @@ export default {
 }
 
 .modal-content {
-    background: #fff;
-    border-radius: 2px;
+    background: $white;
+    border-radius: 4px;
     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
     min-width: 444px;
     margin-left: auto;

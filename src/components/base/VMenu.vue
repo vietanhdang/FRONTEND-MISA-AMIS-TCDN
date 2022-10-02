@@ -1,0 +1,168 @@
+<template>
+    <div class="v-menu" :class="{'v-menu__content--show': isVisible}">
+        <div class="v-menu__main">
+            <div class="v-menu__button" @mousedown="$emit('v-edit',propKey)">Sửa</div>
+            <div class="v-menu__dropdown">
+                <div class="v-menu__icon" @click="open" @blur="close" tabindex="-1">
+                    <div class="v-menu__line"></div>
+                    <div class="ms-16 ms-icon ms-icon-arrow-down"></div>
+                </div>
+                <Transition name="slide">
+                    <div class="v-menu__content" v-if="isVisible" :class="[{'v-menu__content--up': isUp}]"
+                        ref="content">
+                        <div class="v-menu__item" @mousedown="$emit('v-duplicate',propKey)">Nhân bản</div>
+                        <div class="v-menu__item" @mousedown="$emit('v-delete',propKey)">Xóa</div>
+                        <div class="v-menu__item" @mousedown="$emit('v-disable',propKey)">Ngưng sử dụng</div>
+                    </div>
+                </Transition>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    props: {
+        propKey: {
+            required: true,
+        },
+        isUp: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    data() {
+        return {
+            isVisible: false,
+        }
+    },
+    methods: {
+        /**
+         * @description: Hàm này dùng để mở dropdown
+         * Author: AnhDV 25/09/2022
+         */
+        open() {
+            this.isVisible = true
+        },
+
+        /**
+         * @description: Hàm này dùng để đóng dropdown
+         * Author: AnhDV 25/09/2022
+         */
+        close() {
+            this.isVisible = false
+        },
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateY(-10px);
+    opacity: 0;
+}
+
+
+.v {
+    &-menu {
+        position: relative;
+        font-family: "Misa Fonts Regular";
+        max-width: 80px;
+    }
+
+    &-menu__main {
+        display: flex;
+        cursor: pointer;
+        align-items: center;
+    }
+
+    &-menu__button {
+        color: $text-blue;
+        padding: 6px 1px 6px 16px;
+        font-weight: 600;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        font-size: 13px;
+        line-height: 13px;
+    }
+
+    &-menu__dropdown {
+        padding: 8px 10px;
+        background-origin: border-box;
+        position: relative;
+    }
+
+    &-menu__icon {
+        font-weight: 600;
+        position: relative;
+        transition: all 0.25s ease;
+        padding: 0 5px;
+
+        &:focus {
+            border: 1px solid $text-blue !important;
+        }
+
+    }
+
+
+    &-menu__line {
+        left: -7px;
+        height: 20px;
+        top: -1px;
+        position: absolute;
+        border: 1px solid transparent;
+        border-left-color: $white;
+    }
+
+    &-menu__content {
+        z-index: 100;
+        position: absolute;
+        text-align: left;
+        width: auto;
+        right: 0;
+        top: 25%;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+        background-color: $white;
+        padding: 2px 1px;
+        border-radius: 4px;
+        min-width: 122px;
+        border: 1px solid #babec5;
+        transform: translateY(20%);
+        font-weight: 400;
+        animation: 0.2s ease-out 0s 1 slideInFromTop;
+
+        &--up {
+            top: auto;
+            bottom: 25%;
+            transform: translateY(-20%);
+        }
+    }
+
+    &-menu__item {
+        padding: 5px 10px;
+        transition: all 0.2s ease;
+
+        a {
+            color: #000;
+        }
+
+        &:hover {
+            background-color: #e5e5e5;
+            color: $bg-green-hover;
+            transition: all 0.2s ease;
+        }
+    }
+
+    @keyframes slideInFromTop {
+        0% {
+            opacity: 0;
+            transform: translateY(25%);
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+}
+</style>

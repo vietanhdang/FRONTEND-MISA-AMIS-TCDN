@@ -1,5 +1,5 @@
 <template>
-    <v-modal ref="modal">
+    <v-modal :isShow="isShow">
         <div class="v-dialog" @keypress="onHandleKey">
             <div class="v-dialog__content" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
                 @mouseup="stopDrag">
@@ -36,7 +36,8 @@
 </template>
 
 <script>
-import keycode from '@/utils/keycode';
+import Enum from '@/utils/enum';
+const keycode = Enum.KEY_CODE;
 export default {
     name: "VDialog",
     props: {
@@ -44,13 +45,6 @@ export default {
             type: Boolean,
             default: false
         },
-    },
-    watch: {
-        isShow: function (val) {
-            if (val) {
-                this.show();
-            }
-        }
     },
     methods: {
         /**
@@ -74,6 +68,7 @@ export default {
         drag(event) {
             if (this.draggable) { // nếu cho phép di chuyển dialog
                 const { clientX, clientY } = event; // lấy tọa độ của chuột
+
                 const { width, height } = this.$refs["dialog-content"].getBoundingClientRect(); // lấy tọa độ của dialog so với viewport
                 let left = clientX - this.offsetX; // tính tọa độ mới của dialog theo trục x
                 let top = clientY - this.offsetY; // tính tọa độ mới của dialog theo trục y
@@ -83,6 +78,7 @@ export default {
                 top = top < 0 ? 0 : top;
                 left = left + width > window.innerWidth ? window.innerWidth - width : left; // nếu dialog vượt quá viewport thì dialog sẽ nằm ở cuối viewport
                 top = top + height > window.innerHeight ? window.innerHeight - height : top; // nếu dialog vượt quá viewport thì dialog sẽ nằm ở cuối viewport
+
 
                 this.$refs["dialog-content"].style.left = `${Math.round(left)}px`; // thay đổi tọa độ của dialog theo trục x
                 this.$refs["dialog-content"].style.top = `${Math.round(top)}px`; // thay đổi tọa độ của dialog theo trục y
@@ -103,20 +99,6 @@ export default {
             if (event.keyCode === keycode.ESC) {
                 console.log("ESC");
             }
-        },
-        /**
-         * @description: Hàm này dùng để hiển thị dialog
-         * Author: AnhDV 22/09/2022
-         */
-        show() {
-            this.$refs.modal.open();
-        },
-        /**
-         * @description: Hàm này dùng để ẩn dialog
-         * Author: AnhDV 22/09/2022
-         */
-        close() {
-            this.$refs.modal.close();
         },
     },
 
@@ -144,7 +126,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-
+        cursor: grab;
 
         &__overlay {
             position: absolute;
@@ -158,7 +140,7 @@ export default {
         &__content {
             position: fixed;
             background-color: #fff;
-            border-radius: 2px;
+            border-radius: 4px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             min-width: 444px;
             padding: 32px;
@@ -181,6 +163,10 @@ export default {
         &__close {
             display: flex;
             align-items: center;
+
+            .ms-icon {
+                margin-left: 6px;
+            }
         }
 
         &__title {

@@ -1,17 +1,17 @@
 <template>
-    <div class="v-input">
+    <div class="v-input" :data-title="`${error ?  errorMessage : ''}`">
         <div class="v-input__label" v-if="label">
             <label @click="$refs.input.focus()">
                 {{ label }} <span v-if="required"> * </span>
             </label>
         </div>
         <div class="v-input__input" :class="inputClass">
-            <slot name="tooltip"></slot>
-            <input ref="input" :type="type" :placeholder="placeholder"
+            <input ref="input" :type="type" :placeholder="placeholder" @blur="onBlur"
                 :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id"
-                :checked="type === 'checkbox' || type === 'radio' ? (modelValue == value? true : false) : checked"
-                :value="type === 'checkbox' || type === 'radio' ? value : modelValue" :name="name" :disabled="disabled"
-                :style="style" v-model="model">
+                :checked="(type === 'checkbox' || type === 'radio') ? (modelValue == value ? true : false) : checked"
+                :value="(type === 'checkbox' || type === 'radio') ? value : modelValue" :name="name"
+                :disabled="disabled" :style="style" v-model="model"
+                :tabindex="(type === 'checkbox' || type === 'radio') ? modelValue == value ? 0 : -1 : tabIndex">
             <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
                 <label class="label_custom" v-if="label_custom">{{label_custom}}</label>
             </label>
@@ -104,29 +104,35 @@ export default {
             type: String,
             required: false,
         },
+        errorMessage: {
+            type: String,
+            required: false,
+        },
+        tabIndex: {
+            type: Number,
+            required: false,
+        },
     },
     data() {
         return {
             model: this.modelValue,
-            showTooltip: false,
         };
     },
     watch: {
-        /**
-         * @description: Hàm này dùng để lắng nghe sự thay đổi của input để emit ra ngoài 
-         * Author: AnhDV 16/09/2022
-         */
-        model(value) {
-            this.$emit("update:modelValue", value);
-            this.showTooltip = false;
-        },
-
         /**
          * @description: Hàm này dùng để lắng nghe sự thay đổi của giá trị truyền vào để cập nhật giá trị cho input
          * Author: AnhDV 16/09/2022
          */
         modelValue(value) {
             this.model = value;
+        },
+
+        /**
+         * @description: Hàm này dùng để lắng nghe sự thay đổi của input để emit ra ngoài 
+         * Author: AnhDV 16/09/2022
+         */
+        model(value) {
+            this.$emit("update:modelValue", value);
         },
     },
     computed: {
@@ -145,6 +151,29 @@ export default {
                 return styleProps;
             } else {
                 return {};
+            }
+        },
+    },
+    methods: {
+        /**
+         * @description: Hàm này dùng để bắt sự kiện blur của input nếu input rỗng thì emit ra ngoài cho validate bắt lỗi
+         * @param: {any} 
+         * Author: AnhDV 27/09/2022
+         */
+        onBlur() {
+            if (this.model === null || this.model === '' || this.model === undefined) {
+                this.model = "";
+            }
+        },
+        /**
+        * @description: Hàm này dùng để convert giá trị truyền vào thành kiểu dữ liệu boolean
+        * Author: AnhDV 16/09/2022
+        */
+        checkedValue(value) {
+            if (value === '' || value === null || value === undefined) {
+                return false;
+            } else {
+                return value;
             }
         },
     },
@@ -180,7 +209,7 @@ export default {
         margin-bottom: 8px;
 
         span {
-            color: red;
+            color: $border-red;
         }
     }
 
@@ -200,7 +229,7 @@ export default {
             height: 32px;
             outline: none;
             border-radius: 2px;
-            border: 1px solid #bbbbbb;
+            border: 1px solid $border-grey;
             padding: 0 10px;
 
             &:focus {
@@ -209,7 +238,7 @@ export default {
 
             &::placeholder {
                 font-size: 12px;
-                color: #bbbbbb;
+                color: $border-grey;
             }
         }
 
@@ -270,20 +299,28 @@ input[type="radio"] {
 
 @keyframes rotateRevert {
     100% {
-        // transform: rotate(-90deg);
+        transform: rotate(-90deg);
     }
 }
 
 input[type="checkbox"]+label:before {
     content: "";
-    border: 1px solid #bbbbbb;
+    border: 1px solid $border-grey;
     border-radius: 2px;
     display: inline-block;
     width: 18px;
     height: 18px;
     vertical-align: bottom;
     cursor: pointer;
-    animation: rotateRevert 0.2s;
+}
+
+
+input[type="checkbox"].no-animation+label:before {
+    animation: none;
+}
+
+input[type="checkbox"].animation+label:before {
+    animation: rotateRevert 0.2s ease-in-out;
 }
 
 input[type="checkbox"]:checked+label:before {
@@ -291,7 +328,7 @@ input[type="checkbox"]:checked+label:before {
     background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1501px -311px;
     width: 18px;
     height: 18px;
-    animation: rotate 0.3s;
+    animation: rotate 0.2s ease-in-out;
 }
 
 
@@ -300,10 +337,16 @@ input[type="radio"]:focus+label:before {
     border-color: #019160;
 }
 
+input[type="radio"]:focus+label:before {
+    border-color: #019160;
+    box-shadow: 0 0 0 1px rgba(1, 145, 96, 0.5);
+}
+
+
 
 input[type="radio"]+label:before {
     border-radius: 50%;
-    border: 1px solid #bbbbbb;
+    border: 1px solid $border-grey;
     content: "";
     cursor: pointer;
     display: inline-block;

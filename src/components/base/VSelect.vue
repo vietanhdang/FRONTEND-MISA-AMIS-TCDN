@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import keycode from '@/utils/keycode';
-
+import Enum from '@/utils/enum';
+const keycode = Enum.KEY_CODE;
 export default {
     name: "VSelect",
     props: {
@@ -125,10 +125,10 @@ export default {
         selecItemUpDown(event) {
             if (!this.open) return;
             switch (event.keyCode) {
-                case keycode.UP:
+                case keycode.ARROW_UP:
                     this.indexItemSelected = this.indexItemSelected > 0 ? this.indexItemSelected - 1 : this.data.length - 1;
                     break;
-                case keycode.DOWN:
+                case keycode.ARROW_DOWN:
                     this.indexItemSelected = this.indexItemSelected < this.data.length - 1 ? this.indexItemSelected + 1 : 0;
                     break;
                 case keycode.ESC:
@@ -172,9 +172,9 @@ export default {
     }
 
     &-select__selected {
-        background-color: $bg-white;
-        border-radius: 2px;
-        color: $text-black;
+        background-color: $white;
+        border-radius: 4px;
+        color: $black;
         cursor: pointer;
         user-select: none;
         padding-left: 10px;
@@ -196,7 +196,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0 2px 2px 0;
+        border-radius: 0 4px 4px 0;
         cursor: pointer;
         outline: none;
 
@@ -207,11 +207,11 @@ export default {
     }
 
     &-select__items {
-        color: $text-black;
-        border-radius: 2px;
+        color: $black;
+        border-radius: 4px;
         overflow: hidden;
         position: absolute;
-        background-color: $bg-white;
+        background-color: $white;
         padding: 4px;
         left: 0;
         right: 0;
@@ -224,7 +224,7 @@ export default {
             padding: 0 8px;
             cursor: pointer;
             user-select: none;
-            border-radius: 2px;
+            border-radius: 4px;
 
             &:hover {
                 background-color: $bg-grey-hover;
@@ -232,7 +232,7 @@ export default {
 
             &.selected {
                 background-color: $bg-green-hover !important;
-                color: $bg-white;
+                color: $white;
             }
         }
     }
