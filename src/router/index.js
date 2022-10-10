@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from "vue-router";
 function lazyLoad(view) {
   return () => import(`@/views/${view}.vue`);
 }
-
 // Khai báo các routes
 const router = [
   {
@@ -18,7 +17,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-dashboard",
-      title: "Tổng quan",
+      title: "overview",
       order: 1,
     },
   },
@@ -30,7 +29,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-cash",
-      title: "Tiền mặt",
+      title: "cash",
       order: 2,
     },
   },
@@ -42,7 +41,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-bank",
-      title: "Tiền gửi",
+      title: "banking",
       order: 3,
     },
   },
@@ -54,7 +53,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-buy",
-      title: "Mua hàng",
+      title: "purchase",
       order: 4,
     },
   },
@@ -66,7 +65,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-sell",
-      title: "Bán hàng",
+      title: "sales",
       order: 5,
     },
   },
@@ -78,7 +77,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-bill",
-      title: "Quản lý hóa đơn",
+      title: "manage_invoice",
       order: 6,
     },
   },
@@ -90,7 +89,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-warehouse",
-      title: "Quản lý kho",
+      title: "manage_stock",
       order: 7,
     },
   },
@@ -102,7 +101,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-tool",
-      title: "Công cụ dụng cụ",
+      title: "equipment",
       order: 8,
     },
   },
@@ -114,7 +113,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-fixed-asset",
-      title: "Tài sản cố định",
+      title: "fixed_asset",
       order: 9,
     },
   },
@@ -126,7 +125,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-tax",
-      title: "Thuế",
+      title: "tax",
       order: 10,
     },
   },
@@ -138,7 +137,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-price",
-      title: "Giá thành",
+      title: "price",
       order: 11,
     },
   },
@@ -150,7 +149,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-summary",
-      title: "Tổng hợp",
+      title: "general_ledger",
       order: 12,
     },
   },
@@ -162,7 +161,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-budget",
-      title: "Ngân sách",
+      title: "budget",
       order: 13,
     },
   },
@@ -174,7 +173,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-report",
-      title: "Báo cáo",
+      title: "report",
       order: 14,
     },
   },
@@ -186,7 +185,7 @@ const router = [
     },
     sideBar: {
       icon: "ms-icon ms-icon-analysis",
-      title: "Phân tích tài chính",
+      title: "financial_analysis",
       order: 15,
     },
   },

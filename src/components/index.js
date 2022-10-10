@@ -1,7 +1,6 @@
 // Xuất tất cả các component trong thư mục components
 import VButton from "./base/VButton";
 import VInput from "./base/VInput";
-import VSelect from "./base/VSelect";
 import VCombobox from "./base/VCombobox";
 import VTooltip from "./base/VTooltip";
 import VToast from "./base/VToast";
@@ -15,10 +14,11 @@ import VRouterLink from "./base/VRouterLink";
 import TheHeader from "./layout/TheHeader";
 import TheSidebar from "./layout/TheSidebar";
 import VLoading from "./base/VLoading";
+import VDropdown from "./base/VDropdown";
+import VQuickKey from "./base/VQuickKey";
 export default {
   VButton,
   VInput,
-  VSelect,
   VCombobox,
   VTooltip,
   VToast,
@@ -32,4 +32,6 @@ export default {
   VMenu,
   VRouterLink,
   VLoading,
+  VDropdown,
+  VQuickKey,
 };

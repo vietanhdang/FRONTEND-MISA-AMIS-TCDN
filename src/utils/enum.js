@@ -27,28 +27,10 @@ export default {
     ARROW_DOWN: 40,
     // Mã phím F1
     F1: 112,
-    // Mã phím F2
-    F2: 113,
-    // Mã phím F3
-    F3: 114,
-    // Mã phím F4
-    F4: 115,
-    // Mã phím F5
-    F5: 116,
-    // Mã phím F6
-    F6: 117,
-    // Mã phím F7
-    F7: 118,
-    // Mã phím F8
-    F8: 119,
-    // Mã phím F9
-    F9: 120,
-    // Mã phím F10
-    F10: 121,
-    // Mã phím F11
-    F11: 122,
-    // Mã phím F12
-    F12: 123,
+    // Mã phím S
+    S: 83,
+    // Mã phím E
+    E: 69,
   },
   // Mã trạng thái
   STATUS_CODE: {
@@ -90,13 +72,18 @@ export default {
     // Mô tả lỗi
     ERROR_MESSAGE: "errorMessage",
   },
+  // Form mode
   FORM_MODE: {
     // Chế độ thêm mới
     ADD: "add",
     // Chế độ chỉnh sửa
     EDIT: "edit",
+    // Chế độ Nhân bản
+    DUPLICATE: "duplicate",
+    // Null
+    NULL: null,
   },
-  // Thao tác
+  // Hành động cất, hủy, xóa, nhân bản, lưu,...
   ACTION: {
     // Thêm mới
     ADD: "add",
@@ -104,15 +91,126 @@ export default {
     EDIT: "edit",
     // Xóa
     DELETE: "delete",
-    // Xem
-    VIEW: "view",
+    // Xóa nhiều
+    DELETE_MANY: "deleteMany",
     // Tìm kiếm
     SEARCH: "search",
     // Lưu
     SAVE: "save",
+    // Cất và đóng form
+    SAVE_AND_CLOSE: "saveAndClose",
+    // Cất và thêm mới
+    SAVE_AND_ADD: "saveAndAdd",
     // Hủy
     CANCEL: "cancel",
     // Đóng
     CLOSE: "close",
+    // ngưng sử dụng
+    INACTIVE: "inactive",
+    // nhân bản
+    DUPLICATE: "duplicate",
+    // Reload dữ liệu
+    RELOAD: "reload",
+    // Xuất file
+    EXPORT: "export",
+    // Trợ giúp
+    HELP: "help",
+    // Null
+    NULL: null,
+  },
+  // Các thông báo
+  NOTICE_MESSAGE: {
+    // Thông báo thêm mới thành công
+    INSERT_SUCCESS: (data) => `Thêm mới nhân viên <b>${data}</b> thành công!`,
+    // Thông báo thêm mới thất bại
+    INSERT_ERROR: (data) => `Thêm mới nhân viên <b>${data}</b> thất bại!`,
+    // Thông báo chỉnh sửa thành công
+    EDIT_SUCCESS: (data) => `Chỉnh sửa nhân viên <b>${data}</b> thành công!`,
+    // Thông báo chỉnh sửa thất bại
+    EDIT_ERROR: (data) => `Chỉnh sửa nhân viên <b>${data}</b> thất bại!`,
+    // Thông báo xóa thành công
+    DELETE_SUCCESS: (data) => `Xóa nhân viên <b>${data}</b> thành công!`,
+    // Thông báo xóa thất bại
+    DELETE_ERROR: (data) => `Xóa nhân viên <b>${data}</b> thất bại!`,
+    // Thông báo xóa nhiều thành công
+    DELETE_MANY_SUCCESS: (data) => `Xóa <b>${data}</b> nhân viên thành công!`,
+    // Thông báo xóa nhiều thất bại
+    DELETE_MANY_ERROR: `Dữ liệu không tồn tại hoặc đã bị xóa trước đó.`,
+    // Thông báo không tìm thấy dữ liệu
+    NOT_FOUND: `Không tìm thấy dữ liệu!`,
+    // Lỗi không xác định, vui lòng liên hệ quản trị viên
+    UNKNOWN_ERROR: `Lỗi không xác định, vui lòng liên hệ quản trị viên!`,
+    // Thông báo lỗi khi lấy danh sách nhân viên
+    GET_EMPLOYEE_LIST_ERROR: `Có lỗi xảy ra khi lấy danh sách nhân viên!`,
+    // Thông báo lỗi khi lấy thông tin nhân viên
+    GET_EMPLOYEE_INFO_ERROR: `Có lỗi xảy ra khi lấy thông tin nhân viên!`,
+    // Thông báo lỗi khi lấy danh sách phòng ban
+    GET_DEPARTMENT_LIST_ERROR: `Có lỗi xảy ra khi lấy danh sách phòng ban!`,
+    // Thông báo xuất danh sách nhân viên thành công
+    EXPORT_EMPLOYEE_LIST_SUCCESS: `Xuất danh sách nhân viên thành công!`,
+    // Thông báo xuất danh sách nhân viên thất bại
+    EXPORT_EMPLOYEE_LIST_ERROR: `Xuất danh sách nhân viên thất bại!`,
+    // Thông báo đang xử lý xuất danh sách nhân viên
+    EXPORT_EMPLOYEE_LIST_PROCESSING: `Đang xử lý xuất danh sách nhân viên!`,
+    // Thông báo tải lại dữ liệu thành công
+    RELOAD_DATA_SUCCESS: `Tải lại dữ liệu thành công!`,
+    // Thông báo tải lại dữ liệu thất bại
+    RELOAD_DATA_ERROR: `Tải lại dữ liệu thất bại!`,
+    // Thông báo tính năng đang được phát triển
+    DEVELOPING: (data = "") => `Tính năng <b>${data}</b> đang được phát triển!`,
+    // Cất và đóng form
+    SAVE_AND_CLOSE: "Cất (Ctrl + S)",
+    // Cất và thêm mới
+    SAVE_AND_ADD: "Cất và thêm (Ctrl + Shift + S)",
+  },
+  // Các cảnh báo
+  ALERT_MESSAGE: {
+    DELETE_CONFIRM: (data) =>
+      `Bạn có chắc chắn muốn xóa nhân viên <b>${data}</b> không?`,
+    // Cảnh báo xóa nhiều
+    DELETE_MANY_CONFIRM: `Bạn có thực sự muốn xóa những nhân viên đã chọn không?`,
+    // Cảnh báo dữ liệu đã thay đổi
+    DATA_CHANGED: `Dữ liệu đã bị thay đổi. Bạn có muốn cất không?`,
+  },
+  // Các thông báo lỗi của toast
+  ICON: {
+    ERROR: "error",
+    SUCCESS: "success",
+    WARNING: "warning",
+    INFO: "info",
+  },
+  // Confirm
+  CONFIRM: {
+    YES: "Có",
+    NO: "Không",
+    CANCEL: "Hủy",
+  },
+  // Các thông báo lỗi input validation
+  INPUT_VALIDATION: {
+    REQUIRED: (data) => `${data} không được để trống!`,
+    INVALID: (data) => `${data} không hợp lệ!`,
+    INVALID_EMAIL: (data) => `${data} không hợp lệ!`,
+    INVALID_PHONE_NUMBER: (data = "Số điện thoại") => `${data} không hợp lệ!`,
+    INVALID_NUMBER: (data) => `${data} không hợp lệ!`,
+    INVALID_MIN_LENGTH: (data, length) =>
+      `${data} phải có ít nhất ${length} ký tự!`,
+    INVALID_MAX_LENGTH: (data, length) =>
+      `${data} không được vượt quá ${length} ký tự!`,
+    INVALID_DATE: (data) => `${data} không hợp lệ!`,
+    INVALID_DATE_OVER_CURRENT_DATE: (data) =>
+      `${data} không được vượt quá ngày hiện tại!`,
+  },
+  // MISA CODE RESPONSE
+  MISA_CODE: {
+    // Thành công
+    SUCCESS: 200,
+    // Thêm mới thành công
+    CREATED: 201,
+    // Thêm mới thành công
+    NO_CONTENT: 204,
+    // Lỗi validate
+    VALIDATE: 400,
+    // Lỗi không xác định
+    ERROR: 500,
   },
 };

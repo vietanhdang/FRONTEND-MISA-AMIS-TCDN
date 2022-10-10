@@ -5,74 +5,76 @@
 const dialogMode = {
   state: {
     mode: null, // mode của dialog (thêm, sửa, xóa)
+    action: null, // action của dialog (thêm, sửa, xóa)
     employeeId: null, // id của nhân viên
   },
   mutations: {
     /**
-     * @description: Thay đổi mode của dialog
-     * @param: {state} state của store
-     * @param: {mode} mode của dialog (thêm, sửa, xóa)
+     * @description: Thay đổi mode của dialog (Thêm, sửa, xóa)
      * Author: AnhDV 02/10/2022
-     * @example: this.$store.commit("setMode", "add");
      */
     setMode(state, mode) {
       state.mode = mode;
     },
     /**
      * @description: Thay đổi id của nhân viên
-     * @param: {state} state của store
-     * @param: {employeeId} id của nhân viên
      * Author: AnhDV 02/10/2022
-     * @example: this.$store.commit("setEmployeeId", 1);
      */
     setEmployeeId(state, employeeId) {
       state.employeeId = employeeId;
     },
+    /**
+     * @description: TThay đổi action trong dialog (Cất, Cất và tiếp tục, Hủy)
+     * Author: AnhDV 02/10/2022
+     */
+    setAction(state, action) {
+      state.action = action;
+    },
   },
   actions: {
     /**
-     * @description: Thay đổi mode của dialog
-     * @param: {context} context của store
-     * @param: {mode} mode của dialog (thêm, sửa, xóa)
+     * @description: Thay đổi mode của dialog (Thêm, sửa, xóa)
      * Author: AnhDV 02/10/2022
-     * @example: this.$store.dispatch("setMode", "add");
      */
     setMode({ commit }, mode) {
       commit("setMode", mode);
     },
     /**
      * @description: Thay đổi id của nhân viên
-     * @param: {context} context của store
-     * @param: {employeeId} id của nhân viên
      * Author: AnhDV 02/10/2022
-     * @example: this.$store.dispatch("setEmployeeId", 1);
      */
     setEmployeeId({ commit }, employeeId) {
       commit("setEmployeeId", employeeId);
     },
+    /**
+     * @description: Thay đổi action trong dialog (Cất, Cất và tiếp tục, Hủy)
+     * Author: AnhDV 02/10/2022
+     */
+    setAction({ commit }, action) {
+      commit("setAction", action);
+    },
   },
   getters: {
     /**
-     * @description: Lấy mode của dialog
-     * @param: {state} state của store
-     * Author: AnhDV 02/10/2022
-     * @example: this.$store.getters.getMode;
-     * @return: mode của dialog (thêm, sửa, xóa)
+     * @description: Lấy mode của dialog (Thêm, sửa, xóa)
      * Author: AnhDV 02/10/2022
      */
     getMode(state) {
       return state.mode;
     },
     /**
-     * @description: Lấy id của nhân viên
-     * @param: {state} state của store
-     * Author: AnhDV 02/10/2022
-     * @example: this.$store.getters.getEmployeeId;
-     * @return: id của nhân viên
+     * @description: Lấy id của nhân viên trong dialog
      * Author: AnhDV 02/10/2022
      */
     getEmployeeId(state) {
       return state.employeeId;
+    },
+    /**
+     * @description: Lấy action trong dialog (Cất, Cất và tiếp tục, Hủy)
+     * Author: AnhDV 02/10/2022
+     */
+    getAction(state) {
+      return state.action;
     },
   },
 };
