@@ -1,3 +1,20 @@
+.v {
+  &-date__picker {
+    position: relative;
+
+    &-label {
+      cursor: pointer;
+      font-weight: 600;
+
+      font-family: "MISA Fonts Bold";
+      margin-bottom: 8px;
+
+      span {
+        color: $border-red;
+      }
+    }
+  }
+}
 .ant-picker-date-panel {
   .ant {
     &-picker {
@@ -14,8 +31,8 @@
       &-content {
         td,
         th {
-          width: 36px;
-          height: 36px;
+          width: $height-input;
+          height: $height-input;
           box-sizing: border-box;
         }
         thead {
@@ -45,8 +62,8 @@
 
         &-inner {
           background: none !important;
-          width: 36px !important;
-          height: 36px !important;
+          width: $height-input !important;
+          height: $height-input !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
@@ -54,7 +71,7 @@
           &:hover {
             border-radius: 50%;
             border: 1px solid $bg-green;
-            line-height: 36px !important;
+            line-height: $height-input !important;
           }
         }
 
@@ -106,8 +123,8 @@
       color: $white;
       font-weight: 600;
       font-size: 14px;
+      width: auto !important;
       &:hover {
-        background: $white;
         color: $bg-green !important;
         border-radius: 4px;
       }
@@ -200,17 +217,18 @@
 }
 .ant {
   &-picker {
-    border-radius: 4px;
+    border-radius: $border-radius;
     border: 1px solid $border-grey;
     width: 100%;
     padding: 0 !important;
-    height: 32px;
+    height: $height-input;
     font-family: $Misa-font-regular !important;
     &:hover {
       border: 1px solid $border-grey;
     }
     &-header {
       border-bottom: none;
+      padding: 0 12px;
       button {
         text-transform: capitalize;
         font-weight: 600;
@@ -229,7 +247,6 @@
     &-input {
       padding-left: 13px;
       input {
-        height: 32px;
         &::placeholder {
           font-size: 12px;
           color: $border-grey;
@@ -258,9 +275,14 @@
       border: 1px solid $border-grey;
     }
     &-focused {
-      border: 1px solid #019160 !important;
       box-shadow: none !important;
-      overflow: hidden;
+      border: 1px solid $border-green !important;
+    }
+    &.error {
+      border: 1px solid $border-red !important;
+      &.ant-picker-focused {
+        border-color: none !important;
+      }
     }
 
     &-footer {

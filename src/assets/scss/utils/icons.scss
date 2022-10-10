@@ -1,5 +1,10 @@
 .ms {
   /* icon size */
+  &-12 {
+    @include box(12px);
+    min-width: 12px;
+    min-height: 12px;
+  }
   &-14 {
     @include box(14px);
     min-width: 14px;
@@ -19,6 +24,11 @@
     @include box(20px);
     min-width: 20px;
     min-height: 20px;
+  }
+  &-22 {
+    @include box(22px);
+    min-width: 22px;
+    min-height: 22px;
   }
   &-24 {
     @include box(24px);
@@ -180,16 +190,24 @@
   &-arrow-down {
     background-position: -896px -359px;
   }
+  &-arrow-down-black {
+    background-position: -560px -359px;
+  }
+  &-arrow-up-black {
+    background-position: -560px -359px;
+    transform: rotate(180deg);
+  }
   &-info {
     background-position: -826px -456px;
   }
 
-  &-danger {
+  &-warning {
     background-position: -592px -456px;
   }
 
   &-error {
-    background-position: -752px -462px;
+    // background-position: -752px -462px;
+    background-position: -24px -954px;
   }
   &-close {
     background-position: -144px -144px;
@@ -197,5 +215,24 @@
 
   &-help {
     background-position: -89px -144px;
+  }
+  &-toast-success {
+    background-position: -1602px -258px;
+  }
+
+  &-toast-error {
+    background-position: -538px -146px;
+  }
+
+  &-toast-warning {
+    background-position: -593px -145px;
+  }
+
+  &-toast-info {
+    background-position: -873px -145px;
+  }
+
+  &-toast-x {
+    background-position: -1178px -362px;
   }
 }

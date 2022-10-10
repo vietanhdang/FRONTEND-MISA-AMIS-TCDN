@@ -1,22 +1,22 @@
 //  Bao gồm các biến và mixin
-@import "variables";
-@import "mixins";
+@import "variables/variables";
+@import "mixins/mixins";
 @import "reset";
 @import "predefine";
 
-@import "grid";
-@import "form";
-@import "header";
-@import "sidebar";
-@import "content";
-@import "dialog";
-@import "toast";
-@import "icons";
-@import "dialog";
-@import "font";
-@import "datepicker";
-@import "display";
-@import "pagination";
+@import "utils/grid";
+@import "utils/form";
+@import "utils/icons";
+@import "utils/font";
+@import "utils/display";
+@import "base/tooltip_base/tooltip";
+
+@import "base/pagination";
+@import "base/datepicker";
+
+@import "layout/header/header";
+@import "layout/sidebar/sidebar";
+@import "layout/content/content";
 
 .main {
   width: 100%;
@@ -31,24 +31,6 @@
   to {
     opacity: 1;
   }
-}
-*[data-title]:hover::after {
-  content: attr(data-title);
-  background-color: #505050;
-  color: #ffffff;
-  width: max-content;
-  position: absolute;
-  padding: 0px 4px;
-  top: calc(90%);
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 999;
-  animation: fadein 0.2s;
-  font-size: 13px;
-  font-weight: 400;
 }
 
 ::-webkit-scrollbar {

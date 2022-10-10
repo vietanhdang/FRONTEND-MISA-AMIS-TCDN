@@ -1,0 +1,92 @@
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s;
+}
+
+.v-dropdown {
+  position: relative;
+  display: inline-block;
+
+  .v-dropdown__button {
+    @include flex-align-center;
+    cursor: pointer;
+    height: $height-input;
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 16px;
+    transition: all 0.25s ease;
+
+    .v-dropdown__text {
+      font-family: "MISA Fonts Bold";
+      font-size: 13px;
+      margin-right: 4px;
+      line-height: $height-input;
+    }
+
+    .v-dropdown__icon {
+      @include flex-align-center;
+
+      .v-dropdown__icon {
+        margin-left: 5px;
+      }
+    }
+
+    &.secondary-light {
+      border: 1px solid $grey-500;
+      color: $black;
+      background-color: transparent;
+
+      &:hover {
+        background-color: $border-line;
+      }
+
+      &:active {
+        background-color: $border-grey;
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 3px $grey-300;
+      }
+    }
+
+    &.rounded {
+      border-radius: 30px;
+    }
+
+    &.border-bold {
+      border: 2px solid $bg-grey-bold-active;
+    }
+  }
+
+  .v-dropdown__content {
+    position: absolute;
+    padding: 2px 1px;
+    border-radius: 2px;
+    border: 1px solid $border-grey;
+    top: 110%;
+    min-width: 100px;
+    right: 0;
+    z-index: 9999;
+    background-color: $white;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+
+  .v-dropdown__content-item {
+    padding: 4px 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $bg-grey-hover;
+    }
+  }
+}

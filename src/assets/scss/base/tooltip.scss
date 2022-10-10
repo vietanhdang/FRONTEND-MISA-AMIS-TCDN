@@ -1,0 +1,104 @@
+.v {
+  &-tooltip {
+    position: relative;
+
+    &:hover {
+      .v-tooltip__text {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+
+  &-tooltip__text {
+    visibility: hidden;
+    width: 100px;
+    color: $white;
+    border-radius: $border-radius;
+    background: $bg-tooltip;
+    line-height: 1.5;
+    text-align: center;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-family: "MISA Fonts Regular";
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+    }
+
+    &.show {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+.top {
+  .v-tooltip__text {
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+
+    &::after {
+      // margin-left: -5px;
+      left: 50%;
+      top: 100%;
+      border-width: 5px;
+      border-style: solid;
+      border-color: $grey-700 transparent transparent transparent;
+    }
+  }
+}
+
+.right {
+  .v-tooltip__text {
+    top: -5px;
+    left: 110%;
+
+    &::after {
+      top: 50%;
+      margin-top: -5px;
+      right: 100%;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent $grey-700 transparent transparent;
+    }
+  }
+}
+
+.bottom {
+  .v-tooltip__text {
+    top: 125%;
+    left: 50%;
+    margin-left: -50px;
+
+    &::after {
+      // margin-left: -5px;
+      bottom: 100%;
+      left: 50%;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent $grey-700 transparent;
+    }
+  }
+}
+
+.left {
+  .v-tooltip__text {
+    top: -5px;
+    right: 110%;
+
+    &::after {
+      top: 50%;
+      margin-top: -5px;
+      left: 100%;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent transparent $grey-700;
+    }
+  }
+}
