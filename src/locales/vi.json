@@ -1,0 +1,22 @@
+{
+  "common": {
+    "select_lang": "Chọn ngôn ngữ"
+  },
+  "sidebar": {
+    "overview": "Tổng quan",
+    "cash": "Tiền mặt",
+    "banking": "Tiền gửi",
+    "purchase": "Mua hàng",
+    "sales": "Bán hàng",
+    "manage_invoice": "Quản lý hóa đơn",
+    "manage_stock": "Quản lý kho",
+    "equipment": "Công cụ",
+    "fixed_asset": "Tài sản cố định",
+    "tax": "Thuế",
+    "price": "Giá thành",
+    "general_ledger": "Tổng hợp",
+    "budget": "Ngân sách",
+    "report": "Báo cáo",
+    "financial_analysis": "Phân tích tài chính"
+  }
+}
