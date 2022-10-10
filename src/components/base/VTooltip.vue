@@ -1,15 +1,18 @@
 <template>
-    <div class="tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave"
+
+    <div class="v-tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave"
         ref="tooltipParent">
-        <span v-if="content && showTooltip" class="tooltip-text" ref="tooltip" :class="isShow ? 'show' : ''"
-            :style="style">{{content}}</span>
+        <span v-if="content && showTooltip" class="v-tooltip__text" ref="tooltip" :class="isShow ? 'show' : ''"
+            :style="style">
+            {{content}}
+        </span>
         <slot></slot>
     </div>
+
 </template>
   
   
 <script>
-// import _ from 'lodash'
 export default {
     props: {
         content: {
@@ -64,8 +67,8 @@ export default {
                     return;
                 }
                 if (this.equalWidth) {
-                    tooltip.style.position = 'absolute';
-                    tooltip.style.bottom = '-25%';
+                    tooltip.style.transform = `translateY(150%)`;
+                    tooltip.style.padding = '0 5px';
                     return;
                 }
                 // tạo tooltip ở dưới vị trí của chuột
@@ -110,110 +113,23 @@ export default {
          */
         style() {
             return {
-                minWidth: `${this.equalWidth ? this.tooltipWidth : this.minWidth}px`,
+                minWidth: `${this.minWidth}px`,
+                width: `${this.equalWidth ? 'auto' : ''}`,
             }
         }
     },
 };
 </script>
 <style scoped lang="scss">
-.tooltip {
-    position: relative;
+@import '@/assets/scss/base/tooltip.scss';
 
-    .tooltip-text {
-        visibility: hidden;
-        width: 100px;
-        background-color: $grey-700;
-        color: $white;
-        text-align: center;
-        position: fixed;
-        z-index: 9999;
-        opacity: 0;
-        transition: opacity 0.3s;
-
-        &::after {
-            content: "";
-            position: absolute;
-
-        }
-
-        &.show {
-            visibility: visible;
-            opacity: 1;
-        }
-    }
-
-    &:hover {
-        .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-    }
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
 }
 
-.top {
-    .tooltip-text {
-        bottom: 125%;
-        left: 50%;
-        margin-left: -60px;
-
-        &::after {
-            // margin-left: -5px;
-            left: 50%;
-            top: 100%;
-            border-width: 5px;
-            border-style: solid;
-            border-color: $grey-700 transparent transparent transparent;
-        }
-    }
-}
-
-.right {
-    .tooltip-text {
-        top: -5px;
-        left: 110%;
-
-        &::after {
-            top: 50%;
-            margin-top: -5px;
-            right: 100%;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent $grey-700 transparent transparent;
-        }
-    }
-}
-
-.bottom {
-    .tooltip-text {
-        top: 125%;
-        left: 50%;
-        margin-left: -50px;
-
-        &::after {
-            // margin-left: -5px;
-            bottom: 100%;
-            left: 50%;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent $grey-700 transparent;
-        }
-    }
-}
-
-.left {
-    .tooltip-text {
-        top: -5px;
-        right: 110%;
-
-        &::after {
-            top: 50%;
-            margin-top: -5px;
-            left: 100%;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent transparent $grey-700;
-        }
-    }
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

@@ -1,29 +1,35 @@
 <template>
-    <div class="v-input" :data-title="`${error ?  errorMessage : ''}`">
+    <div class="v-input">
         <div class="v-input__label" v-if="label">
-            <label @click="$refs.input.focus()">
+            <label @click="$refs.input.focus()" :tooltip="tooltipText" :position="tooltipPosition">
                 {{ label }} <span v-if="required"> * </span>
             </label>
         </div>
-        <div class="v-input__input" :class="inputClass">
-            <input ref="input" :type="type" :placeholder="placeholder" @blur="onBlur"
-                :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id"
-                :checked="(type === 'checkbox' || type === 'radio') ? (modelValue == value ? true : false) : checked"
-                :value="(type === 'checkbox' || type === 'radio') ? value : modelValue" :name="name"
-                :disabled="disabled" :style="style" v-model="model"
-                :tabindex="(type === 'checkbox' || type === 'radio') ? modelValue == value ? 0 : -1 : tabIndex">
+        <div class="v-input__input" :class="inputClass" :tooltip="`${isShowErrorMessage && error ?  errorMess : ''}`"
+            :position="tooltipPosition">
+            <input ref="input" v-if="type === 'checkbox' || type === 'radio'" :type="type"
+                :class="[className, {'error' : error}]" :id="id" :value="value" :disabled="disabled" :style="style"
+                v-model="tempValue" :tabindex="(type === 'radio') ? (modelValue == value ? 0 : -1) : 0" />
+            <input v-else ref="input" :type="type" :placeholder="placeholder"
+                :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id" :disabled="disabled"
+                :style="style" v-model.trim="tempValue" :data-error="`${isShowErrorMessage && error ?  errorMess : ''}`"
+                @focus="isShowErrorMessage=false" @blur="validateCheck ? validate() : ''" />
             <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
                 <label class="label_custom" v-if="label_custom">{{label_custom}}</label>
             </label>
             <label class="v-input__radio" v-if="type === 'radio'" @click="$refs.input.click()">
                 <label class="label_custom">{{ label_custom}}</label>
             </label>
-            <div class="v-input__icon ms-16 ms-icon ms-icon-search" v-if="icon">
+            <div class="v-input__icon" v-if="icon">
+                <div :class="icon"></div>
+                <slot name="icon"></slot>
             </div>
         </div>
     </div>
 </template>
 <script>
+import Validate from '@/utils/validate';
+import Enum from '@/utils/enum';
 export default {
     name: "VInput",
     props: {
@@ -61,10 +67,6 @@ export default {
             required: false,
             default: null,
         },
-        checked: {
-            type: Boolean,
-            default: false,
-        },
         modelValue: {
             required: false,
             default: null,
@@ -97,14 +99,7 @@ export default {
             required: false,
             default: false,
         },
-        error: {
-            required: false,
-        },
         inputClass: {
-            type: String,
-            required: false,
-        },
-        errorMessage: {
             type: String,
             required: false,
         },
@@ -112,27 +107,74 @@ export default {
             type: Number,
             required: false,
         },
+        errorLabel: {
+            type: String,
+            required: false,
+        },
+        isEmail: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        isPhoneNumber: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        isNumber: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        minLength: {
+            type: Number,
+            required: false,
+            default: 0,
+        },
+        maxLength: {
+            type: Number,
+            required: false,
+            default: 0,
+        },
+        validateCheck: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        isSubmit: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        tooltipText: {
+            type: String,
+            required: false,
+        },
+        tooltipPosition: {
+            type: String,
+            required: false,
+            default: "bottom",
+        },
     },
     data() {
         return {
-            model: this.modelValue,
+            error: false, // có hiển thị lỗi hay không
+            errorMess: "", // nội dung lỗi
+            isShowErrorMessage: false, // trạng thái hiển thị lỗi
         };
     },
     watch: {
         /**
-         * @description: Hàm này dùng để lắng nghe sự thay đổi của giá trị truyền vào để cập nhật giá trị cho input
-         * Author: AnhDV 16/09/2022
+         * @description: Nếu form submit thì kiểm tra validate
+         * Author: AnhDV 08/10/2022
          */
-        modelValue(value) {
-            this.model = value;
-        },
-
-        /**
-         * @description: Hàm này dùng để lắng nghe sự thay đổi của input để emit ra ngoài 
-         * Author: AnhDV 16/09/2022
-         */
-        model(value) {
-            this.$emit("update:modelValue", value);
+        isSubmit: {
+            handler(newVal) {
+                if (newVal) {
+                    this.validate();
+                }
+            },
+            deep: true,
         },
     },
     computed: {
@@ -153,211 +195,74 @@ export default {
                 return {};
             }
         },
+
+        /**
+        * @description: Reactivity cho input v-model 
+        * Author: AnhDV 14/09/2022
+        */
+        tempValue: {
+            get() {
+                return this.modelValue;
+            },
+            set(value) {
+                this.$emit('update:modelValue', value);
+                if (this.validateCheck) { // nếu validateCheck = true thì validate
+                    this.errorMess = "";
+                    this.$nextTick(() => { // sau khi set giá trị thì kiểm tra validate
+                        this.validate();
+                    });
+                }
+            },
+        },
     },
     methods: {
         /**
-         * @description: Hàm này dùng để bắt sự kiện blur của input nếu input rỗng thì emit ra ngoài cho validate bắt lỗi
-         * @param: {any} 
-         * Author: AnhDV 27/09/2022
-         */
-        onBlur() {
-            if (this.model === null || this.model === '' || this.model === undefined) {
-                this.model = "";
-            }
-        },
-        /**
-        * @description: Hàm này dùng để convert giá trị truyền vào thành kiểu dữ liệu boolean
-        * Author: AnhDV 16/09/2022
+        * @description: Hàm này dùng để bắt sự kiện blur của input nếu input rỗng thì sẽ hiển thị lỗi
+        * @param: {any} 
+        * Author: AnhDV 27/09/2022
         */
-        checkedValue(value) {
-            if (value === '' || value === null || value === undefined) {
-                return false;
+        validate() {
+            const self = this;
+            let errorLabel = self.errorLabel;
+            let value = self.modelValue;
+            if ((!self.required && Validate.isNullOrEmpty(value)) || self.required) {
+                if (self.isEmail && !Validate.isEmail(value)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_EMAIL(errorLabel)
+                }
+                if (self.isPhoneNumber && !Validate.isPhoneNumber(value)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_PHONE_NUMBER(errorLabel)
+                }
+                if (self.isNumber && !Validate.isNumber(value)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_NUMBER(errorLabel)
+                }
+                if (self.maxLength > 0 && !Validate.isLength(value, 0, self.maxLength)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_MAX_LENGTH(errorLabel, self.maxLength)
+                }
+                if (self.minLength > 0 && !Validate.isLength(value, self.minLength)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_MIN_LENGTH(errorLabel, self.minLength)
+                }
+                if (!Validate.isNullOrEmpty(value)) {
+                    self.errorMess = Enum.INPUT_VALIDATION.REQUIRED(errorLabel);
+                }
+            }
+            if (self.errorMess) {
+                this.isShowErrorMessage = true;
+                this.error = true;
             } else {
-                return value;
+                this.isShowErrorMessage = false;
+                this.error = false;
             }
         },
     },
-    mounted() {
-        if (this.focus) { // Nếu có truyền focus vào thì focus vào input
-            this.$refs.input.focus();
+    created() {
+        if (this.focus) {
+            this.$nextTick(() => {
+                this.$refs.input.focus();
+            });
         }
     },
-
 }
 </script>
 <style scoped lang="scss">
-.v {
-    &-input {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-    &-input__outline {
-        &:hover {
-            outline: 1px solid #e2e2e2;
-        }
-    }
-
-    &-input__label {
-        label {
-            cursor: pointer;
-        }
-
-        font-weight: 600;
-        font-family: "MISA Fonts Bold";
-        margin-bottom: 8px;
-
-        span {
-            color: $border-red;
-        }
-    }
-
-    &-input__input {
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        position: relative;
-        justify-content: center;
-
-        label {
-            font-weight: 400;
-            cursor: pointer;
-        }
-
-        input {
-            height: 32px;
-            outline: none;
-            border-radius: 2px;
-            border: 1px solid $border-grey;
-            padding: 0 10px;
-
-            &:focus {
-                border: 1px solid #019160;
-            }
-
-            &::placeholder {
-                font-size: 12px;
-                color: $border-grey;
-            }
-        }
-
-        .error {
-            border: 1px solid red;
-
-            &:focus {
-                border: 1px solid red;
-            }
-
-        }
-    }
-
-    &-input__with-icon {
-        padding: 8px 36px 8px 12px;
-    }
-
-    &-input__checkbox {
-
-        .label_custom {
-            margin-left: 10px;
-        }
-    }
-
-    &-input__radio {
-        line-height: 18px;
-        cursor: pointer;
-
-        label {
-            margin-left: 10px;
-        }
-    }
-
-    &-input__icon {
-        position: absolute;
-        right: 11px;
-    }
-
-}
-
-
-.inpur__normal {
-    padding: 0 12px 0 10px;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-@keyframes rotate {
-    0% {
-        transform: rotate(-90deg);
-    }
-}
-
-@keyframes rotateRevert {
-    100% {
-        transform: rotate(-90deg);
-    }
-}
-
-input[type="checkbox"]+label:before {
-    content: "";
-    border: 1px solid $border-grey;
-    border-radius: 2px;
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    vertical-align: bottom;
-    cursor: pointer;
-}
-
-
-input[type="checkbox"].no-animation+label:before {
-    animation: none;
-}
-
-input[type="checkbox"].animation+label:before {
-    animation: rotateRevert 0.2s ease-in-out;
-}
-
-input[type="checkbox"]:checked+label:before {
-    border-color: $bg-green;
-    background: url('@/assets/img/Sprites.64af8f61.svg') no-repeat -1501px -311px;
-    width: 18px;
-    height: 18px;
-    animation: rotate 0.2s ease-in-out;
-}
-
-
-input[type="checkbox"]:focus+label:before,
-input[type="radio"]:focus+label:before {
-    border-color: #019160;
-}
-
-input[type="radio"]:focus+label:before {
-    border-color: #019160;
-    box-shadow: 0 0 0 1px rgba(1, 145, 96, 0.5);
-}
-
-
-
-input[type="radio"]+label:before {
-    border-radius: 50%;
-    border: 1px solid $border-grey;
-    content: "";
-    cursor: pointer;
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    position: relative;
-    vertical-align: bottom;
-}
-
-input[type="radio"]:checked+label:before {
-    border: 1px solid $bg-green;
-    background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -115.5px -460.5px;
-}
+@import "@/assets/scss/base/input.scss";
 </style>

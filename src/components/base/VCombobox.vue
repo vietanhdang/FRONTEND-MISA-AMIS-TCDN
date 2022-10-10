@@ -1,43 +1,47 @@
 <template>
-    <div class="v-combobox" :data-title="`${error ?  errorMessage : ''}`">
+    <div class="v-combobox">
         <div class="v-combobox__label" v-if="label">
-            <!-- Nếu có label thì hiển thị và nếu click vào label thì focus vào input -->
-            <label @click="showListData();$refs.input.focus()">{{ label }} <span v-if="required"> *
-                </span>
+            <label @click="showListData();$refs.input.focus()">{{ label }} <span v-if="required">*</span>
             </label>
         </div>
         <div class="v-combobox__body">
-            <div class="v-combobox__selected" :class="[{ isShowListData: isShowListData },{error: error}]"
-                :style="style">
+            <div class="v-combobox__selected" :class="[{error: error}]" :style="style"
+                :data-error="`${!isShowListData && error ? errorMess : ''}`"
+                :tooltip="`${!isShowListData && error ? errorMess : ''}`">
                 <input ref="input" type="text" v-model="textInput" @click="showListData" :placeholder="placeholder"
                     :disabled="selectBox" @focus="showListData" @blur="hideListData" @keydown="selecItemUpDown" />
                 <div class="v-combobox__icon" tabindex="-1" @click="showListData" @blur="hideListData"
                     @keydown="selecItemUpDown">
-                    <div class="icon-arrow-down"></div>
-                </div>
-            </div>
-            <div class="v-select__list" v-if="isShowListData" :style="[position === 'top' ? { bottom: '100%' } : {}]"
-                ref="combobox__data">
-                <div v-if="filterData.length === 0" class="v-select__items">
-                    Không tìm thấy kết quả
-                </div>
-                <div v-else class="v-select__items" v-for="(option, index) of filterData" :key="index"
-                    @mousedown="onHandleSelected(option, index)"
-                    :class="[{'itemFocus': index == indexItemFocus},{ 'hover':  option[propKey] === keyItemSelected }]">
-                    <slot name="item" :option="option" :index="index">
-                        {{ option[propValue] }}
-                    </slot>
-                    <div v-if="selectBox" :class="{ 'v-select__items--checked': option[propKey] === keyItemSelected }">
+                    <div
+                        :class="['ms-16 ms-icon', { 'ms-icon-arrow-down-black': !isShowListData, 'ms-icon-arrow-up-black': isShowListData }]">
                     </div>
                 </div>
             </div>
+            <transition name="slide-fade">
+                <div class="v-select__list" v-if="isShowListData"
+                    :style="[position === 'top' ? { bottom: '100%' } : {}]" ref="combobox__data">
+                    <div v-if="filterData.length === 0" class="v-select__items">
+                        Không tìm thấy kết quả
+                    </div>
+                    <div v-else class="v-select__items" v-for="(option, index) of filterData" :key="index"
+                        @mousedown="onHandleSelected(option, index)"
+                        :class="[{'v-select__hover': index == indexItemFocus},{ 'v-select__focus':  option[propKey] === keyItemSelected }]">
+                        <slot name="item" :option="option" :index="index">
+                            {{ option[propValue] }}
+                        </slot>
+                        <div v-if="!selectBox"
+                            :class="{ 'v-select__items--checked': option[propKey] === keyItemSelected }">
+                        </div>
+                    </div>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 <script>
 /* eslint-disable */
-/* eslint-disable */
 import { removeVietnameseTones } from '@/utils/format';
+import Validate from '@/utils/validate';
 import axios from 'axios';
 import Enum from '@/utils/enum';
 const keycode = Enum.KEY_CODE;
@@ -95,12 +99,12 @@ export default {
             required: false,
             default: null,
         },
-        error: { // Hiển thị lỗi
+        errorLabel: { // Hiển thị lỗi
+            required: false,
+        },
+        isSubmit: { // Kiểm tra khi submit form
             required: false,
             default: false,
-        },
-        errorMessage: { // Hiển thị lỗi
-            required: false,
         },
     },
     computed: {
@@ -125,13 +129,15 @@ export default {
     data() {
         return {
             isShowListData: false, // Hiển thị danh sách dữ liệu
-            indexItemFocus: null, // index item focus
-            indexItemSelected: -1, // index item selected
-            keyItemSelected: "", // key item focus
+            indexItemFocus: null, // index của item được focus
+            indexItemSelected: -1, // index của item được chọn
+            keyItemSelected: "", // giá trị của item được chọn
             textInput: "", // Text input
-            dataApi: [], // Data from api
-            filterData: [], // Data has been filtered
-            scrollY: 0, // position scroll Y of selected item
+            dataApi: [], // dữ liệu lấy từ api
+            filterData: [], // dữ liệu lọc
+            scrollY: 0, // vị trí scroll của danh sách dữ liệu
+            error: false, // Hiển thị lỗi
+            errorMess: "", // Nội dung lỗi
         };
     },
     watch: {
@@ -143,19 +149,36 @@ export default {
             );
             this.indexItemFocus = null;
         },
-        keyItemSelected(newVal) {
-            if (newVal === null) {
-                this.$emit("update:modelValue", "");
-            }
-        },
         modelValue(newVal) {
-            if (newVal === null) {
-                this.keyItemSelected = "";
-                this.textInput = "";
+            if (newVal === null) { // Nếu modelValue bằng null thì set textInput = "" và keyItemSelected = ""
+                this.resetCombobox();
             }
         },
+        isSubmit: { // nếu isSubmit là true thì validate
+            handler(newVal) {
+                if (newVal) {
+                    this.validate();
+                }
+            },
+            deep: true,
+        }
     },
     methods: {
+        /**
+         * @description: Hàm này dùng để validate combobox xem có trống hay không
+         * @param {String} giá trị của combobox
+         * Author: AnhDV 08/10/2022
+         */
+        validate() {
+            if (this.required) {
+                this.error = !Validate.isNullOrEmpty(this.keyItemSelected);
+                if (this.error) {
+                    this.errorMess = Enum.INPUT_VALIDATION.REQUIRED(this.errorLabel);
+                } else {
+                    this.errorMess = "";
+                }
+            }
+        },
         /**
          * @description: Hàm này dùng để ẩn đi danh sách dữ liệu
          * Author: ANHDV - 08/09/2022 
@@ -170,6 +193,7 @@ export default {
                         self.onHandleSelected(self.dataApi[self.indexItemSelected], self.indexItemSelected);
                     }
                 }
+                this.validate();
                 this.isShowListData = false; // Hide list data
             } catch (error) {
                 console.log(error);
@@ -210,7 +234,7 @@ export default {
                 self.isShowListData = false; // Ẩn danh sách dữ liệu
                 self.$emit("update:modelValue", self.keyItemSelected); // Emit giá trị của item được chọn
                 self.$emit("update:textInput", value); // Emit giá trị của text input
-                // self.$emit("update:modelValue", self.dataApi[index][self.propKey]); // Emit dữ liệu lên component cha
+                this.validate();
             } catch (error) {
                 console.log(error);
             }
@@ -232,7 +256,6 @@ export default {
                     case keycode.ENTER:
                         if (this.indexItemFocus !== null) { // Nếu có item được focus
                             this.onHandleSelected(this.filterData[this.indexItemFocus], this.indexItemFocus); // Lấy dữ liệu của item được focus
-                            // this.$emit("update:modelValue", this.filterData[this.indexItemFocus][this.propKey]); // Emit dữ liệu lên component cha
                         }
                         break;
                     case keycode.ARROW_DOWN:
@@ -312,133 +335,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.error {
-    border: 1px solid $red-500 !important;
-}
-
-.v-combobox {
-    .v-combobox__label {
-        label {
-            cursor: pointer;
-        }
-
-        font-weight: 600;
-        font-family: "MISA Fonts Bold";
-        margin-bottom: 8px;
-
-        span {
-            color: $border-red;
-        }
-    }
-
-    .v-combobox__body {
-        width: 100%;
-        text-align: left;
-        outline: none;
-        box-sizing: border-box;
-        min-height: 32px;
-        border-radius: 4px;
-        background-color: $white;
-        position: relative;
-
-        .v-combobox__selected {
-            background-color: $white;
-            border-radius: 4px;
-            color: $black;
-            user-select: none;
-            padding: 0 0 0 10px;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
-            border: 1px solid $border-grey;
-            outline: none;
-            box-sizing: border-box;
-
-            input {
-                border: none;
-                outline: none;
-                padding: 0;
-                background-color: transparent;
-            }
-
-            &.isShowListData {
-                border: 1px solid $bg-green;
-            }
-        }
-
-        .v-combobox__icon {
-            min-width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            outline: none;
-
-            &:hover {
-                background-color: $bg-grey-hover;
-            }
-
-            .icon-arrow-down {
-                background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -560px -359px;
-                width: 16px;
-                height: 16px;
-            }
-
-            .icon-arrow-up {
-                background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -560px -359px;
-                width: 16px;
-                height: 16px;
-                transform: rotate(180deg);
-            }
-        }
-
-        .hover {
-            background-color: $bg-green-hover !important;
-            color: $white !important;
-        }
-
-        .v-select__list {
-            color: $black;
-            position: absolute;
-            background-color: $bg-white;
-            padding: 8px;
-            left: 0;
-            right: 0;
-            z-index: 9999;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 0 10px rgba(23, 27, 42, 0.24);
-
-            .v-select__items {
-                padding: 0 4px;
-                cursor: pointer;
-                user-select: none;
-                border-radius: 4px;
-                min-height: 32px;
-                line-height: 32px;
-                position: relative;
-
-                &:hover {
-                    background-color: $bg-grey-hover;
-                }
-
-                &.itemFocus {
-                    background-color: $bg-grey-hover;
-                }
-
-                .v-select__items--checked {
-                    background: url("@/assets/img/Sprites.64af8f61.svg") no-repeat -1499px -309px;
-                    width: 24px;
-                    height: 24px;
-                    position: absolute;
-                    right: 0;
-                    top: 6px;
-                    right: 8px;
-                }
-            }
-        }
-    }
-}
+@import "@/assets/scss/base/combobox.scss";
 </style>
     

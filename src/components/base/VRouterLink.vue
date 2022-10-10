@@ -1,6 +1,6 @@
 <template>
     <v-tooltip :content="content">
-        <router-link :to="link" class="sidebar__item" :data-tooltip="content">
+        <router-link :to="link" class="sidebar__item">
             <div class="sidebar__item--icon">
                 <div :class="icon"></div>
             </div>
@@ -33,7 +33,7 @@ export default {
 
 <style scoped lang="scss">
 .router-link-active {
-    border-left-color: #2ca01c;
+    border-left-color: $bg-green;
     background-color: #58595D;
 
     .sidebar__item--icon {

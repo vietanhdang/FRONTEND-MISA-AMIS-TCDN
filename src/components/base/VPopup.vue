@@ -1,22 +1,22 @@
 <template>
-    <v-modal ref="popup">
-        <div class="v__popup">
-            <div class="v__popup--body">
-                <div class="v__popup--icon" @mousemove="stopDrag">
+    <v-modal ref="popup" :tabIndex="tabIndex">
+        <div class="v-popup">
+            <div class="v-popup__body">
+                <div class="v-popup__icon" @mousemove="stopDrag">
                     <div :class="`ms-48 ms-icon ms-icon-${icon}`"></div>
                 </div>
-                <div class="v__popup--text">
-                    {{message}}
+                <div class="v-popup__text">
+                    <span v-html="message"></span>
                     <slot name="body"></slot>
                 </div>
             </div>
             <div class="v-line"></div>
-            <div class="v__popup--footer">
+            <div class="v-popup__footer">
                 <div class="footer__left">
                     <v-button v-if="closeButton" className="secondary" @click="_close" :text="closeButton" />
                 </div>
                 <div class="footer__center">
-                    <VButton v-if="hideButton" @click="_close" :tabIndex="999" :focus="true">Đóng</VButton>
+                    <VButton v-if="hideButton" @click="_close">Đóng</VButton>
                 </div>
                 <div class="footer__right">
                     <v-button v-if="cancelButton!=null" className="secondary" @click="_cancel" :text="cancelButton" />
@@ -29,8 +29,15 @@
 
 
 <script>
+import Enum from '@/utils/enum';
 export default {
     name: "VPopup",
+    props: {
+        tabIndex: {
+            type: Number,
+            default: 0,
+        },
+    },
     data: () => ({
         message: undefined, // nội dung thông báo
         icon: undefined, // icon hiển thị
@@ -68,11 +75,46 @@ export default {
             }
             // gọi hàm show của v-modal
             this.$refs.popup.open()
-
             // Trả về promise để người gọi có thể lấy kết quả
             return new Promise((resolve, reject) => {
                 this.resolvePromise = resolve
                 this.rejectPromise = reject
+            })
+        },
+
+        /**
+         * @description: Hàm này dùng để hiển thị popup thông báo
+         * Author: AnhDV 07/10/2022
+         */
+        showInfo(message) {
+            this.show({
+                message: message,
+                icon: "info",
+                hideButton: true,
+            })
+        },
+
+        /**
+         * @description: Hàm này dùng để hiển thị popup cảnh báo
+         * Author: AnhDV 07/10/2022
+         */
+        showWarning(message) {
+            this.show({
+                message: message,
+                icon: "warning",
+                hideButton: true,
+            })
+        },
+
+        /**
+         * @description: Hàm này dùng để hiển thị popup lỗi
+         * Author: AnhDV 07/10/2022
+         */
+        showError(message) {
+            this.show({
+                message: message,
+                icon: "error",
+                hideButton: true,
             })
         },
 
@@ -82,7 +124,7 @@ export default {
          */
         _confirm() {
             this.$refs.popup.close()
-            this.resolvePromise(true)
+            this.resolvePromise(this.okButton)
             this.reset()
         },
 
@@ -92,7 +134,7 @@ export default {
          */
         _cancel() {
             this.$refs.popup.close()
-            this.resolvePromise(false)
+            this.resolvePromise(this.cancelButton)
             this.reset()
         },
 
@@ -102,9 +144,14 @@ export default {
          */
         _close() {
             this.$refs.popup.close()
+            this.resolvePromise(this.closeButton)
             this.reset();
-        },
 
+        },
+        /**
+         * @description: Hàm này dùng để reset lại các giá trị
+         * Author: AnhDV 07/10/2022
+         */
         reset() {
             this.message = undefined
             this.icon = undefined
@@ -112,59 +159,12 @@ export default {
             this.cancelButton = null
             this.closeButton = null
             this.hideButton = false
+            this.$store.commit('setActionKey', Enum.ACTION.NULL)
         },
     },
 }
 </script>
 
 <style lang="scss" scoped>
-.v {
-    &__popup {
-        padding: 32px;
-        min-width: 444px;
-        width: 444px;
-    }
-
-    &__popup--body {
-        display: flex;
-        justify-content: flex-start;
-    }
-
-    &__popup--text {
-        overflow: auto;
-        max-height: 400px;
-        margin-bottom: 32px;
-        padding-left: 16px;
-    }
-
-    &-line {
-        height: 1px;
-        background: #b8bcc3;
-        margin-bottom: 20px;
-    }
-
-    &__popup--footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-}
-
-.footer {
-    &__left {
-        .v-button {
-            margin-right: 8px;
-        }
-    }
-
-    &__right {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-
-        .v-button {
-            margin-left: 8px;
-        }
-    }
-}
+@import "@/assets/scss/base/popup.scss";
 </style>

@@ -1,6 +1,6 @@
 <template>
     <v-modal :isShow="isShow">
-        <div class="v-dialog" @keypress="onHandleKey">
+        <div class="v-dialog">
             <div class="v-dialog__content" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
                 @mouseup="stopDrag">
                 <div class="v-dialog__header" @mousemove="stopDrag">
@@ -8,17 +8,14 @@
                         <slot name="title"></slot>
                     </div>
                     <div class="v-dialog__close">
-                        <v-tooltip content="GIÚP (F1)" position="bottom" :fixed="true">
-                            <div class="ms-24 ms-icon ms-icon-help"></div>
-                        </v-tooltip>
-                        <v-tooltip content="ĐÓNG (ESC)" :fixed="true" position="bottom">
-                            <div class="ms-24 ms-icon ms-icon-close" @click="$emit('close')"></div>
-                        </v-tooltip>
+                        <div class="ms-24 ms-icon ms-icon-help" tooltip="GIÚP (F1)"></div>
+                        <div class="ms-24 ms-icon ms-icon-close" tooltip="ĐÓNG (ESC)" @click="onHandleClose"></div>
                     </div>
                 </div>
                 <div class="v-dialog__body" @mousemove="stopDrag">
                     <slot name="body"></slot>
                 </div>
+                <div class="v-line"></div>
                 <div class="v-dialog__footer">
                     <div class="footer__left" @mousemove="stopDrag">
                         <slot name="footer__left"></slot>
@@ -36,8 +33,6 @@
 </template>
 
 <script>
-import Enum from '@/utils/enum';
-const keycode = Enum.KEY_CODE;
 export default {
     name: "VDialog",
     props: {
@@ -92,140 +87,15 @@ export default {
             this.draggable = false;
         },
         /**
-         * @description: Hàm này dùng để thao tác với dialog bằng bàn phím
+         * @description: Hàm đóng dialog
          * Author: AnhDV 11/09/2022
          */
-        onHandleKeydown(event) {
-            if (event.keyCode === keycode.ESC) {
-                console.log("ESC");
-            }
+        onHandleClose() {
+            this.$emit("close");
         },
     },
-
 }
 </script>
-<style lang="scss">
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.v {
-    &-dialog {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: grab;
-
-        &__overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        &__content {
-            position: fixed;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            min-width: 444px;
-            padding: 32px;
-            // cursor: grab;
-
-            // padding: 24px;
-            // width: 400px;
-            // max-width: 100%;
-            &-form {
-                width: auto;
-            }
-        }
-
-        &__header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        &__close {
-            display: flex;
-            align-items: center;
-
-            .ms-icon {
-                margin-left: 6px;
-            }
-        }
-
-        &__title {
-            // font-size: 20px;
-            // font-weight: 700;
-        }
-
-        &__text {
-            overflow: auto;
-            max-height: 400px;
-            margin-bottom: 32px;
-            padding-left: 16px;
-            padding-top: 12px;
-        }
-
-        &__body {
-            // padding: 24px 0;
-            // font-size: 14px;
-            // line-height: 18px;
-            // letter-spacing: 0;
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        &__footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .footer {
-                &__left {
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-start;
-
-                    .v-button {
-                        margin-right: 8px;
-                    }
-                }
-
-                &__right {
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-
-                    .v-button {
-                        margin-left: 8px;
-                    }
-                }
-            }
-        }
-    }
-
-    &-line {
-        height: 1px;
-        background: #b8bcc3;
-        margin-bottom: 20px;
-    }
-
-
-}
+<style lang="scss" >
+@import '@/assets/scss/base/dialog.scss';
 </style>

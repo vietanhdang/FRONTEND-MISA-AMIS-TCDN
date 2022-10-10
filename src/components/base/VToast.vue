@@ -4,18 +4,17 @@
             <div class="v-toast__content" v-for="item in toasts" :key="item.id" @mouseover="pauseProgress(item)"
                 @mouseleave="resumeProgress(item)">
                 <template v-if="item.timeout > 0 && item.showProgress">
-                    <div class="v-toast__content__icon" :class="item.type">
-                        <div class="v-icon" :class="getIcon(item.type)">
+                    <div class="v-toast__icon" :class="item.type">
+                        <div :class="`ms-22 ms-icon ms-icon-toast-${item.type}`">
                         </div>
                     </div>
-                    <div class="v-toast__content__text">
-                        <div class="v-toast__content__message">
-                            <span :style="{'color': colorMessage[item.type]}">{{noticeMessage[item.type]}}!</span>
-                            {{item.message}}
-                        </div>
+                    <div class="v-toast__text">
+                        <span class="type" :style="{'color': colorMessage[item.type]}">{{noticeMessage[item.type]}}!
+                        </span>
+                        <span v-html="item.message"></span>
                     </div>
-                    <div class="v-toast__content__button">
-                        <div class="v-icon" :class="getIcon('x')" @click="removeMessage(item)"></div>
+                    <div class="v-toast__button">
+                        <div class="ms-12 ms-icon ms-icon-toast-x" @click="removeMessage(item)"></div>
                     </div>
                 </template>
             </div>
@@ -49,37 +48,37 @@ const noticeMessage = {
 export default {
     name: "VToast",
     props: {
-        showProgress: {
+        showProgress: { // Hiển thị thanh progress
             type: Boolean,
             default: true,
         },
-        type: {
+        type: { // Loại thông báo
             type: String,
             default: "info",
         },
-        message: {
+        message: { // Nội dung thông báo
             type: String,
             default: "Đây là thông báo mang tính nhắc nhở",
         },
-        timeout: {
+        timeout: { // Thời gian hiển thị thông báo
             type: Number,
             default: 3000,
         },
-        maxMessage: {
+        maxMessage: { // Số lượng thông báo tối đa
             type: Number,
             default: 5,
         },
-        order: {
+        order: { // Thứ tự hiển thị thông báo
             type: Boolean,
             default: true,
         },
     },
     data() {
         return {
-            noticeMessage,
-            colorMessage,
-            toasts: [],
-            count: 0,
+            noticeMessage,  // Nội dung thông báo
+            colorMessage,  // Màu sắc thông báo
+            toasts: [], // Danh sách thông báo
+            count: 0, // Số lượng thông báo
         };
     },
     watch: {
@@ -99,7 +98,7 @@ export default {
     },
     created() {
         /**
-         * Tạo API để truyên thông báo từ các component khác
+         * Tạo biến toàn cục để gọi hàm từ bên ngoài
          * Author: AnhDV 10/09/2022
          */
         let toast = {
@@ -237,14 +236,6 @@ export default {
             this.toasts = this.toasts.filter((toast) => toast.id !== messageData.id);
         },
         /**
-        * Lấy ra các icon tương ứng với từng loại toast
-        * @param {string} type loại toast
-        * Author: AnhDV 10/09/2022
-        */
-        getIcon(type) {
-            return `v-toast-icon-${type}`;
-        },
-        /**
          * Kiểm tra xem thông báo có nằm trong danh sách các thông báo hiển thị hay không
          * @param {*} messageData
          * Author: AnhDV 10/09/2022
@@ -258,24 +249,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-move,
-/* apply transition to moving elements */
-.v-enter-active,
-.v-leave-active {
-    transition: all 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.v-leave-active {
-    position: absolute;
-}
-
-@import url('@/assets/scss/_toast.scss');
+@import "@/assets/scss/base/toast.scss";
 </style>

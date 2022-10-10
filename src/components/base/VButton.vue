@@ -1,13 +1,14 @@
 <template>
     <div class="v-button">
-        <button class="v-button__button" :type="type" :class="[buttonType,className]" :disabled="disabled"
+        <button class="v-button__button" :type="type" :class="[buttonType,className]" :disabled="disabled" ref="button"
             :tabindex="tabIndex" :style="style" @blur="$emit('blur')">
-            <div class="v-button__icon" v-if="icon">
-                <div :class="icon"></div>
-            </div>
             <div class="v-button__text">
                 <slot></slot>
                 {{ text }}
+            </div>
+            <div class="v-button__icon" v-if="icon">
+                <div :class="icon"></div>
+                <slot name="icon"></slot>
             </div>
         </button>
     </div>
@@ -37,37 +38,6 @@ export default {
             type: String,
             default: "",
         },
-        width: { // Width của button
-            type: String,
-        },
-        height: { // Height của button
-            type: String,
-            default: "36px",
-        },
-        backgroundColor: { // Background color của button
-            type: String,
-            default: "#2ca01c",
-        },
-        backgroundColorHover: { // Background color hover của button
-            type: String,
-            default: "#35bf22",
-        },
-        backgroundColorActive: { // Background color active của button
-            type: String,
-            default: "#248b15",
-        },
-        backgroundColorFocus: { // Background color focus của button
-            type: String,
-            default: "#118044",
-        },
-        color: { // Màu chữ của button
-            type: String,
-            default: "#fff",
-        },
-        colorHover: { // Màu chữ khi hover của button
-            type: String,
-            default: "#fff",
-        },
         styleProps: {
             type: Array,
             required: false,
@@ -80,10 +50,6 @@ export default {
         tabIndex: {
             type: Number,
             default: 0,
-        },
-        focus: {
-            type: Boolean,
-            default: false,
         },
     },
     computed: {
@@ -110,62 +76,5 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.v {
-    &-button {
-        white-space: nowrap;
-
-        &__button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: v-bind(height);
-            width: v-bind(width);
-            border-radius: 4px;
-            background-color: v-bind(backgroundColor);
-            color: v-bind(color);
-            outline: none;
-            border: none;
-            cursor: pointer;
-            padding: 0 16px;
-            transition: all .25s ease;
-
-            &:hover {
-                background-color: v-bind(backgroundColorHover);
-            }
-
-            &:active {
-                background-color: v-bind(backgroundColorActive);
-            }
-
-            &:focus {
-                background-color: v-bind(backgroundColorFocus);
-                outline: none;
-            }
-
-            &.secondary {
-                border: 1px solid #8d9096;
-                color: #111;
-                background-color: transparent;
-
-                &:hover {
-                    background-color: #d2d3d6;
-                }
-
-                &:active {
-                    background-color: #bbbcbc;
-                }
-
-                &:focus {
-                    box-shadow: 0 0 0 4px #d2d3d6;
-                }
-            }
-        }
-
-
-        &__text {
-            font-family: 'MISA Fonts Bold';
-            font-size: 13px;
-        }
-    }
-}
+@import "@/assets/scss/base/button.scss";
 </style>
