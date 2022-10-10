@@ -2,20 +2,22 @@ import { createApp } from "vue";
 import App from "@/App.vue";
 import routes from "@/router";
 import components from "@/components";
-import "@/assets/css/main.css";
-import store from "@/store/store";
+import "@/assets/scss/main.scss";
 import tcdn_dva from "@/api";
-
+import store from "@/store/store";
+import FlagIcon from "vue-flag-icon";
+import i18n from "@/locales/i18n";
 const app = createApp(App); // Khởi tạo app
 
 app.use(routes); // Sử dụng router
+
+app.config.globalProperties.$api = tcdn_dva; // Đăng ký api
 
 Object.keys(components).forEach((key) => {
   app.component(key, components[key]); // Đăng ký các component
 });
 
-app.config.globalProperties.$api = tcdn_dva; // Đăng ký api
-
 app.use(store); // Sử dụng store
-
+app.use(FlagIcon); // Sử dụng flag-icon
+app.use(i18n); // Sử dụng i18n
 app.mount("#app"); // Mount app vào DOM

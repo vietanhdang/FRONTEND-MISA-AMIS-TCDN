@@ -1,14 +1,20 @@
 <template>
   <div class="main">
+
     <div class="menu-container">
       <TheSidebar :collapsed="collapsed" @toggleSidebar="toggleSidebar" />
     </div>
     <div class="content-area">
       <TheHeader @toggleSidebar="toggleSidebar" :collapsed="collapsed" />
       <div class="content">
-        <router-view />
+        <v-quick-key>
+          <template #default>
+            <router-view />
+          </template>
+        </v-quick-key>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -18,7 +24,7 @@ export default {
   data() {
     return {
       collapsed: false
-    }
+    };
   },
   methods: {
     /**
@@ -26,7 +32,7 @@ export default {
      * Author: AnhDV 10/09/2022
      */
     toggleSidebar() {
-      this.collapsed = !this.collapsed
+      this.collapsed = !this.collapsed;
     }
   }
 }

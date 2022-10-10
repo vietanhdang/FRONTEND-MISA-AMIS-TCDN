@@ -1,3 +1,4 @@
+const PREFIX_DEPARTMENT = "departments";
 export default (axios) => ({
-  getDepartments: () => axios.get(process.env.VUE_APP_API_URL + "/departments"),
+  getDepartments: () => axios.get(`${PREFIX_DEPARTMENT}`),
 });

@@ -2,30 +2,40 @@
     <div class="employee">
         <div class="employee-header">
             <div class="employee-title">Nhân viên</div>
-            <v-button text="Thêm mới nhân viên" @click="handleAction('add')"></v-button>
+            <v-button @click="handleAction(Enum.ACTION.ADD)">
+                Thêm mới nhân viên
+            </v-button>
         </div>
         <div class="employee-body">
             <!-- Các action như search, export, reload -->
             <div class="employee-body__toolbar">
                 <div class="employee-body__toolbar-left">
-                    <slot name="toolbar-left"></slot>
+                    <slot name="toolbar-left">
+                        <v-dropdown className="secondary-light border-bold rounded" @onSelect="handleAction"
+                            icon="ms-16 ms-icon ms-icon-arrow-down-black opacity-5"
+                            :items="[{'key': Enum.ACTION.DELETE_MANY,'value': 'Xóa'}]" :isShow="isEmployeeSelected">
+                            Thực hiện hàng loạt
+                        </v-dropdown>
+                    </slot>
                 </div>
                 <div class="employee-body__toolbar-right">
                     <slot name="toolbar-right"></slot>
-                    <v-input placeholder="Tìm theo mã, tên nhân viên" icon="icon-search" v-model="keyword"
-                        :outline="true" :styleProps="['width: 240px','font-style: italic']"
+                    <v-input placeholder="Tìm theo mã, tên nhân viên" icon="ms-16 ms-icon ms-icon-search"
+                        v-model="keyword" :outline="true" :styleProps="['width: 240px','font-style: italic']"
                         className="v-input__with-icon" />
                     <v-tooltip content="Tải lại dữ liệu" position="bottom" :fixed="true">
-                        <div class="ms-24 ms-icon ms-icon-reload ms-r-2 ml-l-2" @click="handleReloadData"></div>
+                        <div class="ms-24 ms-icon ms-icon-reload ms-r-2 ml-l-2"
+                            @click="handleAction(Enum.ACTION.RELOAD)">
+                        </div>
                     </v-tooltip>
                     <v-tooltip content="Xuất ra excel" position="bottom" :fixed="true">
-                        <div class="ms-24 ms-icon ms-icon-excel ms-x-2"></div>
+                        <div class="ms-24 ms-icon ms-icon-excel ms-x-2" @click="handleAction(Enum.ACTION.EXPORT)"></div>
                     </v-tooltip>
                 </div>
             </div>
             <!-- Table hiển thị danh sách nhân viên -->
             <v-table :columns="columns" :data="employeeList" :options="options" @action="handleAction"
-                v-model:pagination="pagination" v-model:dataState="isLoaded">
+                v-model:pagination="pagination" :actions="actions">
             </v-table>
         </div>
         <!-- Form sửa và thêm nhân viên -->
@@ -39,102 +49,243 @@
 <script>
 import EmployeeForm from './EmployeeForm.vue';
 import Enum from "@/utils/enum";
-import _ from 'lodash';
+import { mapGetters } from 'vuex';
 export default {
     components: { EmployeeForm },
     data() {
         return {
-            options: [
-                { key: 10, value: '10 bản ghi trên 1 trang' },
-                { key: 20, value: '20 bản ghi trên 1 trang' },
-                { key: 30, value: '30 bản ghi trên 1 trang' },
-                { key: 50, value: '50 bản ghi trên 1 trang' },
-                { key: 100, value: '100 bản ghi trên 1 trang' },
-            ], // render các option lựa chọn số bản ghi trên 1 trang
             keyword: "", // biến này dùng để lưu từ khóa tìm kiếm
             showEmployeeForm: false, // biến này dùng để hiển thị form thêm mới hoặc cập nhật nhân viên
-            isLoaded: false, // biến này dùng để kiểm tra dữ liệu đã được load hay chưa
             employeeList: [], // biến này dùng để lưu danh sách nhân viên
             pagination: {
                 pageNumber: 1,
                 pageSize: 20,
-                totalRecord: 0,
-                search: "",
+                keyword: "",
             }, // biến này dùng để lưu thông tin phân trang và tìm kiếm
+            debounce: null, // biến này dùng để lưu hàm debounce
         };
     },
+    computed: {
+        ...mapGetters(['isEmployeeSelected']), // lấy giá trị từ store kiểm tra xem có nhân viên nào được chọn hay không
+        action: {
+            get() {
+                return this.$store.getters.getActionKey;
+            },
+            set(value) {
+                this.$store.commit('setActionKey', value);
+            }
+        }
+    },
     watch: {
+        /**
+         * @description: Lắng nghe sự thay đổi khi người dùng thay đổi liên quan tới phân trang
+         * Author: AnhDV 06/10/2022
+         */
         pagination: {
-            handler: function (newVal) {
+            handler: function (newVal, oldVal) {
+                try { // đề phòng trường hợp newVal và oldVal không có giá trị
+                    if (oldVal.pageSize !== newVal.pageSize) {
+                        newVal.pageNumber = 1;
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
                 this.getEmployeeList(newVal);
             },
             deep: true,
         },
+        /**
+         * @description: Lắng nghe sự thay đổi khi người dùng thay đổi liên quan tới từ khóa tìm kiếm
+         * Author: AnhDV 06/10/2022
+         */
         keyword: {
             /**
-             * @description: Dùng kỹ thuật debounce để giảm số lần gọi api khi người dùng nhập từ khóa tìm kiếm
-             * Author: AnhDV 23/09/2022
-             */
-            handler: _.debounce(function (newVal) {
+            * @description: Dùng debounce để tránh việc gọi api liên tục khi người dùng nhập từ khóa
+            * Author: AnhDV 23/09/2022
+            */
+            handler: function (newVal) {
                 const self = this;
-                self.pagination = {
-                    ...self.pagination,
-                    search: newVal.trim(),
-                };
-            }, 500),
+                clearTimeout(self.debounce);
+                self.debounce = setTimeout(() => {
+                    self.pagination.keyword = newVal.trim();
+                }, 500); // triển khai debounce để giảm số lần gọi api
+            },
         },
+
+        /**
+         * @description: Lắng nghe sự kiện khi người dùng thay đổi trạng thái của form thêm mới hoặc cập nhật nhân viên bằng phím tắt
+         * Author: AnhDV 10/10/2022
+         */
+        action: {
+            handler: function (newVal) {
+                switch (newVal) {
+                    case Enum.ACTION.ADD:
+                        this.handleAction(newVal);
+                        break;
+                    case Enum.ACTION.DELETE: // xóa nhiều nhân viên
+                        if (this.isEmployeeSelected) {
+                            this.handleAction(Enum.ACTION.DELETE_MANY);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            },
+            deep: true,
+        }
+
     },
+
     methods: {
         /**
-         * @description: Hàm này dùng để reload lại dữ liệu
-         * Author: AnhDV 23/09/2022
-         */
-        handleReloadData() {
-            const self = this;
-            self.getEmployeeList();
-        },
-        /**
-         * @description: Bắt các sự kiện click vào button thêm và action của table (sửa và xóa)
+         * @description: Thực hiện các action như thêm mới, sửa, xóa, xóa nhiều, tải lại dữ liệu, xuất ra excel
          * @param {string} action - Tên của action
+         * @param {object} data - Dữ liệu của action
          * Author: AnhDV 16/09/2022
          */
         handleAction(action, data) {
             const self = this;
-            const actionDefine = {
-                add: () => {
-                    self.$store.dispatch('setMode', Enum.FORM_MODE.ADD);
-                    self.showEmployeeForm = true;
-                },
-                edit: async () => {
-                    self.$store.dispatch('setMode', Enum.FORM_MODE.EDIT);
-                    self.$store.dispatch('setEmployeeId', data.employeeID);
-                    self.showEmployeeForm = true;
-                },
-                delete: async () => {
-                    const confirm = await self.$refs.popup.show({
-                        message: `Bạn có thực sự muốn xóa Nhân viên <${data.employeeCode}> không?`,
-                        icon: 'danger',
-                        okButton: "Có",
-                        // cancelButton: "Không",
-                        closeButton: "Không",
-                    });
-                    if (confirm) {
-                        self.deleteEmployeeBackend(data);
-                    }
-                },
-            };
-            actionDefine[action]();
+            try {
+                switch (action) {
+                    case Enum.ACTION.ADD: // thêm mới nhân viên
+                        self.showAddEmployeeForm();
+                        break;
+                    case Enum.ACTION.EDIT: // sửa nhân viên
+                        self.showEditEmployeeForm(data);
+                        break;
+                    case Enum.ACTION.DELETE: // xóa nhân viên
+                        self.deleteEmployee(data);
+                        break;
+                    case Enum.ACTION.DELETE_MANY: // xóa nhiều nhân viên
+                        self.deleteManyEmployee(data);
+                        break;
+                    case Enum.ACTION.DUPLICATE: // Nhân bản nhân viên
+                        self.duplicateEmployee(data);
+                        break;
+                    case Enum.ACTION.INACTIVE:
+                        self.$root.$toast.info(Enum.NOTICE_MESSAGE.DEVELOPING("ngưng sử dụng"));
+                        break;
+                    case Enum.ACTION.RELOAD: // Tải lại danh sách nhân viên
+                        self.reloadData();
+                        break;
+                    case Enum.ACTION.EXPORT: // Xuất file excel
+                        self.exportExcel();
+                        break;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        /**
+         * @description: Hàm này dùng để hiển thị form thêm mới nhân viên
+         * Author: AnhDV 07/10/2022
+         */
+        showAddEmployeeForm() {
+            const self = this;
+            self.$store.dispatch('setMode', Enum.FORM_MODE.ADD);
+            self.showEmployeeForm = true;
+        },
+        /**
+         * @description: Hàm này dùng để sửa nhân viên
+         * @param {object} employee - Dữ liệu của nhân viên
+         * Author: AnhDV 07/10/2022
+         */
+        showEditEmployeeForm(employee) {
+            const self = this;
+            self.$store.dispatch('setMode', Enum.FORM_MODE.EDIT);
+            self.$store.dispatch('setEmployeeId', employee.employeeID);
+            self.showEmployeeForm = true;
+        },
+        /**
+         * @description: Hàm này dùng để xóa nhân viên
+         * @param {object} employee - Dữ liệu của nhân viên
+         * Author: AnhDV 07/10/2022
+         */
+        deleteEmployee(employee) {
+            const self = this;
+            self.deleteEmployeeBackend(employee);
+        },
+        /**
+         * @description: Hàm này dùng để xóa nhiều nhân viên
+         * Author: AnhDV 04/10/2022
+         */
+        async deleteManyEmployee() {
+            const self = this;
+            const confirm = await self.$refs.popup.show({
+                message: Enum.ALERT_MESSAGE.DELETE_MANY_CONFIRM,
+                icon: Enum.ICON.WARNING,
+                okButton: Enum.CONFIRM.YES,
+                closeButton: Enum.CONFIRM.NO,
+            });
+            if (confirm == Enum.CONFIRM.YES) {
+                const result = await self.$store.dispatch('deleteMultipleEmployee');
+                if (result > 0) {
+                    self.$root.$toast.success(Enum.NOTICE_MESSAGE.DELETE_MANY_SUCCESS(result));
+                    self.getEmployeeList();
+                } else {
+                    self.$root.$toast.error(Enum.NOTICE_MESSAGE.DELETE_MANY_ERROR);
+                }
+            }
+        },
+        /**
+         * @description: Hàm này dùng để nhân bản nhân viên
+         * @param {object} employee - Dữ liệu của nhân viên
+         * Author: AnhDV 07/10/2022
+         */
+        async duplicateEmployee(employee) {
+            const self = this;
+            self.$store.dispatch('setMode', Enum.FORM_MODE.DUPLICATE);
+            self.$store.dispatch('setEmployeeId', employee.employeeID);
+            self.showEmployeeForm = true;
+        },
+        /**
+         * @description: Hàm này dùng để tải lại danh sách nhân viên
+         * Author: AnhDV 07/10/2022
+         */
+        async reloadData() {
+            const self = this;
+            await self.getEmployeeList();
+            self.$root.$toast.success(Enum.NOTICE_MESSAGE.RELOAD_DATA_SUCCESS);
+        },
+        /**
+         * @description: Hàm này dùng để xuất danh sách nhân viên ra file excel
+         * Author: AnhDV 05/10/2022
+         */
+        async exportExcel() {
+            const self = this;
+            try {
+                self.$root.$toast.info(Enum.NOTICE_MESSAGE.EXPORT_EMPLOYEE_LIST_PROCESSING);
+                const res = await self.$api.employee.exportEmployees(); // kiểm tra xem có dữ liệu không
+                if (res) {
+                    const link = document.createElement('a'); // tạo thẻ a để download file
+                    link.href = res.request.responseURL; // đường dẫn tải file
+                    link.click();
+                    self.$root.$toast.success(Enum.NOTICE_MESSAGE.EXPORT_EMPLOYEE_LIST_SUCCESS);
+                }
+            } catch (error) {
+                self.$root.$toast.error(Enum.NOTICE_MESSAGE.EXPORT_EMPLOYEE_LIST_ERROR);
+                console.log(error);
+            }
         },
         /**
          * @description: Hàm này dùng để xóa nhân viên ở bên backend
+         * @param {object} data - Dữ liệu của nhân viên cần xóa
          * Author: AnhDV 19/09/2022
          */
-        async deleteEmployeeBackend(data) {
+        async deleteEmployeeBackend(employee) {
+            const self = this;
             try {
-                const self = this;
-                const result = await self.$api.employee.deleteEmployee(data.employeeID);
-                if (result) {
-                    self.deleteEmployeeFrontEnd(data);
+                const confirm = await self.$refs.popup.show({
+                    message: Enum.ALERT_MESSAGE.DELETE_CONFIRM(employee.employeeCode),
+                    icon: Enum.ICON.WARNING,
+                    okButton: Enum.CONFIRM.YES,
+                    closeButton: Enum.CONFIRM.NO,
+                });
+                if (confirm == Enum.CONFIRM.YES) {
+                    const res = await self.$api.employee.deleteEmployee(employee.employeeID);
+                    if (res.data > 0) {
+                        self.deleteEmployeeFrontEnd(employee);
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -147,35 +298,16 @@ export default {
          */
         deleteEmployeeFrontEnd(data) {
             const self = this;
+            const { employeeID, employeeCode } = data;
             try {
-                const { employeeID, employeeCode } = data;
                 const index = self.employeeList.data.findIndex((item) => item.employeeID === employeeID);
                 if (index !== -1) {
                     self.employeeList.data.splice(index, 1);
-                    self.$root.$toast.success(`Xóa nhân viên <${employeeCode}> thành công`, {
-                        timeout: 5000,
-                    });
+                    self.$root.$toast.success(Enum.NOTICE_MESSAGE.DELETE_SUCCESS(employeeCode));
+                    self.employeeList.totalRecord -= 1; // Giảm tổng số bản ghi đi 1
                 }
             } catch (error) {
-                console.log(error);
-            }
-        },
-
-        /**
-         * @description: Hàm này dùng để lấy danh sách nhân viên
-         * @param: {Object} pagination - Dữ liệu phân trang
-         * Author: AnhDV 19/09/2022
-         */
-        async getEmployeeList() {
-            const self = this;
-            try {
-                self.isLoaded = false;
-                const result = await self.$api.employee.getEmployeesFilter(self.pagination);
-                if (result.data) {
-                    this.isLoaded = true;
-                    self.employeeList = result.data;
-                }
-            } catch (error) {
+                self.$root.$toast.success(Enum.NOTICE_MESSAGE.DELETE_ERROR(employeeCode));
                 console.log(error);
             }
         },
@@ -188,31 +320,65 @@ export default {
             const self = this;
             try {
                 self.employeeList.data.unshift(employee); // Thêm nhân viên vào đầu mảng
-                self.$root.$toast.success(`Thêm nhân viên <${employee.employeeCode}> thành công`, {
-                    timeout: 5000,
-                });
+                self.$root.$toast.success(Enum.NOTICE_MESSAGE.INSERT_SUCCESS(employee.employeeCode));
+                self.employeeList.totalRecord += 1; // Tăng tổng số bản ghi lên 1
             } catch (error) {
+                self.$root.$toast.error(Enum.NOTICE_MESSAGE.INSERT_ERROR(employee.employeeCode));
                 console.log(error);
             }
         },
+        /**
+         * @description: Hàm này dùng để cập nhật nhân viên ở bên frontend
+         * Author: AnhDV 05/10/2022
+         */
         updateEmployee(employee) {
             const self = this;
             try {
                 const index = self.employeeList.data.findIndex((item) => item.employeeID === employee.employeeID);
                 if (index !== -1) {
                     self.employeeList.data.splice(index, 1, employee);
-                    self.$root.$toast.success(`Cập nhật nhân viên <${employee.employeeCode}> thành công`, {
-                        timeout: 5000,
-                    });
+                    self.$root.$toast.success(Enum.NOTICE_MESSAGE.EDIT_SUCCESS(employee.employeeCode));
                 }
             } catch (error) {
+                self.$root.$toast.error(Enum.NOTICE_MESSAGE.EDIT_ERROR(employee.employeeCode));
                 console.log(error);
             }
         },
+        /**
+         * @description: Hàm này dùng để lấy danh sách nhân viên
+         * Author: AnhDV 19/09/2022
+         */
+        async getEmployeeList() {
+            const self = this;
+            try {
+                const result = await self.$api.employee.getEmployeesFilter(self.pagination);
+                if (result.data) {
+                    self.employeeList = result.data;
+                }
+            } catch (error) {
+                self.$refs.popup.showError(Enum.NOTICE_MESSAGE.GET_EMPLOYEE_LIST_ERROR);
+                console.log(error);
+            }
+        },
+
     },
     created() {
         const self = this;
         self.getEmployeeList(); // Lấy danh sách nhân viên
+        self.actions = [
+            {
+                'key': Enum.ACTION.DUPLICATE,
+                'value': 'Nhân bản'
+            },
+            {
+                'key': Enum.ACTION.DELETE,
+                'value': 'Xóa'
+            },
+            {
+                'key': Enum.ACTION.INACTIVE,
+                'value': 'Ngưng sử dụng'
+            }
+        ]; // Khởi tạo danh sách action trên từng dòng
         self.columns = [
             {
                 title: '',
@@ -245,9 +411,9 @@ export default {
 
             },
             {
-                title: 'Đơn vị',
-                key: 'departmentName',
-                width: 250,
+                title: 'Số CMND',
+                key: 'identityNumber',
+
             },
             {
                 title: 'Chức danh',
@@ -255,41 +421,12 @@ export default {
                 width: 250,
             },
             {
-                title: 'Số CMND',
-                key: 'identityNumber',
-
-            },
-            {
-                title: 'Ngày cấp',
-                key: 'identityDate',
-                textAlign: 'center',
-                type: 'date',
-            },
-            {
-                title: 'Nơi cấp',
-                key: 'identityPlace',
+                title: 'Đơn vị',
+                key: 'departmentName',
                 width: 250,
             },
             {
-                title: 'Địa chỉ',
-                key: 'employeeAddress',
-                width: 250,
-            },
-            {
-                title: 'Số điện thoại',
-                key: 'phoneNumber',
-            },
-            {
-                title: 'Số điện thoại cố định',
-                key: 'telephoneNumber',
-            },
-            {
-                title: 'Email',
-                key: 'email',
-                width: 250,
-            },
-            {
-                title: 'Số tài khoản ngân hàng',
+                title: 'Số tài khoản',
                 key: 'bankAccountNumber',
 
             },
@@ -303,38 +440,6 @@ export default {
                 key: 'bankBranch',
                 width: 250,
             },
-            // {
-            //     title: 'Là khách hàng',
-            //     key: 'isCustomer',
-            //     checkbox: true,
-            // },
-            // {
-            //     title: 'Là nhà cung cấp',
-            //     key: 'isSupplier',
-            //     checkbox: true,
-            // },
-            // {
-            //     title: 'Ngày tạo',
-            //     key: 'createdDate',
-            //     textAlign: 'center',
-            //     type: 'date',
-            // },
-            // {
-            //     title: 'Người tạo',
-            //     key: 'createdBy',
-            //     width: 200,
-            // },
-            // {
-            //     title: 'Ngày sửa',
-            //     key: 'modifiedDate',
-            //     textAlign: 'center',
-            //     type: 'date',
-            // },
-            // {
-            //     title: 'Người sửa',
-            //     key: 'modifiedBy',
-            //     width: 200,
-            // },
             {
                 title: 'Chức năng',
                 key: 'action',
@@ -344,6 +449,14 @@ export default {
                 width: 120,
             },
         ]; // Tạo cột cho bảng để hiển thị dữ liệu lên bảng
+        self.options = [
+            { key: 10, value: '10 bản ghi trên 1 trang' },
+            { key: 20, value: '20 bản ghi trên 1 trang' },
+            { key: 30, value: '30 bản ghi trên 1 trang' },
+            { key: 50, value: '50 bản ghi trên 1 trang' },
+            { key: 100, value: '100 bản ghi trên 1 trang' },
+        ]; // render các option lựa chọn số bản ghi trên 1 trang
+        self.Enum = Enum; // Khởi tạo enum
     },
 }
 </script>
@@ -392,7 +505,6 @@ export default {
                 display: flex;
                 align-items: center;
             }
-
         }
     }
 }

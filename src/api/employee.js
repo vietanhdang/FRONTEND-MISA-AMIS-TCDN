@@ -1,38 +1,82 @@
+const PREFIX_EMPLOYEE = "employees";
 export default (axios) => ({
+  /**
+   * @description: Lấy mã nhân viên mới
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
   getNewEmployeeCode() {
-    return axios.get(
-      process.env.VUE_APP_API_URL + "/employees/new-employee-code"
-    );
+    return axios.get(`${PREFIX_EMPLOYEE}/new-employee-code`);
   },
 
-  getEmployeeById(id) {
-    return axios.get(process.env.VUE_APP_API_URL + "/employees/" + id);
+  /**
+   * @description: Lấy chi tiết nhân viên
+   * @param {String} employeeId Id nhân viên
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
+  getEmployeeById(employeeId) {
+    return axios.get(`${PREFIX_EMPLOYEE}/${employeeId}`);
   },
+
+  /**
+   * @description: Lấy danh sách nhân viên theo filter
+   * @param {Object} filter Đối tượng filter
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
   getEmployeesFilter(object) {
     var defaultObject = {
       pageNumber: 1,
       pageSize: 10,
-      search: "",
-      sort: "",
+      keyword: "",
     };
     object = Object.assign(defaultObject, object);
-    var url = process.env.VUE_APP_API_URL + "/employees/filter";
-    url += "?pageNumber=" + object.pageNumber;
-    url += "&pageSize=" + object.pageSize;
-    url += "&search=" + object.search;
-    url += "&sort=" + object.sort;
-    return axios.get(url);
+    return axios.get(`${PREFIX_EMPLOYEE}/filter`, {
+      params: {
+        pageNumber: object.pageNumber,
+        pageSize: object.pageSize,
+        keyword: object.keyword,
+      },
+    });
   },
-  deleteEmployee(id) {
-    return axios.delete(process.env.VUE_APP_API_URL + "/employees/" + id);
+
+  /**
+   * @description: Xóa nhân viên
+   * @param {String} employeeId Id nhân viên
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
+  deleteEmployee(employeeId) {
+    return axios.delete(`${PREFIX_EMPLOYEE}/${employeeId}`);
   },
+
+  /**
+   * @description: Thêm mới nhân viên
+   * @param {Object} employee Đối tượng nhân viên
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
   insertEmployee(object) {
-    return axios.post(process.env.VUE_APP_API_URL + "/employees", object);
+    return axios.post(`${PREFIX_EMPLOYEE}`, object);
   },
+
+  /**
+   * @description: Cập nhật nhân viên
+   * @param {Object} employee Đối tượng nhân viên
+   * @return {Promise} Promise
+   * Author: AnhDV 04/10/2022
+   */
   updateEmployee(object) {
-    return axios.put(
-      process.env.VUE_APP_API_URL + "/employees/" + object.employeeID,
-      object
-    );
+    return axios.put(`${PREFIX_EMPLOYEE}/${object.employeeID}`, object);
+  },
+  /**
+   * @description: Export danh sách nhân viên
+   * Author: AnhDV 05/10/2022
+   */
+  exportEmployees() {
+    return axios.get(`${PREFIX_EMPLOYEE}/export`, {
+      responseType: "blob",
+    });
   },
 });
