@@ -1,6 +1,6 @@
 <template>
     <div class="v-dropdown" v-if="isShow">
-        <div class="v-dropdown__button" @click="toggleContent" tabindex="-1" @blur="handleHide" :class="className">
+        <div class="v-dropdown__button" @click="toggleContent" :class="className" @blur="handleHide" tabindex="-1">
             <div class="v-dropdown__text">
                 <slot></slot>
                 {{ text }}
@@ -11,9 +11,10 @@
             </div>
         </div>
         <transition name="slide-fade">
-            <div class="v-dropdown__content" v-if="showContent">
+            <div class="v-dropdown__content" v-show="showContent">
                 <div class="v-dropdown__content-item" v-for="(option, index) in items" :key="index"
-                    @click="$emit('onSelect',option[propKey])">
+                    @click="$emit('onSelect',option[propKey])"
+                    :class="{'v-dropdown__content-item--active': option[propKey] === value && backgroundActive}">
                     <slot name="item" :option="option" :index="index">
                         {{option[propValue]}}
                     </slot>
@@ -55,6 +56,14 @@ export default {
         propValue: { // Value của dữ liệu
             type: String,
             default: "value",
+        },
+        value: { // Giá trị của dropdown
+            type: String,
+            default: "",
+        },
+        backgroundActive: { // Có để màu nền khi active hay không
+            type: Boolean,
+            default: true,
         },
     },
     data() {

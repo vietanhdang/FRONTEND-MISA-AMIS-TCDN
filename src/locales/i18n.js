@@ -1,5 +1,9 @@
 import { createI18n } from "vue-i18n/dist/vue-i18n.cjs";
 
+/**
+ * @description: Hàm này dùng để tìm kiếm các file json trong thư mục locales và đọc nội dung của file json
+ * Author: AnhDV 11/10/2022
+ */
 function loadLocaleMessages() {
   const locales = require.context("./", true, /[A-Za-z0-9-_,\s]+\.json$/i);
   const messages = {};
@@ -14,10 +18,13 @@ function loadLocaleMessages() {
 }
 
 export default createI18n({
+  // Khởi tạo i18n
   legacy: false,
-  locale: "vi",
-  fallbackLocale: "vi",
-  // locale: process.env.VUE_APP_I18N_LOCALE || "en",
-  // fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
-  messages: loadLocaleMessages(),
+  locale:
+    localStorage.getItem("amis-language") ||
+    process.env.VUE_APP_I18N_LOCALE ||
+    "vi", // Đọc ngôn ngữ từ localStorage hoặc mặc định là tiếng việt
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "vi", // Nếu không tìm thấy ngôn ngữ thì sẽ dùng ngôn ngữ mặc định
+  messages: loadLocaleMessages(), // Đọc nội dung các file json trong thư mục locales
+  warnHtmlMessage: false, // Không hiển thị cảnh báo khi dùng html trong i18n
 });

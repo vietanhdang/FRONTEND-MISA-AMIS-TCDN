@@ -1,11 +1,11 @@
 <template>
-    <v-tooltip :content="content">
+    <v-tooltip :content="$t(`sidebar.${content}`)">
         <router-link :to="link" class="sidebar__item">
             <div class="sidebar__item--icon">
                 <div :class="icon"></div>
             </div>
             <div class="sidebar__item--text">
-                {{content}}
+                {{ $t(`sidebar.${content}`) }}
             </div>
         </router-link>
     </v-tooltip>

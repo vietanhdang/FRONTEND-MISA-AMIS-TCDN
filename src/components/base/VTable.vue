@@ -24,7 +24,7 @@
                 </thead>
                 <tbody class="v-table__body">
                     <!-- Render body dựa vào key -->
-                    <tr v-for="(row, indexList) of data.data" :key="indexList" class="v-table__body-row" tabindex="-1">
+                    <tr v-for="(row, indexList) of data.data" :key="indexList" class="v-table__body-row">
                         <td class="v-table__body-row-sticky" style="min-width: 20px"></td>
                         <td v-for="(column, index) of columns" :key="index" class="v-table__body-cell"
                             :class="[`v-text__${column.textAlign ? column.textAlign : 'left'}`, {'v-table__body-row-sticky': column.fixed}]"
@@ -68,9 +68,8 @@
                         <td class="v-table__footer-cell" colspan="100%">
                             <div class="v-pagination__container">
                                 <div class="v-pagination__left">
-                                    Tổng số: <span class="font-weight-700 m-x-1"> {{ data.totalRecord }} </span>
-                                    bản
-                                    ghi
+                                    {{$t('pagination.total')}}: <span class="font-weight-700 m-x-1"> {{ data.totalRecord
+                                    }} </span> {{$t('pagination.record')}}
                                 </div>
                                 <div class="v-pagination__right">
                                     <div class="v-pagination__right-record">
@@ -98,7 +97,7 @@
                         <img :src="require('@/assets/img/bg_no_data.svg')" alt="">
                     </div>
                     <div class="v-table__not-found-text">
-                        Không có dữ liệu
+                        {{$t('notice_message.not_found')}}
                     </div>
                 </div>
             </a-skeleton>
@@ -153,13 +152,16 @@ export default {
          * Author: AnhDV 25/09/2022
          */
         itemRender() {
+
             return (val) => {
                 let { page, type, originalElement } = val;
+                const self = this;
                 if (type === 'prev') {
-                    return <a> Trước</a>;
+                    return <a> {self.$t('pagination.before')} </a>;
                 }
                 if (type === 'next') {
-                    return <a> Sau</a>;
+
+                    return <a> {self.$t('pagination.after')} </a>;
                 }
                 if (type === 'page') {
                     return <a>{page}</a>;

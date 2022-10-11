@@ -33,7 +33,6 @@ import "ant-design-vue/lib/date-picker/style/css";
 import locale from "ant-design-vue/lib/date-picker/locale/vi_VN"; // gọi locale tiếng việt cho datepicker
 import moment from 'moment'; // gọi moment để format date
 import { formatDate } from '@/utils/format'; // gọi hàm format date
-import Enum from '@/utils/enum'; // gọi enum
 import Validate from '@/utils/validate'; // gọi hàm validate
 locale.lang = { // format lại locale cho datepicker
     ...locale.lang,
@@ -136,10 +135,10 @@ export default {
             pickerInput.removeAttribute("title");
             if ((!self.required && Validate.isNullOrEmpty(self.modelValue)) || self.required) {
                 if (self.isLessThanToday && !moment().isAfter(self.defaultPickerValue)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_DATE_OVER_CURRENT_DATE(errorLabel);
+                    self.errorMess = self.$t("validate_error.over_current_date", [errorLabel]);
                 }
                 if (!Validate.isNullOrEmpty(self.modelValue)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.REQUIRED(errorLabel);
+                    self.errorMess = self.$t("validate_error.required", [errorLabel])
                 }
             }
             if (self.errorMess) {

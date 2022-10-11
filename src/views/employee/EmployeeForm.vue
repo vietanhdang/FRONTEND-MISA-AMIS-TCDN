@@ -5,15 +5,15 @@
             <template #title>
                 <div class="row e-header">
                     <div class="e-header__title col font-weight-700">
-                        {{title}} nhân viên
+                        {{$t('employee_info.title')}}
                     </div>
                     <div class="col">
-                        <v-input type="checkbox" label_custom="Là khách hàng" v-model="employee.isCustomer"
-                            :value="true"></v-input>
+                        <v-input type="checkbox" :label_custom="$t('employee_info.is_customer')"
+                            v-model="employee.isCustomer" :value="true"></v-input>
                     </div>
                     <div class="col">
-                        <v-input type="checkbox" label_custom="Là nhà cung cấp" v-model="employee.isSupplier"
-                            :value="true"></v-input>
+                        <v-input type="checkbox" :label_custom="$t('employee_info.is_supplier')"
+                            v-model="employee.isSupplier" :value="true"></v-input>
                     </div>
                 </div>
             </template>
@@ -23,19 +23,21 @@
                         <div class="col l-6 md-6 c-12">
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 md-5 c-5 focus">
-                                    <v-input label="Mã" v-model="employee.employeeCode" :required="true" errorLabel="Mã"
+                                    <v-input :label="$t('employee_info.code')" v-model="employee.employeeCode"
+                                        :required="true" :errorLabel="$t('employee_info.code')"
                                         :isSubmit="attemptSubmit" :validateCheck="true">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-7">
-                                    <v-input label=" Tên" v-model="employee.employeeName" :required="true"
-                                        :isSubmit="attemptSubmit" :validateCheck="true" ref="employeeName"
-                                        errorLabel="Tên">
+                                    <v-input :label="$t('employee_info.name')" v-model="employee.employeeName"
+                                        :required="true" :isSubmit="attemptSubmit" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.name')">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-12 md-12 c-12">
                                     <v-combobox position="bottom" propKey="departmentID" v-model="employee.departmentID"
-                                        propValue="departmentName" label="Đơn vị" errorLabel="Đơn vị"
+                                        propValue="departmentName" :label="$t('employee_info.department')"
+                                        :errorLabel="$t('employee_info.department')"
                                         v-model:textInput="employee.departmentName" :isSubmit="attemptSubmit"
                                         propApi="https://localhost:44365/api/v2/departments" :required="true">
                                         <template #item="item">
@@ -44,7 +46,7 @@
                                     </v-combobox>
                                 </div>
                                 <div class="form-group col l-12 md-12 c-12">
-                                    <v-input label="Chức danh" v-model="employee.jobTitle">
+                                    <v-input :label="$t('employee_info.job_title')" v-model="employee.jobTitle">
                                     </v-input>
                                 </div>
                             </div>
@@ -52,39 +54,44 @@
                         <div class="col l-6 md-6 c-12">
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 md-5 c-12">
-                                    <v-date-picker label="Ngày sinh" v-model="employee.dateOfBirth"
-                                        :isLessThanToday="true" errorLabel="Ngày sinh" :validateCheck="true">
+                                    <v-date-picker :label="$t('employee_info.date_of_birth')"
+                                        v-model="employee.dateOfBirth" :isLessThanToday="true"
+                                        :errorLabel="$t('employee_info.date_of_birth')" :validateCheck="true">
                                     </v-date-picker>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-12">
-                                    <label class="label form-control font-weight-700">Giới tính
+                                    <label class="label form-control font-weight-700">{{$t('employee_info.gender')}}
                                     </label>
                                     <div class="row sm-gutter e-body__gender">
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Nam" :value=1 v-model="employee.gender">
+                                            <v-input type="radio" :label_custom="$t('employee_info.male')" :value=1
+                                                v-model="employee.gender">
                                             </v-input>
                                         </div>
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Nữ" :value=0 v-model="employee.gender">
+                                            <v-input type="radio" :label_custom="$t('employee_info.female')" :value=0
+                                                v-model="employee.gender">
                                             </v-input>
                                         </div>
                                         <div class="col">
-                                            <v-input type="radio" label_custom="Khác" :value=2
+                                            <v-input type="radio" :label_custom="$t('employee_info.other')" :value=2
                                                 v-model="employee.gender">
                                             </v-input>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-12">
-                                    <v-input label="Số CMND" v-model="employee.identityNumber"
-                                        tooltipText="Số chứng minh nhân dân" tooltipPosition="right">
+                                    <v-input :label="$t('employee_info.identity_card')"
+                                        v-model="employee.identityNumber"
+                                        :tooltipText="$t('employee_info.identity_card')" tooltipPosition="right">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-5 md-5 c-12">
-                                    <v-date-picker label="Ngày cấp" v-model="employee.identityDate" />
+                                    <v-date-picker :label="$t('employee_info.issued_date')"
+                                        v-model="employee.identityDate" />
                                 </div>
                                 <div class="form-group col l-12 md-12 c-12">
-                                    <v-input label="Nơi cấp" v-model="employee.identityPlace">
+                                    <v-input :label="$t('employee_info.issued_by')" v-model="employee.identityPlace">
                                     </v-input>
                                 </div>
                             </div>
@@ -92,52 +99,56 @@
                     </div>
                     <div class="row sm-gutter">
                         <div class="form-group col l-12 md-12 c-12">
-                            <v-input label="Địa chỉ" v-model="employee.employeeAddress">
+                            <v-input :label="$t('employee_info.address')" v-model="employee.employeeAddress">
                             </v-input>
                         </div>
                     </div>
                     <div class="row sm-gutter">
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="ĐT di động" v-model="employee.phoneNumber" :isPhoneNumber="true"
-                                errorLabel="Điện thoại di động" :validateCheck="true" tooltipText="Điện thoại di động"
-                                tooltipPosition="right"></v-input>
+                            <v-input :label="$t('employee_info.phone_number')" v-model="employee.phoneNumber"
+                                :isPhoneNumber="true" :errorLabel="$t('employee_info.phone_number_label')"
+                                :validateCheck="true" :tooltipText="$t('employee_info.phone_number_label')"
+                                tooltipPosition="right">
+                            </v-input>
                         </div>
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="ĐT cố định" v-model="employee.telephoneNumber"
-                                tooltipText="Điện thoại cố định" tooltipPosition="right"> </v-input>
+                            <v-input :label="$t('employee_info.home_phone_number')" v-model="employee.telephoneNumber"
+                                :tooltipText="$t('employee_info.home_phone_number_label')" tooltipPosition="right">
+                            </v-input>
                         </div>
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="Email" v-model="employee.email"> </v-input>
+                            <v-input :label="$t('employee_info.email')" v-model="employee.email"> </v-input>
                         </div>
                     </div>
                     <div class="row sm-gutter">
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="Tài khoản ngân hàng" v-model="employee.bankAccountNumber">
+                            <v-input :label="$t('employee_info.bank_number')" v-model="employee.bankAccountNumber">
                             </v-input>
                         </div>
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="Tên ngân hàng" v-model="employee.bankName">
+                            <v-input :label="$t('employee_info.bank_name')" v-model="employee.bankName">
                             </v-input>
                         </div>
                         <div class="form-group col l-3 md-3 c-12">
-                            <v-input label="Chi nhánh" v-model="employee.bankBranch">
+                            <v-input :label="$t('employee_info.bank_branch')" v-model="employee.bankBranch">
                             </v-input>
                         </div>
                     </div>
                 </div>
             </template>
             <template #footer__left>
-                <v-button buttonType="secondary" @click="closeFormHandle" className="v-button__button-no-bg border"
-                    text="Hủy">
+                <v-button buttonType="secondary" @click="closeFormHandle" className="v-button__button-no-bg border">
+                    {{$t('action_form.cancel')}}
                 </v-button>
             </template>
             <template #footer__right>
                 <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_CLOSE)" buttonType="secondary"
-                    :tooltip="Enum.NOTICE_MESSAGE.SAVE_AND_CLOSE">
-                    Cất
+                    :tooltip="$t('action_form.save') + Enum.KEY_DEFINE.CTRL_S">
+                    {{$t('action_form.save')}}
                 </v-button>
-                <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_ADD)" :tooltip="Enum.NOTICE_MESSAGE.SAVE_AND_ADD">
-                    Cất và thêm
+                <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_ADD)"
+                    :tooltip="$t('action_form.save_and_add') + Enum.KEY_DEFINE.CTRL_SHIFT_S">
+                    {{$t('action_form.save_and_add')}}
                 </v-button>
                 <div style="max-width: 0; max-height: 0; overflow: hidden;">
                     <input @focus="inputFocus()" />
@@ -163,7 +174,7 @@ export default {
     },
     data() {
         return {
-            employee: {
+            employee: { // dữ liệu nhân viên
                 employeeID: "",
                 employeeCode: "",
                 employeeName: "",
@@ -198,7 +209,7 @@ export default {
     computed: {
         ...mapGetters(["getEmployeeId"]),
         /**
-         * @description: Get và set trạng thái của form từ store
+         * @description: Get và set trạng thái của form lưu trữ trong store 
          * Author: AnhDV 08/10/2022
          */
         formMode: {
@@ -209,6 +220,10 @@ export default {
                 return this.$store.getters.getMode;
             },
         },
+        /**
+        * @description: Lấy ra các action key (phím tắt) lưu trữ trong store 
+        * Author: AnhDV 11/10/2022
+        */
         action: {
             get() {
                 return this.$store.getters.getActionKey;
@@ -226,30 +241,27 @@ export default {
         modelValue: {
             handler(val) {
                 if (!val) {
-                    this.$store.dispatch('setMode', Enum.FORM_MODE.NULL);
+                    this.formMode = Enum.FORM_MODE.NULL;
                 }
             },
             deep: true
         },
         /**
-         * @description: Nhận các mode từ bên ngoài và xử lý các nghiệp vụ tương ứng
+         * @description: Nhận các mode từ bên component employee-list và xử lý các nghiệp vụ tương ứng
          * Author: AnhDV 04/10/2022
          */
         formMode: {
-            handler: async function (newVal) {
+            handler: async function (formMode) {
                 const self = this;
-                switch (newVal) {
+                switch (formMode) {
                     case Enum.FORM_MODE.ADD:
-                        self.title = "Thêm mới";
                         await self.resetForm();
                         break;
                     case Enum.FORM_MODE.EDIT:
-                        self.title = "Cập nhật";
                         await self.getEmployeeById();
                         self.isChaged = false;
                         break;
                     case Enum.FORM_MODE.DUPLICATE:
-                        self.title = "Nhân bản";
                         await self.getEmployeeById(true);
                         break;
                     default:
@@ -260,26 +272,28 @@ export default {
             deep: true,
         },
         /**
-         * @description: Nhận các action như cất và đóng hoặc cất và thêm mới từ bên ngoài và xử lý theo nghiêp vụ tương ứng
+         * @description: Lấy ra các action key (phím tắt) và xử lý các nghiệp vụ tương ứng
          * Author: AnhDV 04/10/2022
          */
         action: {
-            handler: async function (newVal) {
+            handler: async function (action) {
                 const self = this;
-                switch (newVal) {
-                    case Enum.ACTION.CLOSE:
-                        self.closeFormHandle();
-                        break;
-                    case Enum.ACTION.SAVE_AND_CLOSE:
-                        self.saveHandler(newVal);
-                        break;
-                    case Enum.ACTION.SAVE_AND_ADD:
-                        self.saveHandler(newVal);
-                        break;
-                    default:
-                        break;
+                if (self.formMode !== Enum.FORM_MODE.NULL) {
+                    switch (action) {
+                        case Enum.ACTION.CLOSE:
+                            self.closeFormHandle();
+                            break;
+                        case Enum.ACTION.SAVE_AND_CLOSE:
+                            self.saveHandler(action);
+                            break;
+                        case Enum.ACTION.SAVE_AND_ADD:
+                            self.saveHandler(action);
+                            break;
+                        default:
+                            break;
+                    }
+                    self.inputFocus();
                 }
-                self.inputFocus();
             },
             deep: true,
         },
@@ -311,17 +325,17 @@ export default {
                 }
                 if (self.isChaged) {
                     const confirm = await self.$refs.popup.show({
-                        message: Enum.ALERT_MESSAGE.DATA_CHANGED,
+                        message: self.$t("notice_message.confirm_data_close"),
                         icon: Enum.ICON.INFO,
-                        okButton: Enum.CONFIRM.YES,
-                        cancelButton: Enum.CONFIRM.NO,
-                        closeButton: Enum.CONFIRM.CANCEL,
+                        okButton: self.$t("confirm_popup.yes"),
+                        cancelButton: self.$t("confirm_popup.no"),
+                        closeButton: self.$t("confirm_popup.cancel"),
                     }); // hiển thị popup cảnh báo
                     switch (confirm) {
-                        case Enum.CONFIRM.YES:
+                        case self.$t("confirm_popup.yes"):
                             self.saveHandler(Enum.FORM_MODE.SAVE_AND_CLOSE);
                             break;
-                        case Enum.CONFIRM.NO:
+                        case self.$t("confirm_popup.no"):
                             self.$emit("update:modelValue", false);
                             break;
                         default:
@@ -363,7 +377,7 @@ export default {
         async insertEmployee(action) {
             let self = this;
             const response = await self.$api.employee.insertEmployee(self.employee);
-            if (response.data) {
+            if (response.status == Enum.MISA_CODE.CREATED) {
                 self.employee.employeeID = response.data; // gán giá trị employeeID vừa thêm mới
                 self.$emit("insertEmployee", self.employee); // emit giá trị employee vừa thêm mới
                 switch (action) { // xử lý theo action
@@ -389,10 +403,10 @@ export default {
                 let self = this;
                 if (!getNewEmployeeCode) return;
                 self.attemptSubmit = false; // reset lại trạng thái submit
-                const employeeCode = await self.$api.employee.getNewEmployeeCode(); // lấy mã nhân viên mới
-                if (employeeCode.data) { // nếu có mã nhân viên mới thì gán vào
+                const response = await self.$api.employee.getNewEmployeeCode(); // lấy mã nhân viên mới
+                if (response.status == Enum.MISA_CODE.SUCCESS) {
                     self.employee = { // gán giá trị mặc định cho employee
-                        employeeCode: employeeCode.data,
+                        employeeCode: response.data,
                         gender: 1,
                         isCustomer: false,
                         isSupplier: false,
@@ -404,19 +418,19 @@ export default {
         },
         /**
          * @description: Hàm này dùng để lấy thông tin chi tiết nhân viên theo id và gán vào employee
-         * @param {boolean} newEmployeeCode: có lấy mã nhân viên mới hay không ( phục vụ chức năng nhân bản)
+         * @param {boolean} getNewEmployeeCode: có lấy mã nhân viên mới hay không ( phục vụ chức năng nhân bản)
          * Author: AnhDV 22/09/2022
          */
-        async getEmployeeById(newEmployeeCode = false) {
+        async getEmployeeById(getNewEmployeeCode = false) {
             try {
                 let self = this;
                 const response = await self.$api.employee.getEmployeeById(self.getEmployeeId);
-                if (response.data) {
+                if (response.status == Enum.MISA_CODE.SUCCESS) {
                     self.employee = response.data;
-                    if (newEmployeeCode) {
-                        const employeeCode = await self.$api.employee.getNewEmployeeCode(); // lấy mã nhân viên mới
-                        if (employeeCode.data) { // nếu có mã nhân viên mới thì gán vào
-                            self.employee.employeeCode = employeeCode.data;
+                    if (getNewEmployeeCode) {
+                        const res = await self.$api.employee.getNewEmployeeCode(); // lấy mã nhân viên mới
+                        if (res.status == Enum.MISA_CODE.SUCCESS) {
+                            self.employee.employeeCode = res.data;
                         }
                     }
                 }
@@ -473,21 +487,16 @@ export default {
                 }
             } catch (error) {
                 if (error.response) {
-                    let data = error.response.data.Data;
-                    // lấy ra toàn bộ key và value của data
-                    let htmlMessage = Object.values(data).map((item) => {
-                        return `${item.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                            .replace(/"/g, "&quot;").replace(/'/g, "&#039;")}`;
-                    }).join('<br/>');
-                    switch (error.response.status) {
-                        case Enum.MISA_CODE.VALIDATE:
-                            await self.$refs.popup.showError(htmlMessage);
-                            break;
+                    let { status, data } = error.response;
+                    if (status == Enum.MISA_CODE.VALIDATE) {
+                        let htmlMessage = Object.values(data.Data).map((item) => {
+                            return `${item}`;
+                        });
+                        await self.$refs.popup.showError(htmlMessage);
                     }
                 } else {
-                    self.$refs.popup.showError(Enum.NOTICE_MESSAGE.UNKNOWN_ERROR);
+                    self.$refs.popup.showError(self.$t("notice_message.unknown_error"));
                 }
-
             }
         },
         // /**
@@ -519,10 +528,10 @@ export default {
             }
         }
     },
-    beforeUnmount() { // hàm này chạy trước khi component bị hủy
-        this.formMode = Enum.FORM_MODE.NULL
-        this.attemptSubmit = false;
-        this.$emit("update:modelValue", false);
+    beforeUnmount() {
+        this.formMode = Enum.FORM_MODE.NULL // reset lại formMode
+        this.attemptSubmit = false; // reset lại attemptSubmit
+        this.$emit("update:modelValue", false); // reset lại modelValue
     },
 };
 </script>

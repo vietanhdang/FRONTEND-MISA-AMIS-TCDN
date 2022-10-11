@@ -8,14 +8,15 @@
                         <slot name="title"></slot>
                     </div>
                     <div class="v-dialog__close">
-                        <div class="ms-24 ms-icon ms-icon-help" tooltip="GIÚP (F1)"></div>
-                        <div class="ms-24 ms-icon ms-icon-close" tooltip="ĐÓNG (ESC)" @click="onHandleClose"></div>
+                        <div class="ms-24 ms-icon ms-icon-help" :tooltip="$t('action_form.help') +' (F1)'"></div>
+                        <div class="ms-24 ms-icon ms-icon-close" :tooltip="$t('action_form.close') +' (ESC)'"
+                            @click="onHandleClose"></div>
                     </div>
                 </div>
                 <div class="v-dialog__body" @mousemove="stopDrag">
                     <slot name="body"></slot>
                 </div>
-                <div class="v-line"></div>
+                <div v-if="line" class="v-line"></div>
                 <div class="v-dialog__footer">
                     <div class="footer__left" @mousemove="stopDrag">
                         <slot name="footer__left"></slot>
@@ -39,6 +40,10 @@ export default {
         isShow: {
             type: Boolean,
             default: false
+        },
+        line: {
+            type: Boolean,
+            default: true
         },
     },
     methods: {

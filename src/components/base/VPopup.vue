@@ -16,7 +16,7 @@
                     <v-button v-if="closeButton" className="secondary" @click="_close" :text="closeButton" />
                 </div>
                 <div class="footer__center">
-                    <VButton v-if="hideButton" @click="_close">Đóng</VButton>
+                    <VButton v-if="hideButton" @click="_close">{{$t('confirm_popup.close')}}</VButton>
                 </div>
                 <div class="footer__right">
                     <v-button v-if="cancelButton!=null" className="secondary" @click="_cancel" :text="cancelButton" />

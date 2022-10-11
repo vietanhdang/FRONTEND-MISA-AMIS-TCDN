@@ -29,7 +29,6 @@
 </template>
 <script>
 import Validate from '@/utils/validate';
-import Enum from '@/utils/enum';
 export default {
     name: "VInput",
     props: {
@@ -227,22 +226,22 @@ export default {
             let value = self.modelValue;
             if ((!self.required && Validate.isNullOrEmpty(value)) || self.required) {
                 if (self.isEmail && !Validate.isEmail(value)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_EMAIL(errorLabel)
+                    self.errorMess = this.$t("validate_error.required", [errorLabel])
                 }
                 if (self.isPhoneNumber && !Validate.isPhoneNumber(value)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_PHONE_NUMBER(errorLabel)
+                    self.errorMess = this.$t("validate_error.required", [errorLabel])
                 }
                 if (self.isNumber && !Validate.isNumber(value)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_NUMBER(errorLabel)
+                    self.errorMess = this.$t("validate_error.required", [errorLabel]);
                 }
                 if (self.maxLength > 0 && !Validate.isLength(value, 0, self.maxLength)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_MAX_LENGTH(errorLabel, self.maxLength)
+                    self.errorMess = this.$t("validate_error.max_length", [errorLabel, self.maxLength]);
                 }
                 if (self.minLength > 0 && !Validate.isLength(value, self.minLength)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.INVALID_MIN_LENGTH(errorLabel, self.minLength)
+                    self.errorMess = this.$t("validate_error.min_length", [errorLabel, self.minLength]);
                 }
                 if (!Validate.isNullOrEmpty(value)) {
-                    self.errorMess = Enum.INPUT_VALIDATION.REQUIRED(errorLabel);
+                    self.errorMess = this.$t("validate_error.required", [errorLabel]);
                 }
             }
             if (self.errorMess) {

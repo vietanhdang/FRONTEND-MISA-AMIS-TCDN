@@ -1,11 +1,12 @@
 <template>
     <div class="v-menu" :class="{'v-menu__content--show': isVisible}">
         <div class="v-menu__main">
-            <div class="v-menu__button" @mousedown="handleSelect({key:'edit'})">Sửa</div>
+            <div class="v-menu__button" @mousedown="handleSelect({key:'edit'})">{{$t('action.edit')}}</div>
             <div class="v-menu__dropdown">
                 <div class="v-menu__icon" @click="open" @blur="close" tabindex="-1">
                     <div class="v-menu__line"></div>
-                    <div class="ms-16 ms-icon ms-icon-arrow-down"></div>
+                    <div class="ms-16 ms-icon ms-icon-arrow-down" :tooltip="$t('action.more_action')" position="left">
+                    </div>
                 </div>
                 <Transition name="slide">
                     <div class="v-menu__content" v-if="isVisible" :class="[{'v-menu__content--up': isUp}]"

@@ -161,7 +161,17 @@ export default {
                 }
             },
             deep: true,
-        }
+        },
+        data: { // Nếu data thay đổi thì lưu lại vào dataApi
+            handler(newVal) {
+                this.dataApi = newVal;
+                this.filterData = newVal;
+                if (this.indexItemSelected !== -1) {
+                    this.textInput = newVal[this.indexItemSelected][this.propValue];
+                }
+            },
+            deep: true,
+        },
     },
     methods: {
         /**
@@ -173,7 +183,7 @@ export default {
             if (this.required) {
                 this.error = !Validate.isNullOrEmpty(this.keyItemSelected);
                 if (this.error) {
-                    this.errorMess = Enum.INPUT_VALIDATION.REQUIRED(this.errorLabel);
+                    this.errorMess = this.$t("validate_error.required", [this.errorLabel]);
                 } else {
                     this.errorMess = "";
                 }

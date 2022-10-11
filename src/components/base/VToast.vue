@@ -9,7 +9,7 @@
                         </div>
                     </div>
                     <div class="v-toast__text">
-                        <span class="type" :style="{'color': colorMessage[item.type]}">{{noticeMessage[item.type]}}!
+                        <span class="type" :style="{'color': colorMessage[item.type]}">{{$t(`toast.${item.type}`)}}!
                         </span>
                         <span v-html="item.message"></span>
                     </div>
@@ -35,16 +35,6 @@ const colorMessage = {
     'warning': '#ff9800',
     'info': '#2196f3',
 }
-/**
- * Khai báo nội dung của các loại thông báo
- * Author: AnhDV 10/09/2022
- */
-const noticeMessage = {
-    'success': 'Thành công',
-    'error': 'Lỗi',
-    'warning': 'Cảnh báo',
-    'info': 'Thông tin',
-};
 export default {
     name: "VToast",
     props: {
@@ -75,7 +65,6 @@ export default {
     },
     data() {
         return {
-            noticeMessage,  // Nội dung thông báo
             colorMessage,  // Màu sắc thông báo
             toasts: [], // Danh sách thông báo
             count: 0, // Số lượng thông báo

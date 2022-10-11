@@ -5,12 +5,12 @@
                 <img :src="require('@/assets/img/development.svg')" alt="error" />
             </div>
             <div class="develop-page__content__description">
-                <h1 class="font-weight">Tính năng này đang được phát triển</h1>
+                <h1 class="font-weight">{{$t('notice_message.page_developing', [$route.meta.title])}}</h1>
             </div>
             <div class="develop-page__content__button d-flex justify-content-center border-rounded">
                 <router-link to="/">
                     <v-button className="border-radius-30">
-                        Quay lại
+                        {{$t('action.return')}}
                     </v-button>
                 </router-link>
             </div>
@@ -40,6 +40,7 @@ export default {
     .develop-page__content {
         transform: translateY(-48px);
         text-align: center;
+        width: 600px;
 
         .landing-page__content__title {
             img {

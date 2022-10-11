@@ -25,7 +25,7 @@
     transition: all 0.25s ease;
 
     .v-dropdown__text {
-      font-family: "MISA Fonts Bold";
+      font-family: $Misa-font-bold;
       font-size: 13px;
       margin-right: 4px;
       line-height: $height-input;
@@ -71,6 +71,7 @@
     padding: 2px 1px;
     border-radius: 2px;
     border: 1px solid $border-grey;
+
     top: 110%;
     min-width: 100px;
     right: 0;
@@ -84,9 +85,14 @@
     padding: 4px 10px;
     transition: all 0.2s ease;
     cursor: pointer;
-
+    font-family: $Misa-font-regular;
     &:hover {
       background-color: $bg-grey-hover;
     }
+  }
+  .v-dropdown__content-item--active {
+    background-color: $bg-green;
+    color: $white;
+    pointer-events: none;
   }
 }
