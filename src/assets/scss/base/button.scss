@@ -4,15 +4,15 @@
 
     &__button {
       @include flex-center;
+      transition: all 0.25s ease;
+      padding: 0 16px;
+      outline: none;
       height: 36px;
+      cursor: pointer;
+      color: $white;
+      border: none;
       border-radius: $border-radius;
       background-color: $bg-green;
-      color: $white;
-      outline: none;
-      border: none;
-      cursor: pointer;
-      padding: 0 16px;
-      transition: all 0.25s ease;
 
       &:hover {
         background-color: $bg-green-hover;

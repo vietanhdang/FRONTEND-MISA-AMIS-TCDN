@@ -15,12 +15,12 @@
 
   .v-dropdown__button {
     @include flex-align-center;
-    cursor: pointer;
-    height: $height-input;
     border-radius: 4px;
-    outline: none;
     border: none;
     cursor: pointer;
+    cursor: pointer;
+    height: $height-input;
+    outline: none;
     padding: 0 16px;
     transition: all 0.25s ease;
 
@@ -67,32 +67,31 @@
   }
 
   .v-dropdown__content {
+    z-index: 9999;
+    top: 110%;
+    right: 0;
     position: absolute;
     padding: 2px 1px;
-    border-radius: 2px;
-    border: 1px solid $border-grey;
-
-    top: 110%;
     min-width: 100px;
-    right: 0;
-    z-index: 9999;
-    background-color: $white;
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    border: 1px solid $border-grey;
     border-radius: 5px;
+    border-radius: 2px;
+    background-color: $white;
   }
 
   .v-dropdown__content-item {
-    padding: 4px 10px;
     transition: all 0.2s ease;
-    cursor: pointer;
+    padding: 4px 10px;
     font-family: $Misa-font-regular;
+    cursor: pointer;
     &:hover {
       background-color: $bg-grey-hover;
     }
   }
   .v-dropdown__content-item--active {
-    background-color: $bg-green;
-    color: $white;
     pointer-events: none;
+    color: $white;
+    background-color: $bg-green;
   }
 }
