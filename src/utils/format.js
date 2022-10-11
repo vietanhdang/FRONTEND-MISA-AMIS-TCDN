@@ -69,9 +69,9 @@ export function removeVietnameseTones(str) {
  */
 export function convertGender(number) {
   if (number === 0) {
-    return this.$t("employee_info.male");
-  } else if (number === 1) {
     return this.$t("employee_info.female");
+  } else if (number === 1) {
+    return this.$t("employee_info.male");
   } else {
     return this.$t("employee_info.other");
   }
