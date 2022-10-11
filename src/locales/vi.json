@@ -1,6 +1,7 @@
 {
   "common": {
-    "select_lang": "Chọn ngôn ngữ"
+    "select_lang": "Chọn ngôn ngữ",
+    "notification": "Thông báo"
   },
   "sidebar": {
     "overview": "Tổng quan",

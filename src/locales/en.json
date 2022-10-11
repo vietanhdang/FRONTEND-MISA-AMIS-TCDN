@@ -1,6 +1,7 @@
 {
   "common": {
-    "select_lang": "Select Language"
+    "select_lang": "Select Language",
+    "notification": "Notification"
   },
   "sidebar": {
     "overview": "Overview",
