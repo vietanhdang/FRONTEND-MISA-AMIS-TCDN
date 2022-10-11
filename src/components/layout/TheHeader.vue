@@ -1,26 +1,22 @@
 <template>
     <div class="header">
-        <div class="d-flex align-items-center">
-            <div class="ms-24 ms-icon ms-icon-three-stripes ml-x-2" @click="toggleSidebar" v-if="!collapsed"
-                :tooltip="$t('sidebar.menu_action.collapse')" position="right">
-            </div>
-            <v-dropdown icon="ms-16 ms-icon ms-icon-chevron-big-down" :className="!collapsed ? 'pl-l-1' : 'pl-l-2'"
-                :backgroundActive="false"
+        <div class="d-flex align-items-center flex-shrink">
+            <v-tooltip :content="$t('sidebar.menu_action.collapse')" v-if="!collapsed">
+                <div class="ms-24 ms-icon ms-icon-three-stripes ml-x-2" @click="toggleSidebar"></div>
+            </v-tooltip>
+            <v-dropdown icon="ms-16 ms-icon ms-icon-chevron-big-down" :backgroundActive="false"
                 :items="[{'key': '','value': 'CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC'}]">
                 <v-tooltip content="CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC">
                     CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC
                 </v-tooltip>
-
             </v-dropdown>
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center flex-shrink">
             <v-dropdown icon="ms-16 ms-icon ms-icon-chevron-big-down" className="pl-l-1" :items="languages"
                 propKey="language" propValue="title" @onSelect="changeLocale" :value="currentLanguage">
                 {{ $t('common.select_lang') }}
                 <template #item="item">
-                    <span class="font-weight-500">
-                        <flag :iso="item.option.flag" v-bind:squared=false /> {{ item.option.title }}
-                    </span>
+                    <flag :iso="item.option.flag" v-bind:squared=false /> {{ item.option.title }}
                 </template>
             </v-dropdown>
             <v-tooltip :content="$t('common.notification')">

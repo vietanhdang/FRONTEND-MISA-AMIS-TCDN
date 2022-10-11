@@ -20,7 +20,8 @@
     "report": "Report",
     "financial_analysis": "Financial Analysis",
     "menu_action": {
-      "collapse": "Collapse"
+      "collapse": "Collapse",
+      "expand": "Expand"
     }
   },
   "employee_page": {

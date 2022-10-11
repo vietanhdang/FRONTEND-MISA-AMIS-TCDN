@@ -20,7 +20,8 @@
     "report": "Báo cáo",
     "financial_analysis": "Phân tích tài chính",
     "menu_action": {
-      "collapse": "Thu gọn"
+      "collapse": "Thu gọn",
+      "expand": "Mở rộng"
     }
   },
   "employee_page": {

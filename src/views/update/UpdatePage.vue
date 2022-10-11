@@ -5,7 +5,7 @@
                 <img :src="require('@/assets/img/development.svg')" alt="error" />
             </div>
             <div class="develop-page__content__description">
-                <h1 class="font-weight">{{$t('notice_message.page_developing', [$route.meta.title])}}</h1>
+                <h1 class="font-weight">{{$t('notice_message.page_developing')}}</h1>
             </div>
             <div class="develop-page__content__button d-flex justify-content-center border-rounded">
                 <router-link to="/">
