@@ -1,16 +1,11 @@
 <template>
-
-    <div class="v-tooltip" :class="`${fixed ? position : ''}`" @mouseenter="onMouseOver" @mouseleave="onMouseLeave"
-        ref="tooltipParent">
-        <span v-if="content && showTooltip" class="v-tooltip__text" ref="tooltip" :class="isShow ? 'show' : ''"
-            :style="style">
+    <div class="v-tooltip" @mousemove="onMouseOver" @mouseleave="onMouseLeave" @mousedown="onMouseDown">
+        <span v-if="content" class="v-tooltip__text" ref="tooltip" :class="isShow ? 'show' : ''">
             {{content}}
         </span>
         <slot></slot>
     </div>
-
 </template>
-  
   
 <script>
 export default {
@@ -18,118 +13,57 @@ export default {
         content: {
             type: String,
         },
-        position: {
-            type: String,
-            default: 'auto',
-        },
-        fixed: {
-            type: Boolean,
-            default: false,
-        },
-        minWidth: {
+        top: {
             type: Number,
-            default: 0,
+            default: 20,
         },
-        equalWidth: {
-            type: Boolean,
-            default: false,
-        },
-        maxWidth: {
+        left: {
             type: Number,
-            default: 0,
-        },
-        showTooltip: {
-            type: Boolean,
-            default: true,
+            default: 10,
         },
     },
     data() {
         return {
             isShow: false,
-            tooltipWidth: 0,
+            isMouseDown: false,
         }
     },
     methods: {
+        /**
+        * @description: Hàm này dùng để ẩn tooltip khi hover ra và set lại giá trị isMouseDown = false để cho phép hiển thị tooltip khi hover vào
+        * Author: AnhDV 14/09/2022
+        */
+        onMouseLeave() {
+            this.isShow = false;
+            this.isMouseDown = false;
+        },
+        /**
+         * @description: Hàm này dùng để ẩn tooltip khi click vào và set lại giá trị isMouseDown = true để không cho phép hiển thị tooltip khi hover vào
+         * Author: AnhDV 14/09/2022
+         */
+        onMouseDown() {
+            this.isShow = false;
+            this.isMouseDown = true;
+        },
         /**
          * @description: Hàm này dùng để hiển thị tooltip khi hover vào
          * Author: AnhDV 14/09/2022
          */
         onMouseOver(event) {
-            this.isShow = true;
-            const { clientX, clientY } = event; // lấy tọa độ của chuột
-            const tooltip = this.$refs.tooltip;
-            if (tooltip) {
-                if (this.fixed) { // Nếu có truyền fixed vào thì set tọa độ cho tooltip
-                    tooltip.style.position = 'absolute';
-                    if (this.minWidth > 0) {
-                        tooltip.style.transform = `translate(-25%,-50%)`;
-                    }
-                    return;
-                }
-                if (this.equalWidth) {
-                    tooltip.style.transform = `translateY(150%)`;
-                    tooltip.style.padding = '0 5px';
-                    return;
-                }
-                // tạo tooltip ở dưới vị trí của chuột
-                const { width, height } = tooltip.getBoundingClientRect(); // lấy width và height của tooltip
-                switch (this.position) { // set tọa độ cho tooltip
-                    case 'top':
-                        tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
-                        tooltip.style.top = `${Math.round(clientY - height - 10)}px`;
-                        break;
-                    case 'bottom':
-                        tooltip.style.left = `${Math.round(clientX - width / 2)}px`;
-                        tooltip.style.top = `${Math.round(clientY + 10)}px`;
-                        break;
-                    case 'left':
-                        tooltip.style.left = `${Math.round(clientX - width - 10)}px`;
-                        tooltip.style.top = `${Math.round(clientY - height / 2)}px`;
-                        break;
-                    case 'right':
-                        tooltip.style.left = `${Math.round(clientX + 10)}px`;
-                        tooltip.style.top = `${Math.round(clientY - height / 2)}px`;
-                        break;
-                    default:
-                        tooltip.style.position = 'fixed';
-                        tooltip.style.top = `${clientY + 10}px`;
-                        tooltip.style.left = `${clientX + 10}px`;
-                        break;
+            if (!this.isMouseDown) { // nếu isMouseDown = false thì mới cho phép hiển thị tooltip
+                this.isShow = true;
+                const { clientX, clientY } = event; // lấy tọa độ của chuột
+                const tooltip = this.$refs.tooltip;
+                if (tooltip) {
+                    // tạo tooltip ở dưới vị trí của chuột
+                    tooltip.style.top = clientY + this.top + "px";
+                    tooltip.style.left = clientX + this.left + "px";
                 }
             }
         },
-        /**
-         * @description: Hàm này dùng để ẩn tooltip khi hover ra
-         * Author: AnhDV 14/09/2022
-         */
-        onMouseLeave() {
-            this.isShow = false;
-        }
-    },
-    computed: {
-        /**
-         * @description: Hàm này dùng để set style cho tooltip
-         * Author: AnhDV 14/09/2022
-         */
-        style() {
-            return {
-                minWidth: `${this.minWidth}px`,
-                width: `${this.equalWidth ? 'auto' : ''}`,
-            }
-        }
     },
 };
 </script>
 <style scoped lang="scss">
 @import '@/assets/scss/base/tooltip.scss';
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
 </style>
