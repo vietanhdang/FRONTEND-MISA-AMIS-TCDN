@@ -37,12 +37,23 @@
   align-items: center !important;
 }
 
+.flex-shrink {
+  flex-shrink: 0 !important;
+}
+
 .cursor-pointer {
   cursor: pointer !important;
 }
 
 .border-radius-30 {
   border-radius: 30px !important;
+}
+
+.width-auto {
+  width: auto !important;
+}
+.width-100 {
+  width: 100% !important;
 }
 
 /*# sourceMappingURL=display.css.map */

@@ -73,10 +73,10 @@
     position: absolute;
     padding: 2px 1px;
     min-width: 100px;
+    font-weight: 500;
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
     border: 1px solid $border-grey;
-    border-radius: 5px;
-    border-radius: 2px;
+    border-radius: $border-radius;
     background-color: $white;
   }
 

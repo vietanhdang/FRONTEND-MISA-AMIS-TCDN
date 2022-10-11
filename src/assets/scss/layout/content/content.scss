@@ -14,7 +14,6 @@
     overflow: auto;
   }
   &.content--collapsed {
-    animation: navbar-collapse 0.1s ease-in-out;
     max-width: calc(100% - 74px);
   }
 }

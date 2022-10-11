@@ -1,6 +1,6 @@
 .v-tooltip__text {
   z-index: 9999;
-  visibility: hidden;
+  display: none;
   text-align: center;
   position: fixed;
   pointer-events: none;
@@ -15,13 +15,8 @@
   border-radius: $border-radius;
   background: $bg-tooltip;
 
-  &::after {
-    content: "";
-    position: absolute;
-  }
-
   &.show {
-    visibility: visible;
+    display: block;
     opacity: 0.9;
   }
 }

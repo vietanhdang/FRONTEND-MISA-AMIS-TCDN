@@ -1,9 +1,9 @@
 /* Error: Undefined variable.
  *    ,
- * 12 |       color: $border-red;
- *    |              ^^^^^^^^^^^
+ * 17 |     border: 1px solid $bg-green;
+ *    |                       ^^^^^^^^^
  *    '
- *   scss\base\combobox.scss 12:14  root stylesheet */
+ *   scss\base\combobox.scss 17:23  root stylesheet */
 
 body::before {
   font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
@@ -13,5 +13,5 @@ body::before {
   padding: 1em;
   margin-bottom: 1em;
   border-bottom: 2px solid black;
-  content: "Error: Undefined variable.\a    \2577 \a 12 \2502        color: $border-red;\d\a    \2502               ^^^^^^^^^^^\a    \2575 \a   scss\\base\\combobox.scss 12:14  root stylesheet";
+  content: "Error: Undefined variable.\a    \2577 \a 17 \2502      border: 1px solid $bg-green;\d\a    \2502                        ^^^^^^^^^\a    \2575 \a   scss\\base\\combobox.scss 17:23  root stylesheet";
 }

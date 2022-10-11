@@ -62,7 +62,7 @@
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
     background-color: $white;
     padding: 2px 1px;
-    border-radius: 4px;
+    border-radius: $border-radius;
     min-width: 122px;
     border: 1px solid $border-grey;
     transform: translateY(20%);

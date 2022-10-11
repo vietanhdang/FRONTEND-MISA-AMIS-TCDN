@@ -5,7 +5,8 @@
   overflow-y: auto;
   flex-shrink: 0;
   &.collapsed {
-    width: 52px;
+    // width: 52px;
+    width: auto;
     .sidebar__header {
       display: none;
     }
