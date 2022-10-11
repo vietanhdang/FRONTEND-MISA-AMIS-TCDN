@@ -4,10 +4,13 @@
             <div class="ms-24 ms-icon ms-icon-three-stripes ml-x-2" @click="toggleSidebar" v-if="!collapsed"
                 :tooltip="$t('sidebar.menu_action.collapse')" position="right">
             </div>
-            <v-dropdown icon="ms-16 ms-icon ms-icon-chevron-big-down" className="pl-l-1" :backgroundActive="false"
+            <v-dropdown icon="ms-16 ms-icon ms-icon-chevron-big-down" :className="!collapsed ? 'pl-l-1' : 'pl-l-2'"
+                :backgroundActive="false"
                 :items="[{'key': '','value': 'CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC'}]">
-                <span tooltip="CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC">CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI
-                    - DỊCH VỤ QUI PHÚC</span>
+                <v-tooltip content="CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC">
+                    CÔNG TY TNHH SẢN XUẤT - THƯƠNG MẠI - DỊCH VỤ QUI PHÚC
+                </v-tooltip>
+
             </v-dropdown>
         </div>
         <div class="d-flex align-items-center">
@@ -20,7 +23,7 @@
                     </span>
                 </template>
             </v-dropdown>
-            <v-tooltip content="Thông báo">
+            <v-tooltip :content="$t('common.notification')">
                 <div class="ms-24 ms-icon ms-icon-bell"></div>
             </v-tooltip>
             <div class="header__user d-flex align-items-center p-x-3 ml-r-3">
