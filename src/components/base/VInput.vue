@@ -225,23 +225,23 @@ export default {
             let errorLabel = self.errorLabel;
             let value = self.modelValue;
             if ((!self.required && Validate.isNullOrEmpty(value)) || self.required) {
+                if (!Validate.isNullOrEmpty(value)) {
+                    self.errorMess = this.$t("validate_error.required", [errorLabel]);
+                }
                 if (self.isEmail && !Validate.isEmail(value)) {
-                    self.errorMess = this.$t("validate_error.required", [errorLabel])
+                    self.errorMess = this.$t("validate_error.invalid", [errorLabel])
                 }
                 if (self.isPhoneNumber && !Validate.isPhoneNumber(value)) {
-                    self.errorMess = this.$t("validate_error.required", [errorLabel])
+                    self.errorMess = this.$t("validate_error.invalid_number", [errorLabel])
                 }
                 if (self.isNumber && !Validate.isNumber(value)) {
-                    self.errorMess = this.$t("validate_error.required", [errorLabel]);
+                    self.errorMess = this.$t("validate_error.invalid_number", [errorLabel]);
                 }
                 if (self.maxLength > 0 && !Validate.isLength(value, 0, self.maxLength)) {
                     self.errorMess = this.$t("validate_error.max_length", [errorLabel, self.maxLength]);
                 }
                 if (self.minLength > 0 && !Validate.isLength(value, self.minLength)) {
                     self.errorMess = this.$t("validate_error.min_length", [errorLabel, self.minLength]);
-                }
-                if (!Validate.isNullOrEmpty(value)) {
-                    self.errorMess = this.$t("validate_error.required", [errorLabel]);
                 }
             }
             if (self.errorMess) {
@@ -254,6 +254,7 @@ export default {
         },
     },
     created() {
+        // nếu props focus là true thì đợi dom render xong sau đó focus vào 
         if (this.focus) {
             this.$nextTick(() => {
                 this.$refs.input.focus();

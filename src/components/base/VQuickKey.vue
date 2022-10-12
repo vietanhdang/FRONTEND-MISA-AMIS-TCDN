@@ -79,15 +79,15 @@ export default {
         quickKeyHandle(e) {
             const self = this;
             let isUse = false;
-            switch (self.lowerCaseKey(e.key)) {
-                case self.lowerCaseKey(Enum.KEY_NAME.S):
+            switch (e.key) {
+                case Enum.KEY_NAME.s:
                     if (e.ctrlKey) { // Ctrl + S => Cất và đóng
                         e.preventDefault();
                         self.action = Enum.ACTION.SAVE_AND_CLOSE;
                         isUse = true;
                     }
                     break;
-                case self.lowerCaseKey(Enum.KEY_NAME.S):
+                case Enum.KEY_NAME.S:
                     if (e.ctrlKey && e.shiftKey) { // Ctrl + Shift + S => Cất và thêm mới
                         e.preventDefault();
                         self.action = Enum.ACTION.SAVE_AND_ADD;
@@ -107,14 +107,14 @@ export default {
                         self.action = Enum.ACTION.ADD;
                     }
                     break;
-                case self.lowerCaseKey(Enum.KEY_NAME.Esc): // Esc => Đóng
+                case Enum.KEY_NAME.Esc: // Esc => Đóng
                     e.preventDefault();
                     self.action = Enum.ACTION.CLOSE;
                     if (self.isShow) {
                         self.isShow = false;
                     }
                     break;
-                case self.lowerCaseKey(Enum.KEY_NAME.Delete): // Delete => Xóa
+                case Enum.KEY_NAME.Delete: // Delete => Xóa
                     e.preventDefault();
                     self.action = Enum.ACTION.DELETE;
                     isUse = true;

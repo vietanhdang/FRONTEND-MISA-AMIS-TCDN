@@ -47,6 +47,9 @@
     &:hover {
       background-color: $text-sidebar-hover;
     }
+    &:focus {
+      background-color: $text-sidebar-hover;
+    }
   }
   &__item--icon {
     margin-right: 8px;

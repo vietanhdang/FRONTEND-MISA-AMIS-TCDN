@@ -351,22 +351,12 @@ export default {
          * @param: {enum} action: hành động sau khi cập nhật
          * Author: AnhDV 19/09/2022
          */
-        async updateEmployee(action) {
+        async updateEmployee() {
             let self = this;
             const response = await self.$api.employee.updateEmployee(self.employee); // gọi api update nhân viên
-            if (response.data) {
+            if (response.status == Enum.MISA_CODE.SUCCESS) {
                 self.$emit("updateEmployee", self.employee); // emit giá trị employee vừa cập nhật
-                switch (action) {
-                    case Enum.ACTION.SAVE_AND_CLOSE:
-                        self.closeFormHandle(true);
-                        break;
-                    case Enum.ACTION.SAVE_AND_ADD:
-                        self.formMode = Enum.FORM_MODE.NULL;
-                        self.formMode = Enum.FORM_MODE.ADD;
-                        break;
-                    default:
-                        break;
-                }
+                return Promise.resolve(true);
             }
         },
         /**
@@ -374,23 +364,13 @@ export default {
         * @param: {enum} action: hành động sau khi thêm mới
         * Author: AnhDV 19/09/2022
         */
-        async insertEmployee(action) {
+        async insertEmployee() {
             let self = this;
             const response = await self.$api.employee.insertEmployee(self.employee);
             if (response.status == Enum.MISA_CODE.CREATED) {
                 self.employee.employeeID = response.data; // gán giá trị employeeID vừa thêm mới
                 self.$emit("insertEmployee", self.employee); // emit giá trị employee vừa thêm mới
-                switch (action) { // xử lý theo action
-                    case Enum.ACTION.SAVE_AND_CLOSE:
-                        self.closeFormHandle(true);
-                        break;
-                    case Enum.ACTION.SAVE_AND_ADD:
-                        self.formMode = Enum.FORM_MODE.NULL;
-                        self.formMode = Enum.FORM_MODE.ADD;
-                        break;
-                    default:
-                        break;
-                }
+                return Promise.resolve(true);
             }
         },
         /**
@@ -468,21 +448,35 @@ export default {
                 });
                 if (validateResult) {
                     Object.keys(self.employee).forEach((key) => {
-                        // xóa các trường không cần thiết
+                        // xóa các trường là null hoặc ""
                         if (self.employee[key] == null || self.employee[key] === "") {
                             delete self.employee[key];
                         }
                     });
+                    let result = true;
                     switch (self.formMode) {
-                        case Enum.FORM_MODE.ADD:
-                            await self.insertEmployee(action);
+                        case Enum.FORM_MODE.ADD: // nếu action form là add thì thực hiện insert
+                            result = await self.insertEmployee();
                             break;
-                        case Enum.FORM_MODE.EDIT:
-                            await self.updateEmployee(action);
+                        case Enum.FORM_MODE.EDIT: // nếu action form là edit thì thực hiện update
+                            result = await self.updateEmployee();
                             break;
-                        case Enum.FORM_MODE.DUPLICATE:
-                            await self.insertEmployee(action);
+                        case Enum.FORM_MODE.DUPLICATE: // nếu action form là duplicate thì thực hiện duplicate 
+                            result = await self.insertEmployee();
                             break;
+                    }
+                    if (result) { // nếu insert thành công thì xử lý action form
+                        switch (action) {
+                            case Enum.ACTION.SAVE_AND_CLOSE: // nếu nhấn cất
+                                self.closeFormHandle(true);
+                                break;
+                            case Enum.ACTION.SAVE_AND_ADD: // nếu nhấn cất và thêm
+                                self.formMode = Enum.FORM_MODE.NULL;
+                                self.formMode = Enum.FORM_MODE.ADD;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             } catch (error) {

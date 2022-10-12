@@ -22,7 +22,7 @@
                     <slot name="toolbar-right"></slot>
                     <v-input :placeholder="$t('employee_page.search_function')" icon="ms-16 ms-icon ms-icon-search"
                         v-model="keyword" :outline="true" :styleProps="['width: 240px','font-style: italic']"
-                        className="v-input__with-icon" />
+                        className="v-input__with-icon" :focus="true" />
                     <div :tooltip="$t('action.reload_data')" class="ms-24 ms-icon ms-icon-reload ms-r-2 ml-l-2"
                         @click="handleAction(Enum.ACTION.RELOAD)">
                     </div>

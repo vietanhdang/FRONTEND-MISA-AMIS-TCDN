@@ -36,6 +36,7 @@ export default {
   KEY_NAME: {
     S: "S",
     // s nếu không có shift
+    s: "s",
     A: "A",
     // Esc
     Esc: "Escape",
