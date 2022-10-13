@@ -29,8 +29,18 @@ export default {
     F1: 112,
     // Mã phím S
     S: 83,
+    // Mã phím N
+    N: 78,
     // Mã phím E
     E: 69,
+    // Mã phím R
+    R: 82,
+    // Mã phím L
+    L: 76,
+    // Mã phím A
+    A: 65,
+    // Mã phím C
+    C: 67,
   },
   // tên phím
   KEY_NAME: {
@@ -119,6 +129,8 @@ export default {
     HELP: "help",
     // Null
     NULL: null,
+    // Collapse thanh sidebar
+    COLLAPSE: "collapse",
   },
   // Các thông báo lỗi của toast
   ICON: {
