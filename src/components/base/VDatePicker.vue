@@ -4,8 +4,7 @@
             {{ label }} <span v-if="required"> * </span>
         </div>
         <date-picker :required="required" pickerType="date" format="DD/MM/yyyy" :locale="locale" :allowClear="true"
-            :popupStyle="popupStyleCustom" :onChange="onChange" :value="defaultPickerValue" @focus="onHandleBorder"
-            @blur="onHandleBorder">
+            v-model:value="defaultPickerValue" @focus="onHandleBorder" @blur="onHandleBorder">
             <template #nextIcon>
                 <div class="ms-24 ms-icon ms-icon-arrow-right"></div>
             </template>
@@ -67,6 +66,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        isLessThanValue: {
+            type: String,
+            default: "",
+        },
+        isLessThanValueLabel: {
+            type: String,
+            default: "",
+        },
         isSubmit: {
             type: Boolean,
             default: false,
@@ -80,16 +87,27 @@ export default {
     data() {
         return {
             locale,
-            defaultPickerValue: null,
+            defaultPickerValue: this.modelValue ? moment(formatDate(this.modelValue), 'DD/MM/YYYY') : null,
             error: false, // Hiển thị lỗi
             errorMess: "", // Nội dung lỗi
             isShowErrorMessage: false, // Hiển thị nội dung lỗi
-
         };
     },
     watch: {
         /**
-         * @description: theo giõi giá trị truyền vào để set cho datepicker
+        * @description: theo giõi isLessThanValue để hiển thị lỗi
+        * Author: AnhDV 13/10/2022
+        */
+        isLessThanValue: {
+            handler(newVal) {
+                if (newVal && this.defaultPickerValue) {
+                    this.validate();
+                }
+            },
+            deep: true,
+        },
+        /**
+         * @description: theo giõi nếu vmodel thay đổi thì thay đổi giá trị defaultPickerValue
          * Author: AnhDV 08/10/2022
          */
         modelValue: {
@@ -100,12 +118,6 @@ export default {
                 } else {
                     self.defaultPickerValue = null;
                 }
-                if (self.validateCheck) {
-                    self.errorMess = "";
-                    self.$nextTick(() => { // đợi cho update lên model value xong rồi mới kiểm tra
-                        self.validate();
-                    });
-                }
             },
             deep: true,
         },
@@ -114,13 +126,35 @@ export default {
          * Author: AnhDV 08/10/2022
          */
         isSubmit: {
-            handler(newVal) {
-                if (newVal) {
+            handler(isSubmit) {
+                if (isSubmit) {
                     this.validate();
                 }
             },
             deep: true,
         },
+        /**
+         * @description: theo giõi nếu defaultPickerValue thay đổi thì validate và emit value lên v-model
+         * @param {*} valueBinding  
+         * Author: AnhDV 13/10/2022
+         */
+        defaultPickerValue: {
+            handler: function (valueBinding) {
+                if (valueBinding) {
+                    this.$emit("update:modelValue", moment(valueBinding).format("YYYY-MM-DD"));
+                } else {
+                    this.$emit("update:modelValue", null);
+                }
+                if (this.validateCheck) {
+                    this.errorMess = "";
+                    this.$nextTick(() => { // đợi cho update lên model value xong rồi mới kiểm tra
+                        this.validate();
+                    });
+                }
+            },
+            deep: true,
+        },
+
     },
     methods: {
         /**
@@ -136,17 +170,35 @@ export default {
             if ((!self.required && Validate.isNullOrEmpty(self.modelValue)) || self.required) {
                 if (self.isLessThanToday && !moment().isAfter(self.defaultPickerValue)) {
                     self.errorMess = self.$t("validate_error.over_current_date", [errorLabel]);
-                }
-                if (!Validate.isNullOrEmpty(self.modelValue)) {
+                    self.isShowErrorMessage = true;
+                    self.error = true;
+                    picker.classList.add("error");
+                    picker.setAttribute("data-error", self.errorMess);
+                    return false;
+                } else if (self.isLessThanValue && moment(self.isLessThanValue).isAfter(self.defaultPickerValue)) {
+                    self.errorMess = self.$t("validate_error.less_value", [errorLabel, self.isLessThanValueLabel]);
+                    self.isShowErrorMessage = true;
+                    self.error = true;
+                    picker.classList.add("error");
+                    picker.setAttribute("data-error", self.errorMess);
+                    return false;
+                } else if (!Validate.isNullOrEmpty(self.modelValue)) {
                     self.errorMess = self.$t("validate_error.required", [errorLabel])
+                    self.isShowErrorMessage = true;
+                    self.error = true;
+                    picker.classList.add("error");
+                    picker.setAttribute("data-error", self.errorMess);
+                    return false;
+                } else {
+                    self.errorMess = "";
+                    self.isShowErrorMessage = false;
+                    self.error = false;
+                    picker.classList.remove("error");
+                    picker.removeAttribute("data-error");
+                    return true;
                 }
-            }
-            if (self.errorMess) {
-                self.isShowErrorMessage = true;
-                self.error = true;
-                picker.classList.add("error");
-                picker.setAttribute("data-error", self.errorMess);
             } else {
+                self.errorMess = "";
                 self.isShowErrorMessage = false;
                 self.error = false;
                 picker.classList.remove("error");
@@ -154,23 +206,9 @@ export default {
             }
         },
         /**
-         * @description: Hàm này dùng để format lại date khi chọn date
-         * @param: {dateString} - moment date
-         * Author: AnhDV 02/10/2022
+         * @description: Hàm này dùng để hiển thị lỗi
+         * Author: AnhDV 13/10/2022
          */
-        onChange(dateString) {
-            const self = this;
-            try {
-                if (dateString) {
-                    self.$emit("update:modelValue", moment(dateString).format("YYYY-MM-DD"));
-                } else {
-                    self.$emit("update:modelValue", "");
-                    self.defaultPickerValue = null;
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
         onHandleBorder() {
             const self = this;
             this.$nextTick(() => {
@@ -184,18 +222,9 @@ export default {
 
         },
     },
-    created() {
-        this.popupStyleCustom = { // style cho popup datepicker
-            width: "auto",
-            height: "auto",
-            zIndex: 9999,
-        };
-
-
-    },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 @import "@/assets/scss/base/datepicker.scss";
 </style>

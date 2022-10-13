@@ -1,5 +1,5 @@
 <template>
-    <div class="employee" tabindex="-1">
+    <div class="employee">
         <div class="employee-header">
             <div class="employee-title">{{$t('employee_page.title')}}</div>
             <v-button @click="handleAction(Enum.ACTION.ADD)">
@@ -40,7 +40,7 @@
         </employee-form>
         <!-- Khu vực hiển thị popup và toast thông báo -->
         <v-popup ref="popup"></v-popup>
-        <v-toast ref="toast" :showProgress="true"></v-toast>
+        <v-toast ref="toast" :showProgress="true" :maxMessage="10"></v-toast>
     </div>
 </template>
 <script>
@@ -241,27 +241,24 @@ export default {
          */
         action: {
             handler: function (newVal) {
-                let curentFocus = document.activeElement; // lấy phần tử đang được active
-                // nếu tabindex -1 và tên class là employee thì mới thực hiện các phím tắt
-                if (curentFocus.tabIndex === -1 && curentFocus.className === 'employee') {
-                    switch (newVal) {
-                        case Enum.ACTION.ADD: // tổ hợp phím  Ctrl + Alt + A để thêm mới nhân viên
-                            this.handleAction(newVal);
-                            break;
-                        case Enum.ACTION.DELETE: // phím delete để xóa nhân viên
-                            if (this.isEmployeeSelected) {
-                                this.handleAction(Enum.ACTION.DELETE_MANY);
-                            }
-                            break;
-                        case Enum.ACTION.EXPORT:
-                            this.handleAction(Enum.ACTION.EXPORT);
-                            break;
-                        case Enum.ACTION.RELOAD: // tổ hợp phím Ctrl + R để reload lại table
-                            this.handleAction(Enum.ACTION.RELOAD);
-                            break;
-                        default:
-                            break;
-                    }
+                // let curentFocus = document.activeElement; // lấy phần tử đang được active
+                switch (newVal) {
+                    case Enum.ACTION.ADD: // tổ hợp phím  Ctrl + Alt + A để thêm mới nhân viên
+                        this.handleAction(newVal);
+                        break;
+                    case Enum.ACTION.DELETE: // phím delete để xóa nhân viên
+                        if (this.isEmployeeSelected) {
+                            this.handleAction(Enum.ACTION.DELETE_MANY);
+                        }
+                        break;
+                    case Enum.ACTION.EXPORT:
+                        this.handleAction(Enum.ACTION.EXPORT);
+                        break;
+                    case Enum.ACTION.RELOAD: // tổ hợp phím Ctrl + R để reload lại table
+                        this.handleAction(Enum.ACTION.RELOAD);
+                        break;
+                    default:
+                        break;
                 }
             },
             deep: true,
@@ -474,7 +471,8 @@ export default {
             try {
                 const index = self.employeeList.data.findIndex((item) => item.employeeID === employee.employeeID);
                 if (index !== -1) {
-                    self.employeeList.data.splice(index, 1, employee);
+                    self.employeeList.data.splice(index, 1);
+                    self.employeeList.data.unshift(employee);
                     self.$root.$toast.success(self.$t('notice_message.update_success', [employee.employeeCode]));
                 }
             } catch (error) {

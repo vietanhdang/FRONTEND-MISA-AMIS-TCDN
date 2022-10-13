@@ -5,7 +5,7 @@
             <div class="v-menu__dropdown">
                 <div class="v-menu__icon" @click="open" @blur="close" tabindex="-1">
                     <div class="v-menu__line"></div>
-                    <div class="ms-16 ms-icon ms-icon-arrow-down" :tooltip="$t('action.more_action')" position="left">
+                    <div class="ms-16 ms-icon ms-icon-arrow-down">
                     </div>
                 </div>
                 <Transition name="slide">

@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import Enum from '@/utils/enum';
 export default {
     name: "TheHeader",
     props: {
@@ -53,6 +54,16 @@ export default {
         // Lấy ngôn ngữ hiện tại
         currentLanguage() {
             return this.$i18n.locale;
+        }
+    },
+    watch: {
+        $store: {
+            handler: function (val) {
+                if (val.getters.getActionKey === Enum.ACTION.COLLAPSE) { // nếu actionKey = COLLAPSE
+                    this.toggleSidebar();
+                }
+            },
+            deep: true
         }
     },
     methods: {

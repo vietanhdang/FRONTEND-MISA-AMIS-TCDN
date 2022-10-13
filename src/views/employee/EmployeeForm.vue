@@ -20,21 +20,21 @@
             <template #body>
                 <div class="grid wide v-max-900" ref="employeeForm">
                     <div class="row">
-                        <div class="col l-6 md-6 c-12">
+                        <div class="col l-6 md-6">
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 md-5 c-5 focus">
                                     <v-input :label="$t('employee_info.code')" v-model="employee.employeeCode"
-                                        :required="true" :errorLabel="$t('employee_info.code')"
-                                        :isSubmit="attemptSubmit" :validateCheck="true">
+                                        :isSubmit="attemptSubmit" :required="true" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.code')">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-7">
                                     <v-input :label="$t('employee_info.name')" v-model="employee.employeeName"
-                                        :required="true" :isSubmit="attemptSubmit" :validateCheck="true"
-                                        :errorLabel="$t('employee_info.name')">
+                                        :maxLength="100" :validateCheck="true" :required="true"
+                                        :isSubmit="attemptSubmit" :errorLabel="$t('employee_info.name')">
                                     </v-input>
                                 </div>
-                                <div class="form-group col l-12 md-12 c-12">
+                                <div class="form-group col l-12 md-12">
                                     <v-combobox position="bottom" propKey="departmentID" v-model="employee.departmentID"
                                         propValue="departmentName" :label="$t('employee_info.department')"
                                         :errorLabel="$t('employee_info.department')"
@@ -45,91 +45,97 @@
                                         </template>
                                     </v-combobox>
                                 </div>
-                                <div class="form-group col l-12 md-12 c-12">
-                                    <v-input :label="$t('employee_info.job_title')" v-model="employee.jobTitle">
+                                <div class="form-group col l-12 md-12">
+                                    <v-input :label="$t('employee_info.job_title')" v-model="employee.jobTitle"
+                                        :maxLength="100" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.job_title')">
                                     </v-input>
                                 </div>
                             </div>
                         </div>
-                        <div class="col l-6 md-6 c-12">
+                        <div class="col l-6 md-6">
                             <div class="row sm-gutter">
-                                <div class="form-group col l-5 md-5 c-12">
+                                <div class="form-group col l-5 md-5">
                                     <v-date-picker :label="$t('employee_info.date_of_birth')"
                                         v-model="employee.dateOfBirth" :isLessThanToday="true"
                                         :errorLabel="$t('employee_info.date_of_birth')" :validateCheck="true">
                                     </v-date-picker>
                                 </div>
-                                <div class="form-group col l-7 md-7 c-12">
+                                <div class="form-group col l-7 md-7">
                                     <label class="label form-control font-weight-700">{{$t('employee_info.gender')}}
                                     </label>
-                                    <div class="row sm-gutter e-body__gender">
-                                        <div class="col">
-                                            <v-input type="radio" :label_custom="$t('employee_info.male')" :value=1
-                                                v-model="employee.gender">
-                                            </v-input>
-                                        </div>
-                                        <div class="col">
-                                            <v-input type="radio" :label_custom="$t('employee_info.female')" :value=0
-                                                v-model="employee.gender">
-                                            </v-input>
-                                        </div>
-                                        <div class="col">
-                                            <v-input type="radio" :label_custom="$t('employee_info.other')" :value=2
-                                                v-model="employee.gender">
-                                            </v-input>
-                                        </div>
+                                    <div class="row ml-x-1 justify-content-between e-body__gender">
+                                        <v-input type="radio" :label_custom="$t('employee_info.male')" :value=1
+                                            v-model="employee.gender">
+                                        </v-input>
+                                        <v-input type="radio" :label_custom="$t('employee_info.female')" :value=0
+                                            v-model="employee.gender">
+                                        </v-input>
+                                        <v-input type="radio" :label_custom="$t('employee_info.other')" :value=2
+                                            v-model="employee.gender">
+                                        </v-input>
                                     </div>
                                 </div>
-                                <div class="form-group col l-7 md-7 c-12">
+                                <div class="form-group col l-7 md-7">
                                     <v-input :label="$t('employee_info.identity_card')"
-                                        v-model="employee.identityNumber"
-                                        :tooltipText="$t('employee_info.identity_card')" tooltipPosition="right">
+                                        v-model="employee.identityNumber" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.identity_card')" :isNumber="true"
+                                        tooltipPosition="right" :tooltipText="$t('employee_info.identity_card_label')">
                                     </v-input>
                                 </div>
-                                <div class="form-group col l-5 md-5 c-12">
+                                <div class="form-group col l-5 md-5">
                                     <v-date-picker :label="$t('employee_info.issued_date')"
+                                        :isLessThanValue="employee.dateOfBirth" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.issued_date')"
+                                        :isLessThanValueLabel="$t('employee_info.date_of_birth')"
                                         v-model="employee.identityDate" />
                                 </div>
-                                <div class="form-group col l-12 md-12 c-12">
-                                    <v-input :label="$t('employee_info.issued_by')" v-model="employee.identityPlace">
+                                <div class="form-group col l-12 md-12">
+                                    <v-input :label="$t('employee_info.issued_by')" v-model="employee.identityPlace"
+                                        :maxLength="255" :validateCheck="true"
+                                        :errorLabel="$t('employee_info.issued_by')">
                                     </v-input>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row sm-gutter">
-                        <div class="form-group col l-12 md-12 c-12">
-                            <v-input :label="$t('employee_info.address')" v-model="employee.employeeAddress">
+                        <div class="form-group col l-12 md-12">
+                            <v-input :label="$t('employee_info.address')" v-model="employee.employeeAddress"
+                                :maxLength="255" :validateCheck="true" :errorLabel="$t('employee_info.address')">
                             </v-input>
                         </div>
                     </div>
                     <div class="row sm-gutter">
-                        <div class="form-group col l-3 md-3 c-12">
+                        <div class="form-group col l-3 md-3">
                             <v-input :label="$t('employee_info.phone_number')" v-model="employee.phoneNumber"
-                                :isPhoneNumber="true" :errorLabel="$t('employee_info.phone_number_label')"
+                                :isPhoneNumber="true" :isNumber="true" :errorLabel="$t('employee_info.phone_number')"
                                 :validateCheck="true" :tooltipText="$t('employee_info.phone_number_label')"
                                 tooltipPosition="right">
                             </v-input>
                         </div>
-                        <div class="form-group col l-3 md-3 c-12">
+                        <div class="form-group col l-3 md-3">
                             <v-input :label="$t('employee_info.home_phone_number')" v-model="employee.telephoneNumber"
+                                :isPhoneNumber="true" :isNumber="true"
+                                :errorLabel="$t('employee_info.home_phone_number')" :validateCheck="true"
                                 :tooltipText="$t('employee_info.home_phone_number_label')" tooltipPosition="right">
                             </v-input>
                         </div>
-                        <div class="form-group col l-3 md-3 c-12">
-                            <v-input :label="$t('employee_info.email')" v-model="employee.email"> </v-input>
+                        <div class="form-group col l-3 md-3">
+                            <v-input :label="$t('employee_info.email')" v-model="employee.email" :isEmail="true"
+                                :errorLabel="$t('employee_info.email')" :validateCheck="true"> </v-input>
                         </div>
                     </div>
                     <div class="row sm-gutter">
-                        <div class="form-group col l-3 md-3 c-12">
+                        <div class="form-group col l-3 md-3">
                             <v-input :label="$t('employee_info.bank_number')" v-model="employee.bankAccountNumber">
                             </v-input>
                         </div>
-                        <div class="form-group col l-3 md-3 c-12">
+                        <div class="form-group col l-3 md-3">
                             <v-input :label="$t('employee_info.bank_name')" v-model="employee.bankName">
                             </v-input>
                         </div>
-                        <div class="form-group col l-3 md-3 c-12">
+                        <div class="form-group col l-3 md-3">
                             <v-input :label="$t('employee_info.bank_branch')" v-model="employee.bankBranch">
                             </v-input>
                         </div>
@@ -140,6 +146,9 @@
                 <v-button buttonType="secondary" @click="closeFormHandle" className="v-button__button-no-bg border">
                     {{$t('action_form.cancel')}}
                 </v-button>
+                <div style="max-width: 0; max-height: 0; overflow: hidden;">
+                    <input @focus="inputFocus()" />
+                </div>
             </template>
             <template #footer__right>
                 <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_CLOSE)" buttonType="secondary"
@@ -150,9 +159,6 @@
                     :tooltip="$t('action_form.save_and_add') + Enum.KEY_DEFINE.CTRL_SHIFT_S">
                     {{$t('action_form.save_and_add')}}
                 </v-button>
-                <div style="max-width: 0; max-height: 0; overflow: hidden;">
-                    <input @focus="inputFocus()" />
-                </div>
             </template>
         </v-dialog>
         <!-- Khu vực hiển thị popup cảnh báo -->
@@ -292,7 +298,6 @@ export default {
                         default:
                             break;
                     }
-                    self.inputFocus();
                 }
             },
             deep: true,
@@ -333,7 +338,7 @@ export default {
                     }); // hiển thị popup cảnh báo
                     switch (confirm) {
                         case self.$t("confirm_popup.yes"):
-                            self.saveHandler(Enum.FORM_MODE.SAVE_AND_CLOSE);
+                            self.saveHandler(Enum.ACTION.SAVE_AND_CLOSE);
                             break;
                         case self.$t("confirm_popup.no"):
                             self.$emit("update:modelValue", false);
@@ -493,11 +498,11 @@ export default {
                 }
             }
         },
-        // /**
-        // * @description: Hàm này dùng để focus vào trường input đầu tiên hoặc là trường lỗi đầu tiên
-        // * @param: {boolean} isFocusError: có focus vào trường lỗi đầu tiên hay không
-        // * Author: AnhDV 02/10/2022
-        // */
+        /**
+        * @description: Hàm này dùng để focus vào trường input đầu tiên hoặc là trường lỗi đầu tiên
+        * @param: {boolean} isFocusError: có focus vào trường lỗi đầu tiên hay không
+        * Author: AnhDV 02/10/2022
+        */
         inputFocus(isFocusError = false) {
             try {
                 let self = this;
@@ -555,6 +560,7 @@ export default {
     &.wide {
         margin: 20px 0;
         max-width: 800px;
+        min-width: 400px;
     }
 }
 </style>

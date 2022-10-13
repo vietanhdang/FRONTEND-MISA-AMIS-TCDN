@@ -51,6 +51,10 @@ export default {
             type: Number,
             default: 0,
         },
+        focus: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         /**
@@ -72,6 +76,23 @@ export default {
                 return {};
             }
         },
+    },
+    methods: {
+        /**
+         * @description: Hàm này dùng để focus vào button
+         * Author: AnhDV 14/09/2022
+         */
+        focusButton() {
+            this.$refs.button.focus();
+        },
+    },
+    created() {
+        // nếu props focus là true thì đợi dom render xong sau đó focus vào 
+        if (this.focus) {
+            this.$nextTick(() => {
+                this.$refs.button.focus();
+            });
+        }
     },
 };
 </script>

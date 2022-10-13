@@ -1,5 +1,5 @@
 <template>
-    <v-modal :isShow="isShow">
+    <v-modal :isShow="isShow" :tabIndex="tabIndex">
         <div class="v-dialog">
             <div class="v-dialog__content" ref="dialog-content" @mousedown="startDrag" @mousemove="drag"
                 @mouseup="stopDrag">
@@ -18,14 +18,11 @@
                 </div>
                 <div v-if="line" class="v-line"></div>
                 <div class="v-dialog__footer">
-                    <div class="footer__left" @mousemove="stopDrag">
-                        <slot name="footer__left"></slot>
-                    </div>
-                    <div class="footer__center" @mousemove="stopDrag">
-                        <slot name="footer__center"></slot>
-                    </div>
                     <div class="footer__right" @mousemove="stopDrag">
                         <slot name="footer__right"></slot>
+                    </div>
+                    <div class="footer__left" @mousemove="stopDrag">
+                        <slot name="footer__left"></slot>
                     </div>
                 </div>
             </div>
@@ -45,6 +42,10 @@ export default {
             type: Boolean,
             default: true
         },
+        tabIndex: {
+            type: Number,
+            default: 0
+        }
     },
     methods: {
         /**

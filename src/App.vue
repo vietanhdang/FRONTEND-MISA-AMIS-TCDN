@@ -1,20 +1,17 @@
-<template>
-  <div class="main">
 
+<template>
+
+  <div class="main">
     <div class="menu-container">
       <TheSidebar :collapsed="collapsed" @toggleSidebar="toggleSidebar" />
     </div>
     <div class="content-area">
       <TheHeader @toggleSidebar="toggleSidebar" :collapsed="collapsed" />
       <div class="content">
-        <v-quick-key>
-          <template #default>
-            <router-view />
-          </template>
-        </v-quick-key>
+        <router-view />
       </div>
     </div>
-
+    <v-quick-key></v-quick-key>
   </div>
 </template>
 

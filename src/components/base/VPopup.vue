@@ -1,5 +1,5 @@
 <template>
-    <v-modal ref="popup" :tabIndex="tabIndex">
+    <v-modal ref="modal" :tabIndex="tabIndex">
         <div class="v-popup">
             <div class="v-popup__body">
                 <div class="v-popup__icon" @mousemove="stopDrag">
@@ -13,14 +13,16 @@
             <div class="v-line"></div>
             <div class="v-popup__footer">
                 <div class="footer__left">
-                    <v-button v-if="closeButton" className="secondary" @click="_close" :text="closeButton" />
-                </div>
-                <div class="footer__center">
-                    <VButton v-if="hideButton" @click="_close">{{$t('confirm_popup.close')}}</VButton>
+                    <v-button v-if="closeButton" className="secondary" @click="_close" :text="closeButton"
+                        :focus="true" />
                 </div>
                 <div class="footer__right">
+                    <v-button v-if="hideButton" :focus="true" @click="_close">{{$t('confirm_popup.close')}}</v-button>
                     <v-button v-if="cancelButton!=null" className="secondary" @click="_cancel" :text="cancelButton" />
                     <v-button v-if="okButton" @click="_confirm" :text="okButton" />
+                    <div style="max-width: 0; max-height: 0; overflow: hidden;">
+                        <input @focus="inputFocus()" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,6 +38,20 @@ export default {
         tabIndex: {
             type: Number,
             default: 0,
+        },
+    },
+    computed: {
+        /**
+        * @description: Get và set trạng thái của form lưu trữ trong store 
+        * Author: AnhDV 08/10/2022
+        */
+        formMode: {
+            set(val) {
+                this.$store.dispatch('setMode', val);
+            },
+            get() {
+                return this.$store.getters.getMode;
+            },
         },
     },
     data: () => ({
@@ -74,7 +90,7 @@ export default {
                 this.hideButton = opts.hideButton
             }
             // gọi hàm show của v-modal
-            this.$refs.popup.open()
+            this.$refs.modal.open()
             // Trả về promise để người gọi có thể lấy kết quả
             return new Promise((resolve, reject) => {
                 this.resolvePromise = resolve
@@ -123,9 +139,9 @@ export default {
          * Author: AnhDV 27/09/2022
          */
         _confirm() {
-            this.$refs.popup.close()
             this.resolvePromise(this.okButton)
             this.reset()
+            this.$refs.modal.close()
         },
 
         /**
@@ -133,9 +149,9 @@ export default {
          * Author: AnhDV 27/09/2022
          */
         _cancel() {
-            this.$refs.popup.close()
             this.resolvePromise(this.cancelButton)
             this.reset()
+            this.$refs.modal.close()
         },
 
         /**
@@ -143,11 +159,11 @@ export default {
          * Author: AnhDV 27/09/2022
          */
         _close() {
-            this.$refs.popup.close()
             this.resolvePromise(this.closeButton)
             this.reset();
-
+            this.$refs.modal.close()
         },
+
         /**
          * @description: Hàm này dùng để reset lại các giá trị
          * Author: AnhDV 07/10/2022
@@ -161,6 +177,14 @@ export default {
             this.hideButton = false
             this.$store.commit('setActionKey', Enum.ACTION.NULL)
         },
+
+        /**
+         * @description: Hàm này dùng để focus vào vị trí đầu tiên của popup nếu vượt qua tabIndex
+         * Author: AnhDV 12/10/2022
+         */
+        inputFocus() {
+            this.$refs.modal.$el.querySelector('button').focus()
+        }
     },
 }
 </script>

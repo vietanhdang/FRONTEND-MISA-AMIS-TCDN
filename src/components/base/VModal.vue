@@ -1,6 +1,6 @@
 <template>
     <transition name="fade">
-        <div class="modal" v-if="isVisible" :tabindex="tabIndex" ref="modal">
+        <div class="modal" v-if="isVisible" ref="modal" :tabindex="tabIndex">
             <div class="modal-content">
                 <slot></slot>
             </div>
@@ -18,13 +18,18 @@ export default {
         },
         tabIndex: { // Tab index của modal
             type: Number,
-            default: -1,
+            default: 0,
         },
     },
     data: () => ({
-        isVisible: false,
+        isVisible: false, // Modal có hiển thị hay không
     }),
     watch: {
+        /**
+         * @description: Khi isShow thay đổi thì thay đổi isVisible
+         * @param: {any} 
+         * Author: AnhDV 14/10/2022
+         */
         isShow: function (val) {
             if (val) {
                 this.open();
@@ -33,23 +38,28 @@ export default {
             }
         },
     },
+
     methods: {
         /**
          * @description: Hàm này dùng để mở modal
          * Author: AnhDV 07/10/2022
          */
         open() {
-            this.isVisible = true
+            this.isVisible = true;
             this.$nextTick(() => {
-                this.$refs.modal.focus()
-            })
+                this.oldFocus = document.activeElement; // Lấy element đang focus
+                this.$refs.modal.focus(); // Focus vào modal
+            });
         },
         /**
-         * @description: Hàm này dùng để đóng modal
-         * Author: AnhDV 07/10/2022
-         */
+        * @description: Hàm này dùng để đóng modal (nếu có tab index thì sẽ set lại tab index cũ)
+        * Author: AnhDV 07/10/2022
+        */
         close() {
             this.isVisible = false
+            if (this.oldFocus) {
+                this.oldFocus.focus();
+            }
         },
     },
 }
