@@ -54,6 +54,7 @@
     "female": "Female",
     "other": "Other",
     "identity_card": "Personal ID Number",
+    "identity_card_label": "",
     "issued_date": "Issued Date",
     "issued_by": "Issued By",
     "address": "Address",
@@ -100,10 +101,13 @@
   "validate_error": {
     "required": "{0} is required",
     "invalid": "{0} is invalid",
-    "invalid_number": "{0} is invalid number",
+    "invalid_number": "{0} must be a number",
+    "invalid_phone_number": "{0} is invalid phone number",
     "max_length": "{0} must be less than {1} characters",
     "min_length": "{0} must be greater than {1} characters",
-    "over_current_date": "{0} must be less than current date"
+    "over_current_date": "{0} must be less than current date",
+    "over_value": "{0} must be less than {1}",
+    "less_value": "{0} must be greater than {1}"
   },
   "notice_message": {
     "insert_success": "Insert employee <b>{0}</b> successfully",
@@ -142,28 +146,35 @@
     "info": "Info"
   },
   "quick_key": {
-    "save": "Ctrl + S",
-    "save_and_add": "Ctrl + Shift + S",
-    "add": "Ctrl + Alt + A",
-    "close": "Esc",
-    "delete": "Delete",
-    "reload": "Ctrl + R",
-    "export_excel": "Ctrl + Alt + E",
-    "change_language": "Ctrl + Alt + L",
-    "show_keyboard_shortcut": "Ctrl + F1"
-  },
-  "quick_key_info": {
-    "title": "Keyboard Shortcut",
-    "quick_key": "Quick Key",
-    "function": "Function",
-    "save": "Save and close",
-    "save_and_add": "Save and add new",
-    "add": "Add new",
-    "close": "Close",
-    "delete": "Delete",
-    "reload": "Reload data in table",
-    "export_excel": "Export data in table to excel",
-    "change_language": "Change language",
-    "show_keyboard_shortcut": "Show keyboard shortcut"
+    "info": {
+      "title": "Quick Key",
+      "description": "List of quick key",
+      "key": "Key",
+      "action": "Action"
+    },
+    "key": {
+      "save": "Ctrl + S",
+      "save_and_add": "Ctrl + Shift + S",
+      "add": "Ctrl + Alt + A",
+      "close": "Esc",
+      "delete": "Delete",
+      "reload": "Ctrl + R",
+      "export_excel": "Ctrl + Alt + E",
+      "change_language": "Ctrl + Alt + L",
+      "collapse": "Ctrl + Alt + C",
+      "show_keyboard_shortcut": "Ctrl + F1"
+    },
+    "key_label": {
+      "save": "Save and close",
+      "save_and_add": "Save and add new",
+      "add": "Add new",
+      "close": "Close",
+      "delete": "Delete",
+      "reload": "Reload data in table",
+      "export_excel": "Export data in table to excel",
+      "change_language": "Change language (English/Vietnamese)",
+      "collapse": "Collapse/Expand menu",
+      "show_keyboard_shortcut": "Show keyboard shortcut"
+    }
   }
 }

@@ -54,6 +54,7 @@
     "female": "Nữ",
     "other": "Khác",
     "identity_card": "Số CMND",
+    "identity_card_label": "Số chứng minh nhân dân",
     "issued_date": "Ngày cấp",
     "issued_by": "Nơi cấp",
     "address": "Địa chỉ",
@@ -101,9 +102,12 @@
     "required": "{0} không được để trống!",
     "invalid": "{0} không hợp lệ!",
     "invalid_number": "{0} phải là số!",
+    "invalid_phone_number": "{0} không hợp lệ!",
     "max_length": "{0} không được vượt quá {1} ký tự!",
     "min_length": "{0} không được nhỏ hơn {1} ký tự!",
-    "over_current_date": "{0} không được lớn hơn ngày hiện tại!"
+    "over_current_date": "{0} không được lớn hơn ngày hiện tại!",
+    "over_value": "{0} không được lớn hơn {1}!",
+    "less_value": "{0} không được nhỏ hơn {1}!"
   },
   "notice_message": {
     "insert_success": "Thêm mới nhân viên <b>{0}</b> thành công",
@@ -142,29 +146,36 @@
     "warning": "Cảnh báo",
     "info": "Thông tin"
   },
-  "quick_key_info": {
-    "title": "Danh sách phím tắt",
-    "quick_key": "Phím tắt",
-    "function": "Chức năng",
-    "save": "Cất và đóng",
-    "save_and_add": "Cất và thêm mới",
-    "add": "Thêm mới",
-    "close": "Đóng",
-    "delete": "Xóa",
-    "reload": "Tải lại dữ liệu trong bảng",
-    "export_excel": "Xuất danh sách nhân viên ra Excel",
-    "change_language": "Thay đổi ngôn ngữ hiển thị",
-    "show_keyboard_shortcut": "Hiển thị bảng phím tắt"
-  },
   "quick_key": {
-    "save": "Ctrl + S",
-    "save_and_add": "Ctrl + Shift + S",
-    "add": "Ctrl + Alt + A",
-    "close": "Esc",
-    "delete": "Delete",
-    "reload": "Ctrl + R",
-    "export_excel": "Ctrl + Alt + E",
-    "change_language": "Ctrl + Alt + L",
-    "show_keyboard_shortcut": "Ctrl + F1"
+    "info": {
+      "title": "Phím tắt",
+      "description": "Danh sách phím tắt",
+      "key": "Phím tắt",
+      "action": "Chức năng"
+    },
+    "key": {
+      "save": "Ctrl + S",
+      "save_and_add": "Ctrl + Shift + S",
+      "add": "Ctrl + Alt + A",
+      "close": "Esc",
+      "delete": "Delete",
+      "reload": "Ctrl + R",
+      "export_excel": "Ctrl + Alt + E",
+      "change_language": "Ctrl + Alt + L",
+      "collapse": "Ctrl + Alt + C",
+      "show_keyboard_shortcut": "Ctrl + F1"
+    },
+    "key_label": {
+      "save": "Cất và đóng",
+      "save_and_add": "Cất và thêm mới",
+      "add": "Thêm mới",
+      "close": "Đóng",
+      "delete": "Xóa",
+      "reload": "Tải lại dữ liệu trong bảng",
+      "export_excel": "Xuất danh sách nhân viên ra Excel",
+      "change_language": "Thay đổi ngôn ngữ hiển thị (Tiếng Việt/English)",
+      "collapse": "Thu gọn/ Mở rộng menu bên trái",
+      "show_keyboard_shortcut": "Hiển thị bảng phím tắt"
+    }
   }
 }
