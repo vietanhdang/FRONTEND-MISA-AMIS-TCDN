@@ -5,15 +5,15 @@
                 {{ label }} <span v-if="required"> * </span>
             </label>
         </div>
-        <div class="v-input__input" :class="inputClass" :tooltip="`${isShowErrorMessage && error ?  errorMess : ''}`"
-            :position="tooltipPosition">
+        <div class="v-input__input" :class="inputClass" :tooltip="`${isShowErrorMessage && error ?  errorMess : ''}`">
             <input ref="input" v-if="type === 'checkbox' || type === 'radio'" :type="type"
                 :class="[className, {'error' : error}]" :id="id" :value="value" :disabled="disabled" :style="style"
                 v-model="tempValue" :tabindex="(type === 'radio') ? (modelValue == value ? 0 : -1) : 0" />
             <input v-else ref="input" :type="type" :placeholder="placeholder"
                 :class="[className, {'error' : error}, {'v-input__outline' : outline}]" :id="id" :disabled="disabled"
                 :style="style" v-model.trim="tempValue" :data-error="`${isShowErrorMessage && error ?  errorMess : ''}`"
-                @focus="isShowErrorMessage=false" @blur="validateCheck ? validate() : ''" />
+                :tabindex="0" @mousedown="validateCheck? isShowErrorMessage=false: ''"
+                @mouseleave="validateCheck?isShowErrorMessage=true:''" @blur="validateCheck ? validate() : ''" />
             <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
                 <label class="label_custom" v-if="label_custom">{{label_custom}}</label>
             </label>
@@ -168,9 +168,14 @@ export default {
          * Author: AnhDV 08/10/2022
          */
         isSubmit: {
-            handler(newVal) {
-                if (newVal) {
-                    this.validate();
+            handler(isSubmitted) {
+                if (isSubmitted) {
+                    if (this.validate() && self.error) {
+                        this.$emit("update:isSubmit", false);
+                    }
+                    if (!self.error) { // nếu không có lỗi thì blur input để tránh hiển thị lỗi
+                        this.$refs.input.blur();
+                    }
                 }
             },
             deep: true,
@@ -204,11 +209,12 @@ export default {
                 return this.modelValue;
             },
             set(value) {
-                this.$emit('update:modelValue', value);
-                if (this.validateCheck) { // nếu validateCheck = true thì validate
-                    this.errorMess = "";
-                    this.$nextTick(() => { // sau khi set giá trị thì kiểm tra validate
-                        this.validate();
+                const self = this;
+                self.$emit('update:modelValue', value);
+                if (self.validateCheck) { // nếu validateCheck = true thì validate
+                    self.errorMess = "";
+                    self.$nextTick(() => { // sau khi set giá trị thì kiểm tra validate
+                        self.validate();
                     });
                 }
             },
@@ -227,29 +233,46 @@ export default {
             if ((!self.required && Validate.isNullOrEmpty(value)) || self.required) {
                 if (!Validate.isNullOrEmpty(value)) {
                     self.errorMess = this.$t("validate_error.required", [errorLabel]);
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
                 }
-                if (self.isEmail && !Validate.isEmail(value)) {
+                else if (self.isEmail && !Validate.isEmail(value)) {
                     self.errorMess = this.$t("validate_error.invalid", [errorLabel])
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
                 }
-                if (self.isPhoneNumber && !Validate.isPhoneNumber(value)) {
-                    self.errorMess = this.$t("validate_error.invalid_number", [errorLabel])
+                else if (self.isPhoneNumber && !Validate.isPhoneNumber(value)) {
+                    self.errorMess = this.$t("validate_error.invalid_phone_number", [errorLabel])
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
                 }
-                if (self.isNumber && !Validate.isNumber(value)) {
+                else if (self.isNumber && !Validate.isNumber(value)) {
                     self.errorMess = this.$t("validate_error.invalid_number", [errorLabel]);
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
                 }
-                if (self.maxLength > 0 && !Validate.isLength(value, 0, self.maxLength)) {
+                else if (self.maxLength > 0 && !Validate.isLength(value, 0, self.maxLength)) {
                     self.errorMess = this.$t("validate_error.max_length", [errorLabel, self.maxLength]);
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
                 }
-                if (self.minLength > 0 && !Validate.isLength(value, self.minLength)) {
+                else if (self.minLength > 0 && !Validate.isLength(value, self.minLength)) {
                     self.errorMess = this.$t("validate_error.min_length", [errorLabel, self.minLength]);
+                    self.error = true;
+                    self.isShowErrorMessage = true;
+                    return;
+                } else {
+                    self.error = false;
+                    self.isShowErrorMessage = false;
                 }
-            }
-            if (self.errorMess) {
-                this.isShowErrorMessage = true;
-                this.error = true;
             } else {
-                this.isShowErrorMessage = false;
-                this.error = false;
+                self.error = false;
+                self.isShowErrorMessage = false;
             }
         },
     },

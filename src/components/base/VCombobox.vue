@@ -5,8 +5,8 @@
             </label>
         </div>
         <div class="v-combobox__body">
-            <div class="v-combobox__selected" :class="[{error: error}]" :style="style"
-                :data-error="`${!isShowListData && error ? errorMess : ''}`"
+            <div class="v-combobox__selected" :class="[{error: error}, {'v-combobox__focus': isShowListData}]"
+                :style="style" :data-error="`${!isShowListData && error ? errorMess : ''}`"
                 :tooltip="`${!isShowListData && error ? errorMess : ''}`">
                 <input ref="input" type="text" v-model="textInput" @click="showListData" :placeholder="placeholder"
                     :disabled="selectBox" @focus="showListData" @blur="hideListData" @keydown="selecItemUpDown" />
@@ -18,13 +18,13 @@
                 </div>
             </div>
             <transition name="slide-fade">
-                <div class="v-select__list" v-if="isShowListData"
+                <div class="v-select__list" v-if="isShowListData" tabindex="-1" @keydown="selecItemUpDown"
                     :style="[position === 'top' ? { bottom: '100%' } : {}]" ref="combobox__data">
                     <div v-if="filterData.length === 0" class="v-select__items">
                         Không tìm thấy kết quả
                     </div>
                     <div v-else class="v-select__items" v-for="(option, index) of filterData" :key="index"
-                        @mousedown="onHandleSelected(option, index)"
+                        @click="onHandleSelected(option, index)"
                         :class="[{'v-select__hover': index == indexItemFocus},{ 'v-select__focus':  option[propKey] === keyItemSelected }]">
                         <slot name="item" :option="option" :index="index">
                             {{ option[propValue] }}
@@ -129,48 +129,71 @@ export default {
     data() {
         return {
             isShowListData: false, // Hiển thị danh sách dữ liệu
-            indexItemFocus: null, // index của item được focus
+            indexItemFocus: 0, // index của item được focus
             indexItemSelected: -1, // index của item được chọn
-            keyItemSelected: "", // giá trị của item được chọn
-            textInput: "", // Text input
+            keyItemSelected: this.modelValue,
+            textInput: this.textInput,
             dataApi: [], // dữ liệu lấy từ api
             filterData: [], // dữ liệu lọc
-            scrollY: 0, // vị trí scroll của danh sách dữ liệu
             error: false, // Hiển thị lỗi
             errorMess: "", // Nội dung lỗi
         };
     },
     watch: {
-        textInput() { // Nếu có text input thì filter data theo text input và lưu lại vào filterData
-            this.filterData = this.dataApi.filter((option) =>
-                removeVietnameseTones(option[this.propValue])
-                    .toLowerCase()
-                    .includes(removeVietnameseTones(this.textInput).toLowerCase())
-            );
-            this.indexItemFocus = null;
+        /**
+         * @description: Khi thay đổi text thì sẽ tìm kiếm dữ liệu theo text
+         * Author: AnhDV 14/10/2022
+         */
+        textInput: {
+            handler: function (value) {
+                const self = this;
+                self.filterData = self.dataApi.filter((option) =>
+                    removeVietnameseTones(option[self.propValue])
+                        .toLowerCase()
+                        .includes(removeVietnameseTones(value).toLowerCase())
+                );
+                this.indexItemFocus = -1;
+            },
+            deep: true,
         },
+        /**
+         * @description: Khi bên component cha gọi tới submit thì validate lại dữ liệu trước khi submit
+         * Author: AnhDV 14/10/2022
+         */
+        isSubmit: { // nếu isSubmit là true thì validate
+            handler(isSubmitted) {
+                if (isSubmitted) {
+                    if (this.validate() && self.error) {
+                        this.$emit("update:isSubmit", false);
+                    }
+                }
+            },
+            deep: true,
+        },
+        /**
+         * @description: Nếu data bên component cha thay đổi thì sẽ lấy dữ liệu mới
+         * Author: AnhDV 14/10/2022
+         */
+        data: {
+            handler(newData) {
+                this.dataApi = newData;
+                this.filterData = newData;
+                if (this.indexItemSelected !== -1) {
+                    this.textInput = newData[this.indexItemSelected][this.propValue];
+                }
+            },
+            deep: true,
+        },
+        /**
+         * @description: Nếu modelValue bên component cha thay đổi thì sẽ reset lại combobox
+         * Author: AnhDV 14/10/2022
+         */
         modelValue(newVal) {
             if (newVal === null) { // Nếu modelValue bằng null thì set textInput = "" và keyItemSelected = ""
+                this.$refs.input.blur();
                 this.resetCombobox();
+
             }
-        },
-        isSubmit: { // nếu isSubmit là true thì validate
-            handler(newVal) {
-                if (newVal) {
-                    this.validate();
-                }
-            },
-            deep: true,
-        },
-        data: { // Nếu data thay đổi thì lưu lại vào dataApi
-            handler(newVal) {
-                this.dataApi = newVal;
-                this.filterData = newVal;
-                if (this.indexItemSelected !== -1) {
-                    this.textInput = newVal[this.indexItemSelected][this.propValue];
-                }
-            },
-            deep: true,
         },
     },
     methods: {
@@ -180,33 +203,16 @@ export default {
          * Author: AnhDV 08/10/2022
          */
         validate() {
-            if (this.required) {
-                this.error = !Validate.isNullOrEmpty(this.keyItemSelected);
-                if (this.error) {
-                    this.errorMess = this.$t("validate_error.required", [this.errorLabel]);
-                } else {
-                    this.errorMess = "";
-                }
-            }
-        },
-        /**
-         * @description: Hàm này dùng để ẩn đi danh sách dữ liệu
-         * Author: ANHDV - 08/09/2022 
-         */
-        hideListData() {
             const self = this;
-            try {
-                if (self.textInput === "") {  // Nếu text input không có giá trị thì set lại giá trị cho combobox
-                    self.resetCombobox();
+            if (self.required) {
+                self.error = !Validate.isNullOrEmpty(self.keyItemSelected);
+                if (self.error) {
+                    self.errorMess = self.$t("validate_error.required", [self.errorLabel]);
+                    return false;
                 } else {
-                    if (self.indexItemSelected != null) { // Nếu text input có giá trị và có index selected thì set lại giá trị cho combobox
-                        self.onHandleSelected(self.dataApi[self.indexItemSelected], self.indexItemSelected);
-                    }
+                    self.errorMess = "";
+                    self.error = false;
                 }
-                this.validate();
-                this.isShowListData = false; // Hide list data
-            } catch (error) {
-                console.log(error);
             }
         },
         /**
@@ -218,90 +224,108 @@ export default {
             try {
                 self.isShowListData = true; // Chuyển trạng thái hiển thị danh sách dữ liệu
                 self.filterData = self.dataApi; // Gán dữ liệu đã lọc bằng dữ liệu từ api
-                if (self.indexItemSelected !== -1 && self.scrollY !== null) {
+                if (self.indexItemSelected > -1) {
                     self.$nextTick(() => { // Đợi DOM render xong thì mới scroll đến vị trí đã chọn
-                        self.$refs["combobox__data"].scrollTop = self.scrollY;
+                        self.indexItemFocus = self.indexItemSelected;
+                        const position = self.$refs['combobox__data'].children[self.indexItemSelected].offsetTop - self.$refs['combobox__data'].offsetTop;
+                        self.$refs['combobox__data'].scrollTop = position;
                     });
                 }
+            } catch (error) {
+            }
+        },
+        /**
+         * @description: Hàm này dùng để lấy dữ liệu khi click vào item hoặc nhấn enter
+         * @param {Object} item - Dữ liệu của item được chọn
+         * @param {Number} index - Index của item được chọn
+         * Author: ANHDV - 08/09/2022 
+         */
+        onHandleSelected(item, index) {
+            const self = this;
+            try {
+                const value = item[self.propValue]; // Lấy giá trị của item được chọn
+                self.textInput = value; // Gán giá trị cho textInput
+                self.indexItemSelected = index; // Gán index của item được chọn
+                self.indexItemFocus = index; // Gán index của item được focus
+                self.keyItemSelected = item[self.propKey]; // Gán key của item được chọn
+                self.$emit("update:modelValue", self.keyItemSelected); // Emit giá trị của item được chọn
+                self.$emit("update:textInput", value); // Emit giá trị của text input
+                self.isShowListData = false; // Hide list data
+                self.validate();
             } catch (error) {
                 console.log(error);
             }
         },
         /**
-         * @description: Hàm này dùng để lấy dữ liệu khi click vào item hoặc nhấn enter
-         * @param {Object} option - Dữ liệu của item được chọn
-         * @param {Number} index - Index của item được chọn
+         * @description: Hàm này dùng để ẩn đi danh sách dữ liệu
          * Author: ANHDV - 08/09/2022 
          */
-        onHandleSelected(option, index) {
+        hideListData() {
             const self = this;
-            try {
-                const value = option[self.propValue];
-                self.textInput = value; // Gán giá trị cho textInput
-                self.indexItemSelected = index; // Gán index của item được chọn
-                self.indexItemFocus = index; // Gán index của item được focus
-                self.keyItemSelected = option[self.propKey]; // Gán key của item được chọn
-                self.isShowListData = false; // Ẩn danh sách dữ liệu
-                self.$emit("update:modelValue", self.keyItemSelected); // Emit giá trị của item được chọn
-                self.$emit("update:textInput", value); // Emit giá trị của text input
-                this.validate();
-            } catch (error) {
-                console.log(error);
+            if (!Validate.isNullOrEmpty(self.textInput)) { // Nếu textInput không rỗng thì emit giá trị của textInput là không có trong data
+                self.$emit("update:modelValue", null);
+                self.resetCombobox();
             }
-            try {
-                self.scrollY = self.$refs["combobox__data"].scrollTop; // Lấy vị trí scroll Y của item được chọn
-            } catch (error) {
+            if (Validate.isNullOrEmpty(self.keyItemSelected)) { // Nếu keyItemSelected không rỗng thì emit giá trị của keyItemSelected là không có trong data
+                self.onHandleSelected(self.dataApi[self.indexItemSelected], self.indexItemSelected);
             }
+            this.validate();
+            self.isShowListData = false; // Hide list data
         },
         /**
          * @description: Hàm này dùng để chọn item khi nhấn phím mũi tên lên, xuống, enter, esc
          * Author: ANHDV - 08/09/2022 
          */
         selecItemUpDown(event) {
-            if (!this.isShowListData) return false; // Nếu danh sách dữ liệu đang ẩn thì không xử lý
+            const self = this;
             const keyCodePress = event.keyCode; // Lấy mã phím được nhấn
-            try {
-                const heightOfBox = this.$refs["combobox__data"].offsetHeight - 16 // Lấy chiều cao của box chứa dữ liệu
-                switch (keyCodePress) {
-                    case keycode.ENTER:
-                        if (this.indexItemFocus !== null) { // Nếu có item được focus
-                            this.onHandleSelected(this.filterData[this.indexItemFocus], this.indexItemFocus); // Lấy dữ liệu của item được focus
-                        }
-                        break;
-                    case keycode.ARROW_DOWN:
-                        if (this.indexItemFocus === null) { // Nếu không có item nào được focus
-                            this.indexItemFocus = 0; // Focus item đầu tiên
-                        } else {
-                            this.indexItemFocus = this.indexItemFocus === this.filterData.length - 1 ? 0 : this.indexItemFocus + 1; // Focus vào item tiếp theo
-                        }
-                        const disItemFocusDown = this.$refs["combobox__data"].children[this.indexItemFocus].offsetTop - 8; // Lấy vị trí của item được focus so với vị trí của box chứa dữ liệu
-                        if (disItemFocusDown >= heightOfBox) { // Nếu vị trí của item được focus lớn hơn vị trí của box chứa dữ liệu thì scroll xuống
-                            this.$refs["combobox__data"].scrollTop = disItemFocusDown - heightOfBox + 36;
-                        } else { // Nếu vị trí của item được focus nhỏ hơn vị trí của box chứa dữ liệu thì scroll lên
-                            this.$refs["combobox__data"].scrollTop = 0;
-                        }
-                        break;
-                    case keycode.ARROW_UP:
-                        if (this.indexItemFocus === null) { // Nếu không có item nào được focus thì focus vào item cuối cùng
-                            this.indexItemFocus = this.filterData.length - 1;
-                        } else { // Nếu có item được focus thì focus vào item trước đó
-                            this.indexItemFocus = this.indexItemFocus === 0 ? this.filterData.length - 1 : this.indexItemFocus - 1;
-                        }
-                        const disItemFocusUp = this.$refs["combobox__data"].children[this.indexItemFocus].offsetTop - 8; // Lấy vị trí của item được focus so với vị trí của box chứa dữ liệu
-                        if (disItemFocusUp >= heightOfBox) { // Nếu vị trí của item được focus lớn hơn vị trí của box chứa dữ liệu thì scroll xuống
-                            this.$refs["combobox__data"].scrollTop = disItemFocusUp - heightOfBox + 36;
-                        } else { // Nếu vị trí của item được focus nhỏ hơn vị trí của box chứa dữ liệu thì scroll lên
-                            this.$refs["combobox__data"].scrollTop = 0;
-                        }
-                        break;
-                    case keycode.ESC:
-                        this.hideListData(); // Ẩn danh sách dữ liệu
-                        break;
-                    default:
-                        break;
+            if (!self.isShowListData && (keyCodePress == keycode.ARROW_DOWN || keyCodePress == keycode.ARROW_UP)) {
+                self.showListData();
+                return;
+            }
+            if (self.isShowListData) {
+                try {
+                    switch (keyCodePress) {
+                        case keycode.ENTER:
+                            if (self.filterData.length > 0 && self.indexItemFocus !== -1) {
+                                // lấy ra vị trí index của item được chọn trong danh sách dữ liệu
+                                const index = self.dataApi.findIndex((item) => item[self.propValue] == self.filterData[self.indexItemFocus][self.propValue]);
+                                self.onHandleSelected(self.filterData[self.indexItemFocus], index);
+                            } else {
+                                self.hideListData();
+                            }
+                            break;
+                        case keycode.ARROW_DOWN:
+                            self.indexItemFocus = self.indexItemFocus === self.filterData.length - 1 ? 0 : self.indexItemFocus + 1; // Focus vào item tiếp theo
+                            self.handleScroll(self.indexItemFocus);
+                            break;
+                        case keycode.ARROW_UP:
+                            self.indexItemFocus = self.indexItemFocus === 0 ? self.filterData.length - 1 : self.indexItemFocus - 1; // Focus vào item trước đó
+                            self.handleScroll(self.indexItemFocus);
+                            break;
+                        case keycode.ESC:
+                            self.hideListData(); // Ẩn danh sách dữ liệu
+                            break;
+                        default:
+                            break;
+
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
+            }
+        },
+        /**
+         * @description: Hàm này dùng để xử lý thanh cuộn lên xuống khi focus vào item
+         * Author: AnhDV 13/10/2022
+         */
+        handleScroll(indexItemFocus) {
+            const self = this;
+            try {
+                const position = self.$refs['combobox__data'].children[indexItemFocus].offsetTop - self.$refs['combobox__data'].offsetTop;
+                self.$refs['combobox__data'].scrollTop = position;
             } catch (error) {
-                console.log(error);
+
             }
         },
         /**
@@ -309,10 +333,10 @@ export default {
          * Author: AnhDV 25/09/2022
          */
         resetCombobox() {
-            this.textInput = ""; // Reset lại text input
-            this.indexItemSelected = null; // Reset lại index item được chọn
-            this.indexItemFocus = null; // Reset lại index item được focus
+            this.indexItemSelected = -1; // Reset lại index item được chọn
+            this.indexItemFocus = 0; // Reset lại index item được focus
             this.keyItemSelected = null; // Reset lại key item được chọn
+            this.textInput = ""; // Reset lại text input
             this.filterData = []; // Reset lại dữ liệu lọc
         },
     },
