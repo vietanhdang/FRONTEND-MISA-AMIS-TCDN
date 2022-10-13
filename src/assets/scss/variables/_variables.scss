@@ -105,11 +105,13 @@ $bg-toast-info: #009eeb;
 $bg-tooltip: $grey-700;
 
 /*------ Height of input, button, select, textarea, ... -------*/
-$height-input: 32px;
+$height-input: 36px;
 
 /*------ Height of header-cell, row-cell, ... -------*/
-$height-header-cell: 34px;
-$height-row-cell: 44px;
+// $height-header-cell: 34px;
+// $height-row-cell: 44px;
+$height-header-cell: 48px;
+$height-row-cell: 48px;
 
 /*--------------------------- Sprire Svg ----------------------*/
 

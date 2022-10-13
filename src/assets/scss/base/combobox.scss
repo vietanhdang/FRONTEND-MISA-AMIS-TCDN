@@ -50,13 +50,15 @@
     border-radius: $border-radius;
     background-color: $white;
     @include flex-align-center;
-
     input {
       border: none;
       outline: none;
       padding: 0;
       background-color: transparent;
     }
+  }
+  &-combobox__focus {
+    border: 1px solid $border-green;
   }
   &-combobox__icon {
     top: 0;

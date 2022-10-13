@@ -34,7 +34,7 @@
       border-radius: $border-radius;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       min-width: 444px;
-      padding: 32px;
+      padding: 24px;
 
       &-form {
         width: auto;
@@ -73,6 +73,7 @@
     &__footer {
       justify-content: space-between;
       @include flex-align-center;
+      flex-direction: row-reverse;
 
       .footer {
         &__left {
@@ -82,8 +83,6 @@
           .v-button {
             margin-right: 8px;
           }
-        }
-        &__center {
         }
         &__right {
           @include flex-align-center;

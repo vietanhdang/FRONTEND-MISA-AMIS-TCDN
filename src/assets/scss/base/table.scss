@@ -108,6 +108,9 @@
         &:has(input[type="checkbox"]:checked) {
           background-color: $bg-table-body-focus !important;
         }
+        &:has(input[type="checkbox"]:focus) {
+          background-color: $bg-table-body-focus !important;
+        }
 
         &:hover {
           .v-table__body-cell {

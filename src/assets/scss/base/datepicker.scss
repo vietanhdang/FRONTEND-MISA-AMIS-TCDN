@@ -102,194 +102,130 @@
     }
   }
 }
-.ant-picker-year-panel {
-  .ant-picker {
-    &-content {
-      background: #31af21;
-      transition: transform 0.2s ease-in;
-      border-radius: 22px;
-      td {
-        box-sizing: border-box;
-      }
-    }
-
-    &-cell {
-      padding: 0 !important;
-    }
-    &-cell-in-view {
-    }
-    &-cell-inner {
-      text-align: center;
-      color: $white;
-      font-weight: 600;
-      font-size: 14px;
-      width: auto !important;
-      &:hover {
-        color: $bg-green !important;
-        border-radius: 4px;
-      }
-    }
-    &-cell-selected {
-      .ant-picker-cell-inner {
-        background-color: $white;
-        color: #08bf1e;
-        border-radius: 20px;
-      }
-    }
-  }
-}
+.ant-picker-year-panel,
+.ant-picker-decade-panel,
 .ant-picker-month-panel {
   .ant-picker {
-    &-content {
-      background: #31af21;
-      transition: transform 0.2s ease-in;
-      border-radius: 22px;
-      td {
-        box-sizing: border-box;
-      }
-    }
-
-    &-cell {
-      padding: 0 !important;
-    }
-    &-cell-in-view {
-    }
-    &-cell-inner {
-      text-align: center;
-      color: $white;
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: capitalize;
-      white-space: nowrap;
-      &:hover {
-        background: $white;
-        color: $bg-green !important;
-        border-radius: 2px;
-      }
-    }
-    &-cell-selected {
-      .ant-picker-cell-inner {
-        background-color: $white;
-        color: #08bf1e;
-        border-radius: 20px;
-      }
-    }
-  }
-}
-.ant-picker-decade-panel {
-  .ant-picker {
-    &-content {
-      background: #31af21;
-      transition: transform 0.2s ease-in;
-      border-radius: 22px;
-      td {
-        box-sizing: border-box;
-      }
-    }
-
-    &-cell {
-      padding: 0 !important;
-    }
-    &-cell-in-view {
-    }
-    &-cell-inner {
-      text-align: center;
-      color: $white;
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: capitalize;
-      white-space: nowrap;
-      &:hover {
-        background: $white;
-        color: $bg-green !important;
-        border-radius: 4px;
-      }
-    }
-
-    &-cell-selected {
-      .ant-picker-cell-inner {
-        background-color: $white;
-        color: #08bf1e;
-        border-radius: 20px;
-      }
-    }
-  }
-}
-.ant {
-  &-picker {
-    width: 100%;
-    padding: 0 !important;
-    height: $height-input;
-    font-family: $Misa-font-regular !important;
-    border: 1px solid $border-grey;
-    border-radius: $border-radius;
-    &:hover {
-      border: 1px solid $border-grey;
-    }
-    &-header {
-      border-bottom: none;
-      padding: 0 12px;
-      button {
-        text-transform: capitalize;
-        font-weight: 600;
-        &:hover {
-          color: $bg-green !important;
-        }
-      }
-    }
     &-body {
-      padding: 0 12px;
+      padding: 8px;
     }
-    &-dropdown {
-      z-index: 9999;
-      left: 0;
-    }
-    &-input {
-      padding-left: 13px;
-      input {
-        &::placeholder {
-          font-size: 12px;
-          color: $border-grey;
-          font-style: italic;
-        }
+    &-content {
+      background: $bg-green;
+      border-radius: 22px;
+      &::before {
+        content: "";
+        position: absolute;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 20px solid $bg-green;
+        top: 12%;
+        left: 50%;
+        transform: translateX(-50%);
       }
     }
-    &-clear {
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    &-cell:hover {
+      .ant-picker-cell-inner {
+        color: $bg-green !important;
+        transition: none !important;
+      }
     }
-    &-suffix {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer !important;
-      pointer-events: all !important;
+    &-cell-inner {
+      color: $white;
+      height: 34px;
+      line-height: 18px;
+      padding: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: capitalize;
+      width: auto !important;
+      transition: none !important;
+    }
+    &-cell-selected {
+      .ant-picker-cell-inner {
+        background-color: $white;
+        color: #08bf1e;
+        border-radius: 20px;
+      }
+    }
+  }
+}
+.ant-picker {
+  width: 100%;
+  padding: 0 !important;
+  height: $height-input;
+  font-family: $Misa-font-regular !important;
+  border: 1px solid $border-grey;
+  border-radius: $border-radius;
+  position: relative;
+  &:hover {
+    border: 1px solid $border-grey;
+  }
+  &-header {
+    border-bottom: none;
+    padding: 0 12px;
+    button {
+      text-transform: capitalize;
+      font-weight: 600;
       &:hover {
-        background: #e0e0e0;
+        color: $bg-green !important;
       }
     }
-    &:active {
-      border: 1px solid $border-grey;
-    }
-    &-focused {
-      box-shadow: none !important;
-      border: 1px solid $border-green !important;
-    }
-    &.error {
-      border: 1px solid $border-red !important;
-      &.ant-picker-focused {
-        border-color: none !important;
+  }
+  &-body {
+    padding: 0 12px;
+  }
+  &-dropdown {
+    z-index: 9999;
+    left: 0;
+  }
+  &-input {
+    padding-left: 13px;
+    height: 100%;
+    input {
+      &::placeholder {
+        font-size: 12px;
+        color: $border-grey;
+        font-style: italic;
       }
     }
-
-    &-footer {
-      border-top: 1px solid #e0e0e0 !important;
+  }
+  &-clear {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer !important;
+    pointer-events: all !important;
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+    height: 100%;
+    &:hover {
+      background: #e0e0e0;
     }
-    &-today-btn {
-      color: $bg-green !important;
+  }
+  &:active {
+    border: 1px solid $border-grey;
+  }
+  &-focused {
+    box-shadow: none !important;
+    border: 1px solid $border-green !important;
+  }
+  &.error {
+    border: 1px solid $border-red !important;
+    &.ant-picker-focused {
+      border-color: none !important;
     }
+  }
+  &-footer {
+    border-top: 1px solid #e0e0e0 !important;
+  }
+  &-today-btn {
+    color: $bg-green !important;
   }
 }
