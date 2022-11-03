@@ -7,6 +7,8 @@ import tcdn_dva from "@/api";
 import store from "@/store/store";
 import FlagIcon from "vue-flag-icon";
 import i18n from "@/locales/i18n";
+import outsideClickDirective from "./directives/outsideClick";
+import outsideClickTeleport from "./directives/outsideClickTeleport";
 const app = createApp(App); // Khởi tạo app
 
 app.use(routes); // Sử dụng router
@@ -15,6 +17,17 @@ app.config.globalProperties.$api = tcdn_dva; // Đăng ký api
 
 Object.keys(components).forEach((key) => {
   app.component(key, components[key]); // Đăng ký các component
+});
+
+app.directive("click-outside", outsideClickDirective); // Đăng ký directive
+app.directive("click-outside-teleport", outsideClickTeleport); // Đăng ký directive
+app.directive("currency", {
+  mounted(el, binding) {
+    el.innerHTML = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(binding.value);
+  },
 });
 
 app.use(store); // Sử dụng store

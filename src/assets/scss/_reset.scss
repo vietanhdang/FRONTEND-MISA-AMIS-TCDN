@@ -8,15 +8,16 @@ body {
   box-sizing: border-box;
   font-family: $Misa-font-regular;
   font-weight: 400;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 html,
 body {
   height: 100%;
 }
-ul {
-  margin: 0;
-  padding: 0;
+ul,
+li {
   list-style: none;
 }
 

@@ -1,18 +1,6 @@
 .v {
   &-date__picker {
     position: relative;
-
-    &-label {
-      cursor: pointer;
-      font-weight: 600;
-
-      font-family: "MISA Fonts Bold";
-      margin-bottom: 8px;
-
-      span {
-        color: $border-red;
-      }
-    }
   }
 }
 .ant-picker-date-panel {

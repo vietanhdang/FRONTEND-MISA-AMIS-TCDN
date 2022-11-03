@@ -1,7 +1,7 @@
 /* spacing 
 ============================================================================================ */
 @include generate-class-spacing("margin", "ms", 0.75rem);
-@include generate-class-spacing("padding", "ms", 0.75rem);
+@include generate-class-spacing("padding", "ps", 0.75rem);
 @include generate-class-spacing("margin", "m", 1rem);
 @include generate-class-spacing("padding", "p", 1rem);
 @include generate-class-spacing("margin", "ml", 1.25rem);
@@ -22,6 +22,11 @@
     }
   }
 }
+.color {
+  &-blue {
+    color: #0075c0 !important;
+  }
+}
 
 .border {
   &-none {
@@ -38,6 +43,28 @@
   }
   &-5 {
     opacity: 0.5;
+  }
+}
+.m {
+  &-l-0 {
+    margin-left: 0 !important;
+  }
+  &-r-0 {
+    margin-right: 0 !important;
+  }
+  &-t-0 {
+    margin-top: 0 !important;
+  }
+  &-b-0 {
+    margin-bottom: 0 !important;
+  }
+  &-y-0 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  &-x-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 .error {

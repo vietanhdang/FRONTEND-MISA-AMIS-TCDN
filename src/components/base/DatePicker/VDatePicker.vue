@@ -1,6 +1,6 @@
 <template>
     <div class="v-date__picker" :tooltip="`${isShowErrorMessage && error ?  errorMess : ''}`">
-        <div class="v-date__picker-label" v-if="label">
+        <div class="v-input__label" v-if="label">
             {{ label }} <span v-if="required"> * </span>
         </div>
         <date-picker :required="required" pickerType="date" format="DD/MM/yyyy" :locale="locale" :allowClear="true"

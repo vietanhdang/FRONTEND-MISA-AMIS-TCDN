@@ -1,7 +1,8 @@
 <template>
     <transition name="fade">
-        <div class="modal" v-if="isVisible" ref="modal" :tabindex="tabIndex">
-            <div class="modal-content">
+        <div class="modal" v-if="isVisible || isShow" :tabindex="tabIndex" ref="modal">
+            <div class="modal-content" ref="modal-content" :class="[`modal-${position}`,{'slideIn' : isResize}]"
+                :style="[{ width: width }, { minWidth: width }]">
                 <slot></slot>
             </div>
         </div>
@@ -19,6 +20,18 @@ export default {
         tabIndex: { // Tab index của modal
             type: Number,
             default: 0,
+        },
+        position: { // Vị trí của modal
+            type: String,
+            default: "center",
+        },
+        width: { // Chiều rộng của modal
+            type: String,
+            default: "auto",
+        },
+        isResize: { // Modal có resize hay không
+            type: Boolean,
+            default: false,
         },
     },
     data: () => ({
@@ -38,7 +51,6 @@ export default {
             }
         },
     },
-
     methods: {
         /**
          * @description: Hàm này dùng để mở modal
@@ -52,7 +64,7 @@ export default {
             });
         },
         /**
-        * @description: Hàm này dùng để đóng modal (nếu có tab index thì sẽ set lại tab index cũ)
+        * @description: Hàm này dùng để đóng modal (nếu có thẻ đang focus thì focus vào tab đó)
         * Author: AnhDV 07/10/2022
         */
         close() {
@@ -62,9 +74,27 @@ export default {
             }
         },
     },
+
 }
 </script>
 
 <style  lang="scss" scoped>
 @import "@/assets/scss/base/modal.scss";
+
+.slideIn {
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease;
+}
+
+
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
 </style>

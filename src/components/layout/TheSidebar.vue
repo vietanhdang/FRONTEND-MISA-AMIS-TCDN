@@ -1,4 +1,5 @@
 <template>
+
     <div class="sidebar" :class="{ 'collapsed': collapsed }">
         <div class="ms-48 d-flex align-items-center justify-content-center" :class="{ 'width-100': collapsed }"
             v-if="collapsed" @click="$emit('toggleSidebar')">
@@ -54,7 +55,16 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.collapse-transition-enter-active,
+.collapse-transition-leave-active {
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
 
-</style>>
+.collapse-transition-enter,
+.collapse-transition-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+</style>
 
 

@@ -27,4 +27,11 @@
   min-width: 444px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+
+  &.modal-right {
+    margin-right: 0;
+    height: -webkit-fill-available;
+    border-radius: 0;
+  }
 }

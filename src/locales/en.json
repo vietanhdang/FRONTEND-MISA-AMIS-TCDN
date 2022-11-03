@@ -78,7 +78,21 @@
     "return": "Return",
     "duplicate": "Duplicate",
     "inactive": "Inactive",
-    "more_action": "More Action"
+    "more_action": "More Action",
+    "table_setting": "Theme Setting"
+  },
+  "table_filter": {
+    "filter": "Filter",
+    "cancel": "Cancel",
+    "filter_by_placeholder": "Enter the filter value",
+    "is_null": "(Empty)",
+    "is_not_null": "(Not Empty)",
+    "equal": "Equal",
+    "not_equal": "Not Equal",
+    "contain": "Contain",
+    "not_contain": "Not Contain",
+    "start_with": "Start With",
+    "end_with": "End With"
   },
   "action_form": {
     "save": "Save",

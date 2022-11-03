@@ -8,7 +8,6 @@
   &-menu {
     position: relative;
     font-family: "Misa Fonts Regular";
-    max-width: 80px;
   }
 
   &-menu__main {
@@ -28,16 +27,18 @@
 
   &-menu__dropdown {
     padding: 8px 10px;
-    background-origin: border-box;
     position: relative;
+    max-width: 46px;
   }
 
   &-menu__icon {
     font-weight: 600;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: all 0.25s ease;
     padding: 0 5px;
-
     &:focus {
       border: 1px solid $text-blue !important;
     }
@@ -57,8 +58,6 @@
     position: absolute;
     text-align: left;
     width: auto;
-    right: 0;
-    top: 25%;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
     background-color: $white;
     padding: 2px 1px;
@@ -79,6 +78,7 @@
   &-menu__item {
     padding: 5px 10px;
     transition: all 0.2s ease;
+    cursor: pointer;
 
     a {
       color: $black;

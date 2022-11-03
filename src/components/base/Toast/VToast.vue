@@ -4,12 +4,13 @@
             <div class="v-toast__content" v-for="item in toasts" :key="item.id" @mouseover="pauseProgress(item)"
                 @mouseleave="resumeProgress(item)">
                 <template v-if="item.timeout > 0 && item.showProgress">
-                    <div class="v-toast__icon" :class="item.type">
+                    <div class="v-toast__icon">
+                        <!-- :class="item.type" -->
                         <div :class="`ms-22 ms-icon ms-icon-toast-${item.type}`">
                         </div>
                     </div>
                     <div class="v-toast__text">
-                        <span class="type" :style="{'color': colorMessage[item.type]}">{{$t(`toast.${item.type}`)}}!
+                        <span class="type" :style="{ 'color': colorMessage[item.type] }">{{ $t(`toast.${item.type}`) }}!
                         </span>
                         <span v-html="item.message"></span>
                     </div>
@@ -91,16 +92,16 @@ export default {
          * Author: AnhDV 10/09/2022
          */
         let toast = {
-            success: (message, options = { timeout: 3000 }) => {
+            success: (message, options = { timeout: this.timeout }) => {
                 this.addMessage(message, "success", options);
             },
-            error: (message, options = { timeout: 3000 }) => {
+            error: (message, options = { timeout: this.timeout }) => {
                 this.addMessage(message, "error", options);
             },
-            warning: (message, options = { timeout: 3000 }) => {
+            warning: (message, options = { timeout: this.timeout }) => {
                 this.addMessage(message, "warning", options);
             },
-            info: (message, options = { timeout: 3000 }) => {
+            info: (message, options = { timeout: this.timeout }) => {
                 this.addMessage(message, "info", options);
             },
         };

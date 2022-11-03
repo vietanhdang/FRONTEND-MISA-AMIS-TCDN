@@ -28,18 +28,34 @@
   &-input__input {
     @include flex-align-center;
     position: relative;
-
+    
     label {
       font-weight: 400;
       cursor: pointer;
     }
+    textarea {
+      outline: none;
+      border-radius: $border-radius;
+      border: 1px solid $border-grey;
+      padding: 9px;
+      resize: none;
+      &:focus {
+        border: 1px solid $border-green;
+      }
 
+      &::placeholder {
+        font-size: 12px;
+        color: $border-grey;
+      }
+    }
     input {
       outline: none;
       height: $height-input;
       border-radius: $border-radius;
       border: 1px solid $border-grey;
-      padding: 0 8px;
+      // padding: 0 8px;
+      padding: 0 12px 0 10px;
+      width: 100%;
 
       &:focus {
         border: 1px solid $border-green;
@@ -152,4 +168,14 @@
   100% {
     transform: rotate(-90deg);
   }
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

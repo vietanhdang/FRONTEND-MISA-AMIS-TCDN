@@ -5,7 +5,7 @@
             <template #title>
                 <div class="row e-header">
                     <div class="e-header__title col font-weight-700">
-                        {{$t('employee_info.title')}}
+                        {{ $t('employee_info.title') }}
                     </div>
                     <div class="col">
                         <v-input type="checkbox" :label_custom="$t('employee_info.is_customer')"
@@ -24,25 +24,23 @@
                             <div class="row sm-gutter">
                                 <div class="form-group col l-5 md-5 c-5 focus">
                                     <v-input :label="$t('employee_info.code')" v-model="employee.employeeCode"
-                                        :isSubmit="attemptSubmit" :required="true" :validateCheck="true"
-                                        :errorLabel="$t('employee_info.code')">
+                                        :required="true" :errorLabel="$t('employee_info.code')">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-7 md-7 c-7">
                                     <v-input :label="$t('employee_info.name')" v-model="employee.employeeName"
-                                        :maxLength="100" :validateCheck="true" :required="true"
-                                        :isSubmit="attemptSubmit" :errorLabel="$t('employee_info.name')">
+                                        ref="employeeName" @validate="setValid('employeeName', $event)" :maxLength="100"
+                                        :required="true" :errorLabel="$t('employee_info.name')">
                                     </v-input>
                                 </div>
                                 <div class="form-group col l-12 md-12">
                                     <v-combobox position="bottom" propKey="departmentID" v-model="employee.departmentID"
-                                        propValue="departmentName" :label="$t('employee_info.department')"
+                                        @validate="setValid('employeeName', $event)" propValue="departmentName"
+                                        :label="$t('employee_info.department')"
                                         :errorLabel="$t('employee_info.department')"
-                                        v-model:textInput="employee.departmentName" :isSubmit="attemptSubmit"
-                                        propApi="https://localhost:44365/api/v2/departments" :required="true">
-                                        <template #item="item">
-                                            {{item.option['departmentCode']}} - {{item.option['departmentName']}}
-                                        </template>
+                                        v-model:textInput="employee.departmentName"
+                                        propApi="https://localhost:44365/api/v2/departments" :required="true"
+                                        :columns="[{ key: 'departmentCode', title: 'Mã phòng ban', width: '120px' }, { key: 'departmentName', title: 'Tên phòng ban', width: '250px' }]">
                                     </v-combobox>
                                 </div>
                                 <div class="form-group col l-12 md-12">
@@ -62,7 +60,7 @@
                                     </v-date-picker>
                                 </div>
                                 <div class="form-group col l-7 md-7">
-                                    <label class="label form-control font-weight-700">{{$t('employee_info.gender')}}
+                                    <label class="label form-control font-weight-700">{{ $t('employee_info.gender') }}
                                     </label>
                                     <div class="row ml-x-1 justify-content-between e-body__gender">
                                         <v-input type="radio" :label_custom="$t('employee_info.male')" :value=1
@@ -86,7 +84,7 @@
                                 <div class="form-group col l-5 md-5">
                                     <v-date-picker :label="$t('employee_info.issued_date')"
                                         :isLessThanValue="employee.dateOfBirth" :validateCheck="true"
-                                        :errorLabel="$t('employee_info.issued_date')"
+                                        :isLessThanToday="true" :errorLabel="$t('employee_info.issued_date')"
                                         :isLessThanValueLabel="$t('employee_info.date_of_birth')"
                                         v-model="employee.identityDate" />
                                 </div>
@@ -144,7 +142,7 @@
             </template>
             <template #footer__left>
                 <v-button buttonType="secondary" @click="closeFormHandle" className="v-button__button-no-bg border">
-                    {{$t('action_form.cancel')}}
+                    {{ $t('action_form.cancel') }}
                 </v-button>
                 <div style="max-width: 0; max-height: 0; overflow: hidden;">
                     <input @focus="inputFocus()" />
@@ -153,11 +151,11 @@
             <template #footer__right>
                 <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_CLOSE)" buttonType="secondary"
                     :tooltip="$t('action_form.save') + Enum.KEY_DEFINE.CTRL_S">
-                    {{$t('action_form.save')}}
+                    {{ $t('action_form.save') }}
                 </v-button>
                 <v-button @click="saveHandler(Enum.ACTION.SAVE_AND_ADD)"
                     :tooltip="$t('action_form.save_and_add') + Enum.KEY_DEFINE.CTRL_SHIFT_S">
-                    {{$t('action_form.save_and_add')}}
+                    {{ $t('action_form.save_and_add') }}
                 </v-button>
             </template>
         </v-dialog>
@@ -422,6 +420,10 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+
+        setValid(fieldName, valid) {
+            console.log(fieldName, valid);
         },
         /**
          * @description: Hàm này dùng để xử lý sự kiện cất

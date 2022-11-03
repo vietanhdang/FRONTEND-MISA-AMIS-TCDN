@@ -78,7 +78,21 @@
     "return": "Quay lại",
     "duplicate": "Nhân bản",
     "inactive": "Ngưng sử dụng",
-    "more_action": "Chức năng khác"
+    "more_action": "Chức năng khác",
+    "table_setting": "Tùy chỉnh giao diện"
+  },
+  "table_filter": {
+    "filter": "Lọc",
+    "cancel": "Bỏ lọc",
+    "filter_by_placeholder": "Nhập giá trị lọc",
+    "is_null": "(Trống)",
+    "is_not_null": "(Không trống)",
+    "equal": "Bằng",
+    "not_equal": "Khác",
+    "contain": "Chứa",
+    "not_contain": "Không chứa",
+    "start_with": "Bắt đầu với",
+    "end_with": "Kết thúc với"
   },
   "action_form": {
     "save": "Cất",

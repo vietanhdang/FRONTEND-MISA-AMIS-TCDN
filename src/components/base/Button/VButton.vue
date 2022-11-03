@@ -1,7 +1,7 @@
 <template>
     <div class="v-button">
-        <button class="v-button__button" :type="type" :class="[buttonType,className]" :disabled="disabled" ref="button"
-            :tabindex="tabIndex" :style="style" @blur="$emit('blur')">
+        <button class="v-button__button" :type="type" :class="[buttonType,className,{'rounded' : rounded}]"
+            :disabled="disabled" ref="button" :tabindex="tabIndex" :style="style" @blur="$emit('blur')">
             <div class="v-button__text">
                 <slot></slot>
                 {{ text }}
@@ -54,7 +54,11 @@ export default {
         focus: {
             type: Boolean,
             default: false,
-        }
+        },
+        rounded: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         /**

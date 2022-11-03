@@ -1,6 +1,7 @@
 import department from "./department";
 import employee from "./employee";
 import ax from "axios";
+import baseApi from "./base/base-api";
 
 const axios = ax.create({
   // Khởi tạo cấu hình cho axios
@@ -13,6 +14,9 @@ const api = {
   // Khởi tạo các api
   department: department(axios),
   employee: employee(axios),
+  unit: baseApi(axios, "units"),
+  stock: baseApi(axios, "stocks"),
+  inventoryGroup: baseApi(axios, "inventorygroups"),
 };
 
 export default api;

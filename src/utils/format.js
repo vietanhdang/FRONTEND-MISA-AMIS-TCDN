@@ -1,4 +1,6 @@
 /* eslint-disable */
+import i18n from "@/locales/i18n";
+const { t } = i18n.global;
 /**
  * @description: Hàm này dùng để format ngày giờ từ dạng timestamp sang dạng dd/mm/yyyy
  * @param: {number} timestamp - Thời gian dạng timestamp
@@ -23,6 +25,18 @@ export function formatDate(timestamp) {
  */
 export function formatNumber(number) {
   return Math.round(number);
+}
+
+/**
+ * @description: Hàm này dùng để format đơn vị tiền tệ
+ * @param: {number} number - Số tiền
+ * Author: AnhDV 19/10/2022
+ */
+export function formatCurrency(number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(number);
 }
 
 /**
@@ -54,10 +68,7 @@ export function removeVietnameseTones(str) {
   str = str.trim(); // Loại bỏ khoảng trắng ở đầu và cuối chuỗi
 
   // Remove punctuations
-  str = str.replace(
-    /!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g,
-    " "
-  ); // Loại bỏ các kí tự đặt biệt
+  str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " "); // Loại bỏ các kí tự đặt biệt
   return str;
 }
 
@@ -69,16 +80,49 @@ export function removeVietnameseTones(str) {
  */
 export function convertGender(number) {
   if (number === 0) {
-    return this.$t("employee_info.female");
+    return t("employee_info.female");
   } else if (number === 1) {
-    return this.$t("employee_info.male");
+    return t("employee_info.male");
   } else {
-    return this.$t("employee_info.other");
+    return t("employee_info.other");
   }
 }
+
+/**
+ * @description: Hàm này dùng để convert trạng thái từ số sang chuỗi
+ * @param: number - Trạng thái dạng số
+ * Author: AnhDV 24/10/2022
+ */
+export function convertStatus(number) {
+  if (number === 0) {
+    return "Ngừng sử dụng";
+  } else {
+    return "Đang sử dụng";
+  }
+}
+
+/**
+ * @description: Hàm này dùng để format lại định dạng số phân nhau bởi dấu . và lấy 2 số sau dấu phẩy mặc định là 00
+ * @param: {any}
+ * Author: AnhDV 31/10/2022
+ */
+export function formatNumberShow(number) {
+  if (!isNaN(number)) {
+    let numberFormat = new Intl.NumberFormat("vi-VN", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+    }).format(number);
+    return numberFormat;
+  }
+  return "";
+}
+
 export default {
   formatDate,
   formatNumber,
   removeVietnameseTones,
   convertGender,
+  formatCurrency,
+  formatNumberShow,
+  convertStatus,
 };

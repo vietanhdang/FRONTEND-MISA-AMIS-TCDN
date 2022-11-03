@@ -1,5 +1,5 @@
 <template>
-    <v-modal ref="modal" :tabIndex="tabIndex">
+    <v-modal ref="modal" :tabIndex="tabIndex" @keydown.esc.prevent="reset()">
         <div class="v-popup">
             <div class="v-popup__body">
                 <div class="v-popup__icon" @mousemove="stopDrag">
@@ -17,8 +17,8 @@
                         :focus="true" />
                 </div>
                 <div class="footer__right">
-                    <v-button v-if="hideButton" :focus="true" @click="_close">{{$t('confirm_popup.close')}}</v-button>
-                    <v-button v-if="cancelButton!=null" className="secondary" @click="_cancel" :text="cancelButton" />
+                    <v-button v-if="hideButton" :focus="true" @click="_close">{{ $t('confirm_popup.close') }}</v-button>
+                    <v-button v-if="cancelButton != null" className="secondary" @click="_cancel" :text="cancelButton" />
                     <v-button v-if="okButton" @click="_confirm" :text="okButton" />
                     <div style="max-width: 0; max-height: 0; overflow: hidden;">
                         <input @focus="inputFocus()" />
@@ -38,20 +38,6 @@ export default {
         tabIndex: {
             type: Number,
             default: 0,
-        },
-    },
-    computed: {
-        /**
-        * @description: Get và set trạng thái của form lưu trữ trong store 
-        * Author: AnhDV 08/10/2022
-        */
-        formMode: {
-            set(val) {
-                this.$store.dispatch('setMode', val);
-            },
-            get() {
-                return this.$store.getters.getMode;
-            },
         },
     },
     data: () => ({
@@ -141,7 +127,6 @@ export default {
         _confirm() {
             this.resolvePromise(this.okButton)
             this.reset()
-            this.$refs.modal.close()
         },
 
         /**
@@ -151,7 +136,6 @@ export default {
         _cancel() {
             this.resolvePromise(this.cancelButton)
             this.reset()
-            this.$refs.modal.close()
         },
 
         /**
@@ -161,7 +145,6 @@ export default {
         _close() {
             this.resolvePromise(this.closeButton)
             this.reset();
-            this.$refs.modal.close()
         },
 
         /**
@@ -175,6 +158,7 @@ export default {
             this.cancelButton = null
             this.closeButton = null
             this.hideButton = false
+            this.$refs.modal.close()
             this.$store.commit('setActionKey', Enum.ACTION.NULL)
         },
 

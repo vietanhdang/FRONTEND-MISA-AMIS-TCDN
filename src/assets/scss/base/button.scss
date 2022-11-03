@@ -1,13 +1,14 @@
 .v {
   &-button {
     white-space: nowrap;
+    height: $height-button;
 
     &__button {
       @include flex-center;
       transition: all 0.25s ease;
-      padding: 0 16px;
+      padding: 0px 16px;
       outline: none;
-      height: 36px;
+      height: 100%;
       cursor: pointer;
       color: $white;
       border: none;
@@ -75,7 +76,13 @@
     &__text {
       font-family: "MISA Fonts Bold";
       font-size: 13px;
-      margin-right: 4px;
+      font-weight: 600;
+      position: relative;
+      color: inherit;
+      display: inline-block;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      line-height: 13px;
     }
 
     &__icon {

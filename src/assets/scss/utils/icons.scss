@@ -50,6 +50,21 @@
     min-width: 48px;
     min-height: 48px;
   }
+  &-64 {
+    @include box(64px);
+    min-width: 64px;
+    min-height: 64px;
+  }
+  &-85 {
+    @include box(85px);
+    min-width: 85px;
+    min-height: 85px;
+  }
+  &-90 {
+    @include box(90px);
+    min-width: 90px;
+    min-height: 90px;
+  }
   &-round {
     border-radius: 50%;
   }
@@ -66,6 +81,10 @@
 }
 .ms-icon {
   background: url($sprite-img) no-repeat;
+  &-v2 {
+    background: url($sprite-img-v2) no-repeat;
+    cursor: pointer;
+  }
   cursor: pointer;
   @include flex-center;
   &-arrow-right {
@@ -86,6 +105,12 @@
     background-position: -423px -201px;
     &:hover {
       background-position: -1097px -88px;
+    }
+  }
+  &-reload-small {
+    background-position: -1887px -833px;
+    &:hover {
+      background-position: -1930px -833px;
     }
   }
   &-excel {
@@ -112,9 +137,30 @@
   &-chevron-down {
     background-position: -1076px -32px;
   }
+  &-chevron-left {
+    background-position: -35px -360px !important;
+  }
   &-chevron-big-down {
     background-position: -80px -360px;
     transform: rotate(90deg);
+  }
+  &-chevron-up--primary {
+    background-position: -128px -360px;
+  }
+  &-chevron-down--primary {
+    background-position: -176px -360px;
+  }
+  &-meter {
+    background-position: -592px -200px;
+    &:hover {
+      background-position: -592px -256px;
+    }
+  }
+  &-arrow-check-all {
+    background-position: -256px -143px;
+  }
+  &-search-tax {
+    background-position: -2240px -521px;
   }
   &-bell {
     &:hover {
@@ -193,6 +239,14 @@
   &-arrow-down-black {
     background-position: -560px -359px;
   }
+  &-arrow-down-white {
+    background-position: -848px -359px;
+  }
+  &-arrow-down-blue {
+    // ms-12
+    background-position: -178px -362px;
+  }
+
   &-arrow-up-black {
     background-position: -560px -359px;
     transform: rotate(180deg);
@@ -234,5 +288,109 @@
 
   &-toast-x {
     background-position: -1178px -362px;
+  }
+  &-setting {
+    background-position: -88px -200px;
+    &:hover {
+      background-position: -88px -256px;
+    }
+  }
+  &-process-stock {
+    background-position: -1264px -200px;
+  }
+  &-process-inventory {
+    background-position: -1152px -200px;
+  }
+  &-process-unit-price {
+    background-position: -872px -256px;
+  }
+  &-process-tool {
+    background-position: -1040px -200px;
+  }
+  &-process-setting {
+    background-position: -648px -200px;
+  }
+  &-chevron-left {
+    background-position: -224px -360px;
+  }
+  &-inventory-item-category {
+    background-position: -31px -631px;
+  }
+  &-inventory-item-category-detail {
+    background-position: -32px -748px;
+  }
+  &-construct-item-category {
+    background-position: -264px -631px;
+  }
+  &-construct-item-category-detail {
+    background-position: -170px -748px;
+  }
+  &-mataerial-item-category {
+    background-position: -960px -631px;
+  }
+  &-mataerial-item-category-detail {
+    background-position: -597px -748px;
+  }
+  &-clothes-item-category {
+    background-position: -148px -631px;
+  }
+  &-clothes-item-category-detail {
+    background-position: -101px -748px;
+  }
+  &-tool-item-category {
+    background-position: -1078px -631px;
+  }
+  &-tool-item-category-detail {
+    background-position: -678px -749px;
+  }
+  &-plus-success {
+    background-position: -32px -312px;
+  }
+  &-minimun-stock {
+    background-position: -27px -1311px;
+  }
+  &-over-stock {
+    background-position: -139px -1307px;
+  }
+  &-preview-image {
+    background-position: -25px -448px;
+    transform: scale(1.5);
+  }
+  &-edit-upload-file {
+    background-position: -412px -308px;
+  }
+  &-delete-upload-file {
+    background-position: -460px -308px;
+  }
+  &-download-upload-file {
+    background-position: -1549px -403px;
+  }
+  &-arrow-right-black {
+    background-position: -320px -360px;
+  }
+  &-arrow-bottom-black {
+    background-position: -320px -360px;
+    transform: rotate(90deg);
+  }
+  &-close-small {
+    background-position: -80px -312px;
+  }
+  &-selected-small {
+    background-position: -896px -312px;
+  }
+  &-header-option {
+    background-position: -1687px -564px;
+  }
+  &-header-pin {
+    background-position: -1726px -560px;
+  }
+  &-tree-collapse-small {
+    background-position: -559px -312px;
+  }
+  &-tree-expand-small {
+    background-position: -607px -311px;
+  }
+  &-tour {
+    background-position: -984px -144px;
   }
 }

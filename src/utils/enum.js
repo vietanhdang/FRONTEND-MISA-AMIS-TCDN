@@ -159,4 +159,32 @@ export default {
     // Tiếng anh
     EN: "en",
   },
+  FilterConditon: {
+    // Lọc bằng
+    Equal: "Equal",
+    // Lọc khác
+    NotEqual: "NotEqual",
+    // Lọc chứa
+    Contain: "Contain",
+    // Lọc không chứa
+    NotContain: "NotContain",
+    // Lọc bắt đầu bằng
+    StartWith: "StartWith",
+    // Lọc kết thúc bằng
+    EndWith: "EndWith",
+    // Lọc null
+    IsNull: "IsNull",
+    // Lọc không null
+    IsNotNull: "IsNotNull",
+  },
+  FilterType: {
+    // Lọc theo số
+    Number: "number",
+    // Lọc theo trạng thái
+    Boolean: "boolean",
+    // Lọc theo chuỗi
+    String: "string",
+    // Lọc theo ngày tháng
+    Date: "date",
+  },
 };

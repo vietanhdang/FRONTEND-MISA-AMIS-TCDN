@@ -1,9 +1,9 @@
 <template>
     <div class="employee">
         <div class="employee-header">
-            <div class="employee-title">{{$t('employee_page.title')}}</div>
+            <div class="employee-title">{{ $t('employee_page.title') }}</div>
             <v-button @click="handleAction(Enum.ACTION.ADD)">
-                {{$t('employee_page.add_employee')}}
+                {{ $t('employee_page.add_employee') }}
             </v-button>
         </div>
         <div class="employee-body">
@@ -14,26 +14,31 @@
                         <v-dropdown className="secondary-light border-bold rounded" @onSelect="handleAction"
                             icon="ms-16 ms-icon ms-icon-arrow-down-black opacity-5" :items="bathAction"
                             :isShow="isEmployeeSelected">
-                            {{$t('action.batch_action')}}
+                            {{ $t('action.batch_action') }}
                         </v-dropdown>
                     </slot>
                 </div>
                 <div class="employee-body__toolbar-right">
                     <slot name="toolbar-right"></slot>
                     <v-input :placeholder="$t('employee_page.search_function')" icon="ms-16 ms-icon ms-icon-search"
-                        v-model="keyword" :outline="true" :styleProps="['width: 240px','font-style: italic']"
+                        v-model="keyword" :outline="true" :styleProps="['width: 240px', 'font-style: italic']"
                         className="v-input__with-icon" :focus="true" />
                     <div :tooltip="$t('action.reload_data')" class="ms-24 ms-icon ms-icon-reload ms-r-2 ml-l-2"
                         @click="handleAction(Enum.ACTION.RELOAD)">
                     </div>
                     <div :tooltip="$t('action.export_excel')" class="ms-24 ms-icon ms-icon-excel ms-x-2"
                         @click="handleAction(Enum.ACTION.EXPORT)"></div>
+                    <div :tooltip="$t('action.table_setting')" class="ms-24 ms-icon ms-icon-setting ms-x-2"
+                        @click="handleAction(Enum.ACTION.SETTING)"></div>
                 </div>
             </div>
             <!-- Table hiển thị danh sách nhân viên -->
-            <v-table :columns="columns" :data="employeeList" :options="options" @action="handleAction"
-                v-model:pagination="pagination" :actions="tableAction">
+            <v-table v-model:columns="columns" :data="employeeList.data" @action="handleAction" :actions="tableAction">
             </v-table>
+            <!-- Phân trang -->
+            <v-pagination v-model:pageSize="pagination.pageSize" v-model:pageNumber="pagination.pageNumber"
+                v-model:totalRecord="employeeList.totalRecord">
+            </v-pagination>
         </div>
         <!-- Form sửa và thêm nhân viên -->
         <employee-form v-model="showEmployeeForm" @insertEmployee="insertEmployee" @updateEmployee="updateEmployee">
@@ -88,7 +93,8 @@ export default {
                         key: 'employeeID',
                         fixed: true,
                         checkbox: true,
-                        width: 40,
+                        type: 'checkbox',
+                        width: "40px",
                     },
                     {
                         title: this.$t(`employee_table.code`),
@@ -98,7 +104,7 @@ export default {
                     {
                         title: this.$t(`employee_table.name`),
                         key: 'employeeName',
-                        width: 200,
+                        width: "200px",
                         search: true,
                     },
                     {
@@ -121,12 +127,12 @@ export default {
                     {
                         title: this.$t(`employee_table.job_title`),
                         key: 'jobTitle',
-                        width: 250,
+                        width: "250px",
                     },
                     {
                         title: this.$t(`employee_table.department`),
                         key: 'departmentName',
-                        width: 250,
+                        width: "250px",
                     },
                     {
                         title: this.$t(`employee_table.bank_number`),
@@ -136,37 +142,27 @@ export default {
                     {
                         title: this.$t(`employee_table.bank_name`),
                         key: 'bankName',
-                        width: 250,
+                        width: "250px",
                     },
                     {
                         title: this.$t(`employee_table.bank_branch`),
                         key: 'bankBranch',
-                        width: 250,
+                        width: "250px",
                     },
                     {
                         title: this.$t(`employee_table.action`),
                         key: 'action',
-                        fixed: true,
                         type: 'action',
+                        fixed: true,
                         textAlign: 'center',
-                        width: 120,
+                        width: "120px",
                     },
                 ];
-            }
-        },
-        /**
-         * @description: Khai báo các lựa chọn phân trang
-         * @param: {any} 
-         * Author: AnhDV 11/10/2022
-         */
-        options: {
-            get() {
-                return [{ key: 10, value: this.$t('pagination.10') },
-                { key: 20, value: this.$t('pagination.20') },
-                { key: 30, value: this.$t('pagination.30') },
-                { key: 50, value: this.$t('pagination.50') },
-                { key: 100, value: this.$t('pagination.100') }];
             },
+            set(value) {
+                this.columns = value;
+                console.log(this.columns);
+            }
         },
         /**
          * @description: Khai báo các action thực hiện hàng loạt
@@ -199,6 +195,8 @@ export default {
                 ]; // Khởi tạo danh sách action trên từng dòng
             }
         }
+
+
     },
     watch: {
         /**
@@ -206,14 +204,7 @@ export default {
          * Author: AnhDV 06/10/2022
          */
         pagination: {
-            handler: function (newVal, oldVal) {
-                try { // đề phòng trường hợp newVal và oldVal không có giá trị
-                    if (oldVal.pageSize !== newVal.pageSize) {
-                        newVal.pageNumber = 1;
-                    }
-                } catch (e) {
-                    console.log(e);
-                }
+            handler: function (newVal) {
                 this.getEmployeeList(newVal);
             },
             deep: true,

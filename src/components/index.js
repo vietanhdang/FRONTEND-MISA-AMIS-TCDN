@@ -1,21 +1,27 @@
 // Xuất tất cả các component trong thư mục components
-import VButton from "./base/VButton";
-import VInput from "./base/VInput";
-import VCombobox from "./base/VCombobox";
-import VTooltip from "./base/VTooltip";
-import VToast from "./base/VToast";
-import VDialog from "./base/VDialog";
-import VTable from "./base/VTable";
-import VModal from "./base/VModal";
-import VPopup from "./base/VPopup";
-import VDatePicker from "./base/VDatePicker";
-import VMenu from "./base/VMenu";
+import VButton from "./base/Button/VButton";
+import VInput from "./base/Input/VInput";
+import VCombobox from "./base/Combobox/VCombobox";
+import VTooltip from "./base/Tooltip/VTooltip";
+import VToast from "./base/Toast/VToast";
+import VDialog from "./base/Dialog/VDialog";
+import VTable from "./base/Table/VTable.vue";
+import VModal from "./base/Modal/VModal";
+import VPopup from "./base/Popup/VPopup";
+import VDatePicker from "./base/DatePicker/VDatePicker";
+import VMenu from "./base/Menu/VMenu";
 import VRouterLink from "./base/VRouterLink";
+import VLoading from "./base/Loading/VLoading";
+import VDropdown from "./base/Dropdown/VDropdown";
+import VQuickKey from "./base/VQuickKey";
+import VSkeleton from "./base/Skeleton/VSkeleton";
+import VPagination from "./base/Pagination/VPagination";
+import VCollapse from "./base/VCollapse";
 import TheHeader from "./layout/TheHeader";
 import TheSidebar from "./layout/TheSidebar";
-import VLoading from "./base/VLoading";
-import VDropdown from "./base/VDropdown";
-import VQuickKey from "./base/VQuickKey";
+import VFilterToolbar from "./base/Table/VFilterToolbar.vue";
+import VTableTree from "./base/Table/VTableTree.vue";
+
 export default {
   VButton,
   VInput,
@@ -34,4 +40,10 @@ export default {
   VLoading,
   VDropdown,
   VQuickKey,
+  VSkeleton,
+  VPagination,
+  VCollapse,
+  VFilterToolbar,
+  VTableTree,
+  
 };

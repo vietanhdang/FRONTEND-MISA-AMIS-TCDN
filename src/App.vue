@@ -1,6 +1,5 @@
 
 <template>
-
   <div class="main">
     <div class="menu-container">
       <TheSidebar :collapsed="collapsed" @toggleSidebar="toggleSidebar" />

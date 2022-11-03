@@ -83,7 +83,7 @@ const router = [
   },
   {
     path: "/quan-ly-kho",
-    component: lazyLoad("update/UpdatePage"),
+    component: lazyLoad("warehouse/WarehousePage"),
     meta: {
       title: "Quản lý kho",
     },
@@ -91,6 +91,34 @@ const router = [
       icon: "ms-icon ms-icon-warehouse",
       title: "manage_stock",
       order: 7,
+    },
+  },
+  {
+    path: "/don-vi-tinh",
+    component: lazyLoad("warehouse/unit/UnitPage"),
+    meta: {
+      title: "Đơn vị tính",
+    },
+  },
+  {
+    path: "/kho",
+    component: lazyLoad("warehouse/stock/StockPage"),
+    meta: {
+      title: "Đơn vị tính",
+    },
+  },
+  {
+    path: "/nhom-vat-tu",
+    component: lazyLoad("warehouse/inventory-group/InventoryGroupPage"),
+    meta: {
+      title: "Nhóm vật tư",
+    },
+  },
+  {
+    path: "/vat-tu-hang-hoa",
+    component: lazyLoad("warehouse/inventory/InventoryPage"),
+    meta: {
+      title: "Vật tư / Hàng hóa",
     },
   },
   {
