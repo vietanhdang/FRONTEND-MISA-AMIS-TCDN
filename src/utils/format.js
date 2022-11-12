@@ -1,5 +1,6 @@
 /* eslint-disable */
 import i18n from "@/locales/i18n";
+import { arrayToTree } from "performant-array-to-tree";
 const { t } = i18n.global;
 /**
  * @description: Hàm này dùng để format ngày giờ từ dạng timestamp sang dạng dd/mm/yyyy
@@ -87,6 +88,23 @@ export function convertGender(number) {
     return t("employee_info.other");
   }
 }
+/**
+ * @description: Hàm này dùng để convert giảm thuế từ số sang chuỗi
+ * @param: {any}
+ * Author: AnhDV 04/11/2022
+ */
+export function convertTax(number) {
+  switch (number) {
+    case 1:
+      return "Chưa xác định";
+    case 2:
+      return "Không giảm thuế";
+    case 3:
+      return "Có giảm thuế";
+    default:
+      return "";
+  }
+}
 
 /**
  * @description: Hàm này dùng để convert trạng thái từ số sang chuỗi
@@ -94,10 +112,13 @@ export function convertGender(number) {
  * Author: AnhDV 24/10/2022
  */
 export function convertStatus(number) {
-  if (number === 0) {
-    return "Ngừng sử dụng";
-  } else {
-    return "Đang sử dụng";
+  switch (Number(number)) {
+    case 0:
+      return "Ngừng sử dụng";
+    case 1:
+      return "Đang sử dụng";
+    default:
+      return "";
   }
 }
 
@@ -106,15 +127,99 @@ export function convertStatus(number) {
  * @param: {any}
  * Author: AnhDV 31/10/2022
  */
-export function formatNumberShow(number) {
+export function formatNumberShow(number, minimumFractionDigits = 0) {
+  if (number === null || number === undefined) return "";
   if (!isNaN(number)) {
     let numberFormat = new Intl.NumberFormat("vi-VN", {
       style: "decimal",
-      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      minimumFractionDigits: minimumFractionDigits,
     }).format(number);
     return numberFormat;
   }
   return "";
+}
+/**
+ * @description: Hàm này dùng để convert format ngược lại định dạng số đã format thành số thường
+ * @param: {any}
+ * Author: AnhDV 04/11/2022
+ */
+export function reverseFormatNumber(val, locale) {
+  var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, "");
+  var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, "");
+  var reversedVal = val.replace(new RegExp("\\" + group, "g"), "");
+  reversedVal = reversedVal.replace(new RegExp("\\" + decimal, "g"), ".");
+  return Number.isNaN(reversedVal) ? 0 : reversedVal;
+}
+
+/**
+ * @description: Hàm này dùng để convent inventory type từ số sang chuỗi
+ * @param: {any}
+ * Author: AnhDV 07/11/2022
+ */
+export function convertInventoryType(number) {
+  switch (number) {
+    case 1:
+      return "Hàng hóa";
+    case 2:
+      return "Dịch vụ";
+    case 3:
+      return "Nguyên vật liệu";
+    case 4:
+      return "Thành phẩm";
+    case 5:
+      return "Công cụ dụng cụ";
+    default:
+      return "";
+  }
+}
+
+/**
+ * @description: Hàm này dùng để xóa kí tự dẫn tới database injection
+ * @param: {any}
+ * Author: AnhDV 07/11/2022
+ */
+export function removeDatabaseInjection(str) {
+  try {
+    return str.replace(/'/g, "");
+  } catch (e) {
+    return str;
+  }
+}
+/**
+ * @description: tìm ra tất cả các con của 1 node
+ * @param: {any}
+ * Author: AnhDV 24/10/2022
+ */
+function getAllChildOfNode(list, propKeyReplace, result, level = 0) {
+  list.forEach((item) => {
+    item.level = level;
+    item[propKeyReplace] = `${"&nbsp;".repeat(level * 4)}${item[propKeyReplace]}`;
+    if (item.children && item.children.length > 0) {
+      item[propKeyReplace] = `<b>${item[propKeyReplace]}</b>`;
+    }
+    result.push(item);
+    if (item.children) {
+      getAllChildOfNode(item.children, propKeyReplace, result, level + 1);
+    }
+  });
+}
+
+/**
+ * @description: Tạo một mảng mới có tên dạng tree &ensp;
+ * @param: {any}
+ * Author: AnhDV 07/11/2022
+ * @return: {any}
+ */
+export function createArrayTreeName(list, propKey, propValue, propParent) {
+  let result = [];
+  let arr = arrayToTree(list, {
+    id: propKey,
+    parentId: propParent,
+    dataField: null,
+  });
+  getAllChildOfNode(arr, propValue, result);
+  return result;
 }
 
 export default {
@@ -125,4 +230,9 @@ export default {
   formatCurrency,
   formatNumberShow,
   convertStatus,
+  convertTax,
+  reverseFormatNumber,
+  convertInventoryType,
+  removeDatabaseInjection,
+  createArrayTreeName,
 };

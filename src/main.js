@@ -21,14 +21,6 @@ Object.keys(components).forEach((key) => {
 
 app.directive("click-outside", outsideClickDirective); // Đăng ký directive
 app.directive("click-outside-teleport", outsideClickTeleport); // Đăng ký directive
-app.directive("currency", {
-  mounted(el, binding) {
-    el.innerHTML = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(binding.value);
-  },
-});
 
 app.use(store); // Sử dụng store
 app.use(FlagIcon); // Sử dụng flag-icon

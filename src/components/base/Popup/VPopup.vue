@@ -170,6 +170,7 @@ export default {
             this.$refs.modal.$el.querySelector('button').focus()
         }
     },
+   
 }
 </script>
 

@@ -119,6 +119,8 @@ export default {
     CLOSE: "close",
     // ngưng sử dụng
     INACTIVE: "inactive",
+    // Sử dụng
+    ACTIVE: "active",
     // nhân bản
     DUPLICATE: "duplicate",
     // Reload dữ liệu
@@ -132,6 +134,29 @@ export default {
     // Collapse thanh sidebar
     COLLAPSE: "collapse",
   },
+  // Các tính chất hàng hóa dịch vụ
+  GOODS_PROPERTY: {
+    // Hàng hóa
+    GOODS: 1,
+    // Dịch vụ
+    SERVICE: 2,
+    // Nguyên Vật Liệu
+    MATERIAL: 3,
+    // Thành phẩm
+    FINISHED_GOODS: 4,
+    // Công cụ dụng cụ
+    TOOL: 5,
+  },
+  /// Tình trạng tồn kho
+  INVENTORY_STATUS: {
+    // Còn tồn
+    IN_STOCK: 1,
+    // Hết hàng
+    OUT_OF_STOCK: 2,
+    // Sắp hết hàng
+    SOON_OUT_OF_STOCK: 3,
+  },
+
   // Các thông báo lỗi của toast
   ICON: {
     ERROR: "error",
@@ -176,6 +201,14 @@ export default {
     IsNull: "IsNull",
     // Lọc không null
     IsNotNull: "IsNotNull",
+    // Lọc lớn hơn
+    GreaterThan: "GreaterThan",
+    // Lọc lớn hơn hoặc bằng
+    GreaterThanOrEqual: "GreaterThanOrEqual",
+    // Lọc nhỏ hơn
+    LessThan: "LessThan",
+    // Lọc nhỏ hơn hoặc bằng
+    LessThanOrEqual: "LessThanOrEqual",
   },
   FilterType: {
     // Lọc theo số
@@ -183,8 +216,39 @@ export default {
     // Lọc theo trạng thái
     Boolean: "boolean",
     // Lọc theo chuỗi
-    String: "string",
+    Text: "text",
     // Lọc theo ngày tháng
     Date: "date",
+  },
+  MISAError: {
+    /// <summary>
+    /// Lỗi Exception
+    /// </summary>
+    Exception: 500,
+
+    /// <summary>
+    /// Lỗi trùng dữ liệu
+    /// </summary>
+    Duplicate: 6,
+
+    /// <summary>
+    /// Lỗi xóa dữ liệu
+    /// </summary>
+    Delete: 7,
+
+    /// <summary>
+    /// Lỗi validate do nghiệp vụ
+    /// </summary>
+    Validate: 8,
+
+    /// <summary>
+    /// Lỗi không tìm thấy dữ liệu
+    /// </summary>
+    NotFound: 404,
+
+    /// <summary>
+    /// Lỗi xóa dữ liệu do có nhiều bảng tham chiếu
+    /// </summary>
+    ForeignKey: 9,
   },
 };

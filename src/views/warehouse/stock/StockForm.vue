@@ -6,7 +6,7 @@
             @onHandleSaveAndNew="saveHandler(Enum.ACTION.SAVE_AND_ADD)">
             <template #title>
                 <div class="content-header__title">
-                    Thêm kho
+                    {{ titleForm }}
                 </div>
             </template>
             <template #body>
@@ -14,16 +14,16 @@
                     <div class="row sm-gutter">
                         <div class="form-group col l-4 md-4 c-4">
                             <v-input label="Mã" :required="true" v-model="stockObj.stockCode" errorLabel="Mã"
-                                ref="stockCode" @validate="setValid('stockCode', $event)" :focus="true">
+                                :maxLength="25" ref="stockCode" @validate="setValid('stockCode', $event)" :focus="true">
                             </v-input>
                         </div>
                         <div class="form-group col l-8 md-8 c-8">
                             <v-input label="Tên" :required="true" v-model="stockObj.stockName" errorLabel="Tên"
-                                ref="stockName" @validate="setValid('stockName', $event)">
+                                ref="stockName" @validate="setValid('stockName', $event)" :maxLength="100">
                             </v-input>
                         </div>
                         <div class="form-group col l-12 md-12 c-12">
-                            <v-input label="Địa chỉ" type="textarea" v-model="stockObj.address">
+                            <v-input label="Địa chỉ" type="textarea" v-model="stockObj.address" :maxLength="255">
                             </v-input>
                         </div>
                     </div>
@@ -51,6 +51,7 @@
         </v-dialog>
         <!-- Khu vực hiển thị các popup cảnh báo -->
         <v-popup ref="popup" :tabIndex="0"></v-popup>
+        <v-toast ref="toast" :showProgress="true" :maxMessage="10"></v-toast>
     </div>
 </template>
 <script>
@@ -71,9 +72,9 @@ export default {
     data() {
         return {
             stockObj: { // Đối tượng đơn vị tính
-                stockCode: '',
-                stockName: '',
-                address: '',
+                stockCode: null,
+                stockName: null,
+                address: null,
                 status: 1
             },
             oldStockObj: {},
@@ -98,22 +99,37 @@ export default {
                 return this.$store.getters.getMode;
             },
         },
+        /**
+         * @description: Thay đổi tên tiêu đề form theo trạng thái của form
+         * @param: {any} 
+         * Author: AnhDV 07/11/2022
+         */
+        titleForm() {
+            if (this.formMode == Enum.FORM_MODE.EDIT) {
+                return "Sửa kho";
+            }
+            return "Thêm kho";
+        },
     },
     watch: {
+        /**
+         * @description: Theo giõi trạng thái đóng mở của form để thực hiện nghiệp vụ tương ứng
+         * @param: {any} 
+         * Author: AnhDV 11/11/2022
+         */
         modelValue: {
-            handler(isShowForm) {
+            async handler(isShowForm) {
                 const self = this;
                 if (isShowForm) {
-                    if (self.formMode == Enum.FORM_MODE.ADD) {
-                        self.oldStockObj = JSON.parse(JSON.stringify(self.stockObj));
-                    } else if (self.formMode == Enum.FORM_MODE.EDIT) {
-                        self.getDetail();
+                    if (self.formMode == Enum.FORM_MODE.EDIT) {
+                        await self.getDetail();
                     } else if (self.formMode == Enum.FORM_MODE.DUPLICATE) {
-                        self.getDetail();
+                        await self.getDetail();
+                        self.formMode = Enum.FORM_MODE.ADD;
+                    } else {
                         self.formMode = Enum.FORM_MODE.ADD;
                     }
-                } else {
-                    self.formMode = Enum.FORM_MODE.NULL;
+                    self.oldStockObj = JSON.parse(JSON.stringify(self.stockObj));
                 }
             },
             deep: true
@@ -125,17 +141,12 @@ export default {
          * @param: {any} 
          * Author: AnhDV 29/10/2022
          */
-        getDetail() {
+        async getDetail() {
             const self = this;
             try {
-                api.stock.getById(self.entityId, (res) => {
-                    self.stockObj = res.data;
-                    self.oldStockObj = JSON.parse(JSON.stringify(res.data));
-                }, (err) => {
-                    self.$refs.popup.show(err.message, 'error');
-                });
+                self.stockObj = await api.stock.getById(self.entityId);
             } catch (error) {
-                console.log(error);
+                self.$refs.popup.showError(`Lấy thông tin kho thất bại!`);
             }
         },
         /**
@@ -201,12 +212,13 @@ export default {
          */
         resetForm() {
             this.stockObj = {
-                stockCode: '',
-                stockName: '',
-                address: '',
+                stockCode: null,
+                stockName: null,
+                address: null,
                 status: 1
             };
-            this.valids = {}; this.inputFocus();
+            this.valids = {};
+            this.inputFocus();
         },
         /**
          * @description: Hàm này dùng để set trạng thái đóng mở của dialog
@@ -242,11 +254,9 @@ export default {
             }
             switch (action) {
                 case Enum.ACTION.SAVE_AND_CLOSE:
-                    console.log('save and close');
                     self.insertData(false);
                     break;
                 case Enum.ACTION.SAVE_AND_ADD:
-                    console.log('save and add');
                     self.insertData(true);
                     break;
                 default:
@@ -259,28 +269,40 @@ export default {
          */
         async insertData(isReset = false) {
             const self = this;
-            let result = false;
-            if (self.formMode === Enum.FORM_MODE.ADD) {
-                await api.stock.save(self.stockObj, (res) => {
-                    self.stockObj.stockID = res.data;
-                    result = true;
-                });
-                console.log('re');
-
-            } else if (self.formMode === Enum.FORM_MODE.EDIT) {
-                await api.stock.update(self.stockObj, self.entityId, (res) => {
-                    console.log(res);
-                    result = true;
-                });
-            }
-            console.log('result', self.stockObj);
-
-            if (result) {
-                self.$emit('newUnit', self.stockObj);
-                if (isReset) {
-                    self.resetForm();
-                } else {
-                    self.onHandleDialogState(false);
+            let message = 'Thêm mới'
+            try {
+                let result = false;
+                if (self.formMode === Enum.FORM_MODE.ADD) {
+                    const res = await api.stock.save(self.stockObj);
+                    if (res) {
+                        self.stockObj.stockID = res;
+                        result = true;
+                    }
+                } else if (self.formMode === Enum.FORM_MODE.EDIT) {
+                    const res = await api.stock.update(self.stockObj, self.entityId);
+                    if (res) {
+                        result = true;
+                        message = 'Cập nhật'
+                    }
+                }
+                if (result) {
+                    self.$emit('newObj', self.stockObj);
+                    self.$root.$toast.success(`${message} kho ${self.stockObj.stockCode} thành công`);
+                    if (isReset) {
+                        self.resetForm();
+                    } else {
+                        self.onHandleDialogState(false);
+                    }
+                }
+            } catch (error) {
+                switch (Number(error.message)) {
+                    case Enum.MISAError.Duplicate:
+                        self.$root.$toast.error(`Kho <<b>${self.stockObj.stockCode}</b>> đã tồn tại`);
+                        self.$refs.stockCode.handleShowErrorMessage('Kho đã tồn tại');
+                        break;
+                    default:
+                        self.$refs.popup.showError(self.$t("notice_message.unknown_error"));
+                        break;
                 }
             }
         },

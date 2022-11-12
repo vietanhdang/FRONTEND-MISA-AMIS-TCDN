@@ -14,8 +14,8 @@
         <teleport to="body">
             <Transition name="slide">
                 <div class="v-menu__content" v-if="isVisible" ref="content">
-                    <div class="v-menu__item" v-for="(item, index) in items" :key="index" @click="handleSelect(item)"
-                        tabindex="-1">
+                    <div class="v-menu__item" v-for="(item, index) in actionItems" :key="index"
+                        @click="handleSelect(item)" tabindex="-1">
                         {{ item.value }}
                     </div>
                 </div>
@@ -25,9 +25,13 @@
 </template>
 
 <script>
+import Enum from '@/utils/enum'
 export default {
     props: {
         propKey: { // Key của menu
+            required: true,
+        },
+        columns: { // Giá trị của menu
             required: true,
         },
         isUp: {
@@ -43,6 +47,36 @@ export default {
         return {
             isVisible: false,
         }
+    },
+    computed: {
+        actionItems() {
+            return this.items.length > 0 ? this.items : [{
+                'key': Enum.ACTION.DUPLICATE,
+                'value': this.$t('action.duplicate'),
+            },
+            {
+                'key': Enum.ACTION.DELETE,
+                'value': this.$t('action.delete'),
+            },
+            {
+                'key': !this.status ? Enum.ACTION.ACTIVE : Enum.ACTION.INACTIVE,
+                'value': !this.status ? this.$t('action.active') : this.$t('action.inactive'),
+            }]
+        },
+
+        /**
+         * @description: Lấy ra trạng status của bản ghi
+         * @param: {any} 
+         * Author: AnhDV 10/11/2022
+         */
+        status() {
+            try {
+                return this.propKey[this.columns.find((item) => item.key === 'status').key] === 1
+            } catch (error) {
+                return true
+            }
+
+        },
     },
     methods: {
         /**

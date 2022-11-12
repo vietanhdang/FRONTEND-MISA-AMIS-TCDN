@@ -33,7 +33,8 @@
                 </div>
             </div>
             <!-- Table hiển thị danh sách nhân viên -->
-            <v-table v-model:columns="columns" :data="employeeList.data" @action="handleAction" :actions="tableAction">
+            <v-table v-model:columns="columns" :data="employeeList.data" @action="handleAction" :actions="tableAction"
+                :isDataLoaded="isDataLoaded">
             </v-table>
             <!-- Phân trang -->
             <v-pagination v-model:pageSize="pagination.pageSize" v-model:pageNumber="pagination.pageNumber"
@@ -65,6 +66,8 @@ export default {
                 keyword: "",
             }, // biến này dùng để lưu thông tin phân trang và tìm kiếm
             debounce: null, // biến này dùng để lưu hàm debounce,
+            isDataLoaded: false, // biến này dùng để kiểm tra dữ liệu đã được load hay chưa
+
         };
     },
     computed: {
@@ -478,9 +481,11 @@ export default {
         async getEmployeeList() {
             const self = this;
             try {
+                self.isDataLoaded = false;
                 const result = await self.$api.employee.getEmployeesFilter(self.pagination);
                 if (result.status == Enum.MISA_CODE.SUCCESS) {
                     self.employeeList = result.data;
+                    self.isDataLoaded = true;
                     return Promise.resolve(true);
                 } else {
                     return Promise.resolve(false);

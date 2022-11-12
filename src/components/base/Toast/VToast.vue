@@ -6,7 +6,7 @@
                 <template v-if="item.timeout > 0 && item.showProgress">
                     <div class="v-toast__icon">
                         <!-- :class="item.type" -->
-                        <div :class="`ms-22 ms-icon ms-icon-toast-${item.type}`">
+                        <div :class="`ms-22 ms-icon-v2 ms-icon-toast-${item.type}`">
                         </div>
                     </div>
                     <div class="v-toast__text">

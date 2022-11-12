@@ -18,7 +18,7 @@
                                 <!-- Mặc định render column title -->
                                 <span>{{ column.title }}</span>
                                 <div class="v-table__header-icon ms-16 ms-icon-v2 ms-icon-header-option"
-                                    @click="showFilterPopup(column, index, $event)" v-if="column.filterable">
+                                    @click="showFilterPopup(column, $event)" v-if="column.filterable">
                                 </div>
                             </div>
                         </th>
@@ -58,7 +58,7 @@
                                 </template>
                                 <!-- Nếu như type là action thì render action -->
                                 <template v-else-if="column.type === 'action'">
-                                    <v-menu :propKey="row" @onSelect="onSelect" :items="actions">
+                                    <v-menu :propKey="row" @onSelect="onSelect" :items="actions" :columns="columns">
                                     </v-menu>
                                 </template>
                                 <!-- Nếu như type là tree thì render tree -->
@@ -103,6 +103,7 @@
 import { formatDate, convertGender, formatCurrency, convertStatus } from '@/utils/format';
 import Enum from '@/utils/enum';
 import VTableFilter from './VTableFilter'
+import format from '@/utils/format';
 export default {
     name: "VTable",
     components: {
@@ -151,16 +152,16 @@ export default {
     },
     computed: {
         /**
-         * @description: get và set các list id selected
-         * @param: {any} 
-         * Author: AnhDV 29/10/2022
-         */
+        * @description: get và set các list id selected
+        * @param: {any} 
+        * Author: AnhDV 29/10/2022
+        */
         listSelected: {
             get() {
-                return this.$store.getters.getListEmployeeSelected;
+                return this.$store.getters.getListIdSelected;
             },
             set(value) {
-                this.$store.commit('setEmployeeSelected', value);
+                this.$store.commit('setListIdSelected', value);
             },
         },
         /**
@@ -170,9 +171,9 @@ export default {
          */
         arrayTreeObj() {
             let vm = this;
-            var newObj = [];
-            vm.recursive(vm.data, newObj, 0, vm.itemId, false);
-            return newObj;
+            var newData = [];
+            vm.recursive(vm.data, newData, 0, vm.itemId, false);
+            return newData;
         }
     },
     watch: {
@@ -249,20 +250,20 @@ export default {
          * @param {newObj} dữ liệu mới
          * @param {level} level của item
          * @param {itemId} key của item
-         * @param {expend} trạng thái expand or collapse
+         * @param {isExpend} trạng thái expand or collapse
          * Author: AnhDV 02/11/2022
          */
-        recursive(obj, newObj, level, itemId, isExpend) {
+        recursive(data, newObj, level, itemId, isExpend) {
             try {
                 let vm = this;
-                obj.forEach(function (o) {
-                    if (o.children && o.children.length != 0) { // nếu có children thì gọi lại hàm đệ quy
+                data.forEach(function (o) {
+                    if (o.children && o.children.length != 0) { // nếu có children thì set một số giá trị như level và expend
                         o.level = level; // set level cho item
                         newObj.push(o); // thêm item vào mảng mới
                         if (o.id == itemId) { // nếu id của item bằng id được truyền vào thì set trạng thái expend cho item
                             o.expend = isExpend;
                         }
-                        if (o.expend == true) { // nếu trạng thái expend của item là true thì gọi lại hàm đệ quy
+                        if (o.expend == true) { // nếu trạng thái expend của item là true thì gọi lại hàm đệ quy để hiển thị các item con
                             vm.recursive(o.children, newObj, o.level + 1, itemId, isExpend);
                         }
                     } else { // nếu không có children thì thêm item vào mảng mới
@@ -275,14 +276,18 @@ export default {
                 console.log(error);
             }
         },
+        /**
+         * @description: Hàm này dùng để toggle trạng thái expand or collapse của parent item
+         * @param: {any} 
+         * Author: AnhDV 10/11/2022
+         */
         toggle(item) {
             try {
                 // hiển thị con của row được chọn
                 let vm = this;
                 vm.itemId = item[vm.propKeyTree]; // lấy id của item được chọn
                 item.leaf = false;
-                //show  sub items after click on + (more)
-                if (item.children.length > 0) {
+                if (item.children.length > 0) { // hiển thị hoặc ẩn con của item được chọn
                     item.expend = !item.expend;
                     vm.recursive(item.children, [], item.level + 1, item.id, true);
                 }
@@ -297,6 +302,7 @@ export default {
                 console.log();
             }
         },
+
         formatDate, convertGender, formatCurrency, convertStatus,
         /**
           * @description: Hàm này gọi dùng để truyền các action sau khi chọn của row
@@ -326,30 +332,36 @@ export default {
                 this.isLoaded = true;
             }, 200);
         },
-        showFilterPopup(column, index, event) {
-            this.filterPopup.isShow = false;
+        /**
+         * @description: Hàm này dùng để show filter popup
+         * @param: {any} 
+         * Author: AnhDV 10/11/2022
+         */
+        showFilterPopup(column, event) {
+            const self = this;
+            self.filterPopup.isShow = false;
             let target = event.target.parentElement.parentElement.getBoundingClientRect(); // lấy ra thẻ cha chứa icon show filter
             let top = target.top + target.height; // tính toán vị trí top của popup
             let left = target.left + target.width; // tính toán vị trí left của popup
-            this.filterPopup = {
+            self.filterPopup = {
                 isShow: true,
                 top: top,
                 left: left,
                 title: column.title,
                 key: column.key,
+                type: column.type || Enum.FilterType.Text,
                 value: '',
-                condition: Enum.FilterConditon.Contain,
-                conditionName: this.$t('table_filter.contain'),
-                type: column.type || Enum.FilterType.String,
+                condition: column.condition || column.type == Enum.FilterType.Number ? Enum.FilterConditon.Equal : Enum.FilterConditon.Contain,
+                conditionName: column.type == Enum.FilterType.Number ? self.$t('table_filter.equal') : self.$t('table_filter.contain'),
                 filterOptions: column.filterOptions || [],
                 selectedOption: null,
             }
-            // kiểm tra xem cột có filter không
-            if (this.listFilter.length > 0) {
-                const filter = this.listFilter.find((item) => item.key === column.key);
-                if (filter) {
-                    this.filterPopup.value = filter.value;
-                    this.filterPopup.condition = filter.condition;
+            const filter = this.$store.getters.getItemFilterByKey(column.key);
+            if (filter) {
+                self.filterPopup = {
+                    ...self.filterPopup,
+                    value: filter.value,
+                    condition: filter.condition,
                 }
             }
         },
@@ -359,9 +371,8 @@ export default {
          * Author: AnhDV 29/10/2022
          */
         closeFilterPopup(removeKey) {
-            if (removeKey && this.listFilter.length > 0) {
-                this.listFilter = this.listFilter.filter((item) => item.key !== removeKey);
-                this.$emit('dataFilter', this.listFilter);
+            if (removeKey !== undefined) {
+                this.$store.commit('removeItemFilter', removeKey);
             }
             this.filterPopup = {
                 isShow: false,
@@ -372,37 +383,28 @@ export default {
                 value: '',
                 condition: Enum.FilterConditon.Contain,
                 conditionName: this.$t('table_filter.contain'),
-                type: Enum.FilterType.String,
+                type: Enum.FilterType.Text,
                 filterOptions: [],
                 selectedOption: null,
-            }
+            } // reset lại giá trị của popup filter
         },
         /**
-         * @description: Hàm này dùng để lọc dữ liệu
+         * @description: Hàm này dùng để lưu giá trị filter vào store
          * @param: {any}
          * Author: AnhDV 29/10/2022
          */
         applyFilter(value) {
-            let filter = {
-                key: value.key,
-                value: value.value,
-                condition: value.condition,
-                conditionName: value.conditionName,
-                type: value.type,
-                title: value.title,
-                selectedOption: value.selectedOption,
-            }
-            if (this.listFilter.length > 0) {
-                let index = this.listFilter.findIndex(item => item.key === value.key);
-                if (index > -1) {
-                    this.listFilter[index] = filter;
-                } else {
-                    this.listFilter.push(filter);
+            if (value.value || value.condition == Enum.FilterConditon.IsNotNull || value.condition == Enum.FilterConditon.IsNull) {
+                let filter = {
+                    key: value.key,
+                    value: format.removeDatabaseInjection(value.value),
+                    condition: value.condition,
+                    conditionName: value.conditionName,
+                    title: value.title,
+                    selectedOption: value.selectedOption,
                 }
-            } else {
-                this.listFilter.push(filter);
+                this.$store.commit('addItemFilter', filter);
             }
-            this.$emit('dataFilter', this.listFilter);
             this.closeFilterPopup();
         },
     },

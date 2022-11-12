@@ -19,8 +19,8 @@ import VPagination from "./base/Pagination/VPagination";
 import VCollapse from "./base/VCollapse";
 import TheHeader from "./layout/TheHeader";
 import TheSidebar from "./layout/TheSidebar";
-import VFilterToolbar from "./base/Table/VFilterToolbar.vue";
 import VTableTree from "./base/Table/VTableTree.vue";
+import VFilter from "./base/Filter/VFilter.vue";
 
 export default {
   VButton,
@@ -43,7 +43,6 @@ export default {
   VSkeleton,
   VPagination,
   VCollapse,
-  VFilterToolbar,
+  VFilter,
   VTableTree,
-  
 };

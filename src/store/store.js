@@ -2,6 +2,8 @@ import { createStore } from "vuex";
 import dialogMode from "./dialogMode";
 import employee from "./employee";
 import action from "./action";
+import filter from "./filter";
+import table from "./table";
 
 /**
  * @description: Tạo store lưu trữ các state
@@ -13,6 +15,8 @@ const store = createStore({
     dialogMode,
     employee,
     action,
+    filter,
+    table,
   },
 });
 

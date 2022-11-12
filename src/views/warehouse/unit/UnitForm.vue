@@ -2,24 +2,24 @@
     <div>
         <!-- Khu vực hiển thị dialog form thêm hoặc sửa đơn vị tính -->
         <v-dialog :isShow="modelValue" @close="closeFormHandle(false)" width="500px"
-            @keydown.ctrl.s.exact="saveHandler(Enum.ACTION.SAVE_AND_CLOSE)"
-            @keydown.ctrl.shift.s.exact="saveHandler(Enum.ACTION.SAVE_AND_ADD)">
+            @onHandleSave="saveHandler(Enum.ACTION.SAVE_AND_CLOSE)"
+            @onHandleSaveAndNew="saveHandler(Enum.ACTION.SAVE_AND_ADD)">
             <template #title>
                 <div class="content-header__title">
-                    Thêm đơn vị tính
+                    {{ titleForm }}
                 </div>
             </template>
             <template #body>
                 <div class="grid">
                     <div class="row sm-gutter">
                         <div class="form-group col l-6 md-6 c-6">
-                            <v-input label="Đơn vị tính" :required="true" v-model="unitObj.unitName"
+                            <v-input label="Đơn vị tính" :required="true" v-model="unitObj.unitName" :maxLength="100"
                                 errorLabel="Đơn vị tính" ref="unitName" @validate="setValid('unitName', $event)"
                                 :focus="true">
                             </v-input>
                         </div>
                         <div class="form-group col l-12 md-12 c-12">
-                            <v-input label="Mô tả" type="textarea" v-model="unitObj.description">
+                            <v-input label="Mô tả" type="textarea" v-model="unitObj.description" :maxLength="255">
                             </v-input>
                         </div>
                     </div>
@@ -47,6 +47,7 @@
         </v-dialog>
         <!-- Khu vực hiển thị các popup cảnh báo -->
         <v-popup ref="popup" :tabIndex="0"></v-popup>
+        <v-toast ref="toast" :showProgress="true" :maxMessage="10"></v-toast>
     </div>
 </template>
 <script>
@@ -67,8 +68,8 @@ export default {
     data() {
         return {
             unitObj: { // Đối tượng đơn vị tính
-                unitName: '',
-                description: '',
+                unitName: null,
+                description: null,
                 status: 1
             },
             oldUnitObj: {},
@@ -92,22 +93,32 @@ export default {
                 return this.$store.getters.getMode;
             },
         },
+        /**
+         * @description: Thay đổi tên tiêu đề form theo trạng thái của form
+         * @param: {any} 
+         * Author: AnhDV 07/11/2022
+         */
+        titleForm() {
+            if (this.formMode == Enum.FORM_MODE.EDIT) {
+                return "Sửa đơn vị tính";
+            }
+            return "Thêm đơn vị tính";
+        },
     },
     watch: {
         modelValue: {
-            handler(isShowForm) {
+            async handler(isShowForm) {
                 const self = this;
                 if (isShowForm) {
-                    if (self.formMode == Enum.FORM_MODE.ADD) {
-                        self.oldUnitObj = JSON.parse(JSON.stringify(self.unitObj));
-                    } else if (self.formMode == Enum.FORM_MODE.EDIT) {
-                        self.getDetail();
+                    if (self.formMode == Enum.FORM_MODE.EDIT) {
+                        await self.getDetail();
                     } else if (self.formMode == Enum.FORM_MODE.DUPLICATE) {
-                        self.getDetail();
+                        await self.getDetail();
+                        self.formMode = Enum.FORM_MODE.ADD;
+                    } else {
                         self.formMode = Enum.FORM_MODE.ADD;
                     }
-                } else {
-                    self.formMode = Enum.FORM_MODE.NULL;
+                    self.oldUnitObj = JSON.parse(JSON.stringify(self.unitObj));
                 }
             },
             deep: true
@@ -119,17 +130,12 @@ export default {
          * @param: {any} 
          * Author: AnhDV 29/10/2022
          */
-        getDetail() {
+        async getDetail() {
             const self = this;
             try {
-                api.unit.getById(self.entityId, (res) => {
-                    self.unitObj = res.data;
-                    self.oldUnitObj = JSON.parse(JSON.stringify(res.data));
-                }, (err) => {
-                    self.$refs.popup.show(err.message, 'error');
-                });
+                self.unitObj = await api.unit.getById(self.entityId);
             } catch (error) {
-                console.log(error);
+                self.$refs.popup.showError(`Lấy thông tin đơn vị tính thất bại!`);
             }
         },
         /**
@@ -195,8 +201,8 @@ export default {
          */
         resetForm() {
             this.unitObj = {
-                unitName: '',
-                description: '',
+                unitName: null,
+                description: null,
                 status: 1
             };
             this.valids = {};
@@ -239,7 +245,6 @@ export default {
                     self.insertData(false);
                     break;
                 case Enum.ACTION.SAVE_AND_ADD:
-                    console.log('save and add');
                     self.insertData(true);
                     break;
                 default:
@@ -253,24 +258,39 @@ export default {
         async insertData(isReset = false) {
             const self = this;
             let result = false;
-            if (self.formMode === Enum.FORM_MODE.ADD) {
-                await api.unit.save(self.unitObj, (res) => {
-                    self.unitObj.unitID = res.data;
-                    console.log(res);
-                    result = true;
-                });
-            } else if (self.formMode === Enum.FORM_MODE.EDIT) {
-                await api.unit.update(self.unitObj, self.entityId, (res) => {
-                    console.log(res);
-                    result = true;
-                });
-            }
-            if (result) {
-                self.$emit('newUnit', self.unitObj);
-                if (isReset) {
-                    self.resetForm();
-                } else {
-                    self.onHandleDialogState(false);
+            let message = 'Thêm mới'
+            try {
+                if (self.formMode === Enum.FORM_MODE.ADD) {
+                    const res = await api.unit.save(self.unitObj);
+                    if (res) {
+                        self.unitObj.unitID = res;
+                        result = true;
+                    }
+                } else if (self.formMode === Enum.FORM_MODE.EDIT) {
+                    const res = await api.unit.update(self.unitObj, self.entityId);
+                    if (res) {
+                        result = true;
+                        message = 'Cập nhật'
+                    }
+                }
+                if (result) {
+                    self.$emit('newObj', self.unitObj);
+                    self.$root.$toast.success(`${message} đơn vị ${self.unitObj.unitName} thành công`);
+                    if (isReset) {
+                        self.resetForm();
+                    } else {
+                        self.onHandleDialogState(false);
+                    }
+                }
+            } catch (error) {
+                switch (Number(error.message)) {
+                    case Enum.MISAError.Duplicate:
+                        self.$root.$toast.error(`Đơn vị tính <<b>${self.unitObj.unitName}</b>> đã tồn tại`);
+                        self.$refs.unitName.handleShowErrorMessage('Đơn vị tính đã tồn tại');
+                        break;
+                    default:
+                        self.$root.$toast.error(`Có lỗi xảy ra khi ${message} đơn vị tính`);
+                        break;
                 }
             }
         },

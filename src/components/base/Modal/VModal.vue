@@ -1,6 +1,6 @@
 <template>
     <transition name="fade">
-        <div class="modal" v-if="isVisible || isShow" :tabindex="tabIndex" ref="modal">
+        <div class="modal" v-if="isVisible || isShow" :tabindex="tabIndex" ref="modal" :style="[{ zIndex: zIndex }]">
             <div class="modal-content" ref="modal-content" :class="[`modal-${position}`,{'slideIn' : isResize}]"
                 :style="[{ width: width }, { minWidth: width }]">
                 <slot></slot>
@@ -32,6 +32,10 @@ export default {
         isResize: { // Modal có resize hay không
             type: Boolean,
             default: false,
+        },
+        zIndex: { // Z-index của modal
+            type: Number,
+            default: 9999,
         },
     },
     data: () => ({

@@ -17,6 +17,7 @@ const api = {
   unit: baseApi(axios, "units"),
   stock: baseApi(axios, "stocks"),
   inventoryGroup: baseApi(axios, "inventorygroups"),
+  inventoryItem: baseApi(axios, "inventoryitems"),
 };
 
 export default api;

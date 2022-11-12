@@ -134,11 +134,14 @@
     position: relative;
 
     &:hover {
-      background-color: $bg-grey-hover;
+      // background-color: $bg-grey-hover;
+      color: #35bf22;
+      background-color: #ebedf0;
     }
 
     &.itemFocus {
-      background-color: $bg-grey-hover;
+      // background-color: $bg-grey-hover;
+      background-color: #ebedf0;
     }
   }
   &-select__empty {

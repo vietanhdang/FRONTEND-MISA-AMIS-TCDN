@@ -78,6 +78,7 @@
     "return": "Quay lại",
     "duplicate": "Nhân bản",
     "inactive": "Ngưng sử dụng",
+    "active": "Sử dụng",
     "more_action": "Chức năng khác",
     "table_setting": "Tùy chỉnh giao diện"
   },
@@ -92,7 +93,11 @@
     "contain": "Chứa",
     "not_contain": "Không chứa",
     "start_with": "Bắt đầu với",
-    "end_with": "Kết thúc với"
+    "end_with": "Kết thúc với",
+    "greater_than": "Lớn hơn",
+    "greater_than_or_equal": "Lớn hơn hoặc bằng",
+    "less_than": "Nhỏ hơn",
+    "less_than_or_equal": "Nhỏ hơn hoặc bằng"
   },
   "action_form": {
     "save": "Cất",

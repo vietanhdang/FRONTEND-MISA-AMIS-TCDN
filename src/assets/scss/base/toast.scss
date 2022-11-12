@@ -43,9 +43,9 @@
     @include flex-center;
     flex-shrink: 0;
 
-    &.info {
-      border-radius: 50%;
+    &:has(.ms-icon-toast-info) {
       background-color: $bg-toast-info;
+      border-radius: 50%;
     }
   }
 

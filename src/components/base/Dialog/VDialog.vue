@@ -1,8 +1,9 @@
 <template>
 
     <v-modal :isShow="isShow" :tabIndex="tabIndex" :position="position" :width="isResize ? changeSize : width"
-        :isResize="isResize" @keydown.ctrl.alt.c.stop="onHandleResize" @keydown.esc.stop="onHandleClose"
-        @keydown.ctrl.shift.s.exact="onHandleSaveAndNew" @keydown.ctrl.s.exact="onHandleSave">
+        :style="[{ zIndex: zIndex }]" :isResize="isResize" @keydown.ctrl.alt.c.stop="onHandleResize"
+        @keydown.esc.stop="onHandleClose" @keydown.ctrl.shift.s.exact="onHandleSaveAndNew"
+        @keydown.ctrl.s.exact="onHandleSave">
         <div class="v-dialog__content" :class="`v-dialog__content--${position}`">
             <div class="v-dialog__header">
                 <div class="v-dialog__title">
@@ -62,6 +63,10 @@ export default {
             type: Boolean,
             default: false
         },
+        zIndex: {
+            type: Number,
+            default: 9999
+        }
     },
     data() {
         return {

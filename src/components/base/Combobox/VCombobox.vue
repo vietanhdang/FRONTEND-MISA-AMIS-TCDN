@@ -2,20 +2,18 @@
     <div class="v-combobox" @keydown="handleSelectItemUpDown" v-click-outside="handleClickOutside" :class="[className]"
         ref="v-combobox">
         <v-tooltip :content="tooltipText" :position="tooltipPosition">
-            <div class="v-input__label" v-if="label">
-                <label @click="handleShowListData">{{ label }} <span v-if="required">*</span>
-                </label>
+            <div class="v-input__label" v-if="label" @click="handleShowListData">
+                {{ label }} <span v-if="required">*</span>
             </div>
         </v-tooltip>
         <div class="v-combobox__body" ref="combobox">
-
             <div class="v-combobox__selected" :class="[{ error: error }, { 'v-combobox__focus': isFocus }]"
-                :tooltip="showError">
+                :tooltip="showError" :error="error">
                 <!-- Combobox multiple value thì cần thêm khoảng để hiển thị nhiều giá trị -->
                 <div v-if="mode === 'multiple'" class="v-combobox__multi-select">
                     <div class="v-combobox__selection-item" v-for="(item, index) in selectedItems" :key="index">
                         <v-tooltip :content="item[propTooltip]">
-                            <span>{{ item[propValue] }} </span>
+                            <span>{{ replaceText(item[propValue]) }}</span>
                         </v-tooltip>
                         <div class="ms-16 ms-icon-v2 ms-icon-close-small" @click="handleRemoveItem(item)"></div>
                     </div>
@@ -28,7 +26,7 @@
                     @blur="handleBlurInput" autocomplete="off" spellcheck="false" @focus="handleInputFocus"
                     :readonly="selectBox" />
                 <!-- Thêm button add nhanh vào combobox -->
-                <div v-if="add" class="v-combobox__icon v-combobox__add" @click="$emit('add')">
+                <div v-if="add" class="v-combobox__icon v-combobox__add" @click="handleHideListData(), $emit('add')">
                     <div class="ms-16 ms-icon ms-icon-plus-success"></div>
                 </div>
                 <!-- Button show list -->
@@ -55,9 +53,7 @@
                                 <div v-if="hasHeader" class="v-select__item">
                                     <div class="v-select__item--content" v-for="(item, index) in columns" :key="index"
                                         :style="[{ maxWidth: item.width }, { width: item.width }]">
-                                        <div class="v-select__item--text">
-                                            {{ option[item.key] }}
-                                        </div>
+                                        <div class="v-select__item--text" v-html="option[item.key]"></div>
                                     </div>
                                 </div>
                                 <div v-else class="v-select__item">
@@ -89,7 +85,7 @@
 </template>
 <script>
 /* eslint-disable */
-import { removeVietnameseTones } from '@/utils/format';
+import { removeVietnameseTones, createArrayTreeName } from '@/utils/format';
 import Validate from '@/utils/validate';
 import axios from 'axios';
 import Enum from '@/utils/enum';
@@ -200,7 +196,16 @@ export default {
             required: false,
             default: false,
         },
-
+        additionObject: { // chấp nhận add thêm giá trị mới vào combobox nếu không có trong data hay không
+            type: Object,
+            required: false,
+            default: () => { }
+        },
+        tree: {
+            type: Object,
+            required: false,
+            default: () => { }
+        },
     },
     data() {
         return {
@@ -271,6 +276,26 @@ export default {
     },
     watch: {
         /**
+         * @description: Theo giõi nếu có một object mới truyền vào thì thêm vào data và chọn nó
+         * @param: {any} 
+         * Author: AnhDV 04/11/2022
+         */
+        additionObject: {
+            handler: function (value) {
+                if (value) {
+                    this.dataApi.unshift(value);
+                    if (this.mode == 'single') {
+                        // lấy ra index của item được chọn
+                        let index = this.dataApi.findIndex(item => item[this.propKey] == value[this.propKey]);
+                        this.handleSelectItem(value, index, true);
+                    } else {
+                        this.handleSelectItem(value);
+                    }
+                }
+            },
+            deep: true,
+        },
+        /**
          * @description: Nếu data bên component cha thay đổi thì sẽ lấy dữ liệu mới
          * Author: AnhDV 14/10/2022
          */
@@ -297,13 +322,77 @@ export default {
                         this.$refs.input.blur();
                     }
                     this.handleResetCombobox();
+                } else {
+                    this.loadData();
+                }
+            },
+            deep: true,
+        },
+        /**
+         * @description: showError tính lại vị trí tooltip 
+         * @param: {any} 
+         * Author: AnhDV 04/11/2022
+         */
+        showError: {
+            handler(newData) {
+                if (newData) {
+                    let after = this.$el.querySelector('.error');
+                    // kiểm tra content after có dài hơn độ dài của input không
+                }
+            },
+            deep: true,
+        },
+        /**
+         * @description: Hàm này dùng để format lại text input nếu nó là tree 
+         * @param: {any} 
+         * Author: AnhDV 11/11/2022
+         */
+        textInput: {
+            handler(newData) {
+                if (this.tree) {
+                    this.textInput = this.replaceText(newData);
                 }
             },
             deep: true,
         },
     },
-
     methods: {
+        /**
+         * @description: Hàm này dùng để replace &npsp; và thẻ <b> thành khoảng trắng
+         * @param: {any} 
+         * Author: AnhDV 10/11/2022
+         */
+        replaceText(text) {
+            try {
+                return text.replace(/&nbsp;/g, ' ').replace(/<b>/g, '').replace(/<\/b>/g, '').trim();
+            } catch (error) {
+                return text;
+            }
+        },
+        /**
+         * @description: nạp dữ liệu vào combobox
+         * @param: {any} 
+         * Author: AnhDV 07/11/2022
+         */
+        loadData() {
+            const self = this;
+            if (self.mode === 'single') {
+                const index = self.dataApi.findIndex((item) => item[self.propKey] === self.modelValue); // Tìm index của item có key trùng với giá trị mặc định
+                if (index !== -1) { // Nếu tồn tại item có key trùng với giá trị mặc định\
+                    self.handleSelectItem(self.dataApi[index], index); // Lấy dữ liệu của item được focus
+                    self.$emit("update:textInput", self.dataApi[index][self.propValue]); // Cập nhật lại textInput
+                }
+            } else {
+                self.selectedItemsKey = self.modelValue || []; // Lấy dữ liệu của item được focus
+                self.selectedItems = self.dataApi.filter((item) => self.selectedItemsKey.includes(item[self.propKey])); // Lấy dữ liệu của item được focus
+                if (self.selectedItems.length > 0) {
+                    self.$emit("update:textInput", self.selectedItems.map(item => self.replaceText(item[self.propValue]).replace(';', '')).join(';'));
+                }
+            }
+            if (self.additionValue) {
+                self.textInput = self.modelValue;
+            }
+        },
         /**
          * @description: Hàm này dùng để set vị trí phù hợp cho combobox nằm dưới hoặc trên input
          * @param: {any} 
@@ -341,6 +430,7 @@ export default {
          */
         handleInputFocus() {
             this.isFocus = true;
+            this.$refs.input.focus();
         },
         /**
          * @description: Hàm này dùng để validate combobox xem có trống hay không
@@ -469,14 +559,20 @@ export default {
                     } else {
                         // Nếu item chưa được chọn thì thêm vào list item đã chọn
                         self.selectedItemsKey.push(item[self.propKey]); // thêm key của item đã chọn
-                        self.selectedItems.push(item);
+                        let tempItem = JSON.parse(JSON.stringify(item)); // clone item
+                        if (self.tree) {
+                            tempItem[self.tree.propName] = self.replaceText(tempItem[self.tree.propName]); // thay thế text
+                        }
+                        self.selectedItems.push(tempItem); // thêm item đã chọn (hiển thị trên)
                     }
-                    self.tempValue = self.selectedItemsKey;
-                    self.textInput = "";
+                    self.tempValue = self.selectedItemsKey; // gán giá trị tạm bằng list key của item đã chọn
+                    self.$emit("update:textInput", self.selectedItems.map(item => self.replaceText(item[self.propValue]).replace(';', '')).join(';'));
+                    self.textInput = null;
                 }
                 else {
                     const value = item[self.propValue]; // Lấy giá trị của item được chọn
                     self.textInput = value; // Gán giá trị cho textInput
+                    self.indexItemSelected = index; // Gán index của item được chọn
                     self.indexItemSelected = index; // Gán index của item được chọn
                     self.indexItemFocus = index; // Gán index vị trí focus của item
                     self.keyItemSelected = item[self.propKey]; // Gán key của item được chọn
@@ -541,13 +637,13 @@ export default {
          */
         handleBlurInput() {
             const self = this;
-            if (!Validate.isNullOrEmpty(self.textInput)) { // Nếu textInput không rỗng
-                if (self.mode !== 'multiple') {
+            if (!Validate.isNullOrEmpty(self.textInput)) { // Nếu textInput rỗng
+                if (self.mode === 'single') {
                     self.tempValue = null;
                 }
             } else {
-                if (self.mode !== 'multiple') {
-                    if (self.additionValue && self.filterData.length === 0) {
+                if (self.mode === 'single') {
+                    if (self.additionValue) {
                         self.tempValue = self.textInput;
                         self.indexItemSelected = -1; // Reset lại index item được chọn
                         self.indexItemFocus = 0; // Reset lại index item được focus
@@ -557,16 +653,12 @@ export default {
                             self.textInput = self.dataApi[self.indexItemSelected][self.propValue];
                         } else {
                             self.tempValue = null;
-                            self.textInput = '';
+                            self.textInput = null;
                         }
                     }
+                } else {
+                    self.textInput = null;
                 }
-            }
-            if (self.mode === 'multiple') {
-                if (self.selectedItems.length === 0) {
-                    self.tempValue = [];
-                }
-                self.textInput = '';
             }
             if (!self.isShowListData) {
                 self.isFocus = false;
@@ -597,7 +689,7 @@ export default {
                     self.handleBlurInput(); // Ẩn danh sách dữ liệu
                     return;
                 }
-                if (keyCodePress == keycode.ESC) {
+                if (keyCodePress == keycode.ESC && self.isShowListData) {
                     event.stopPropagation(); // Ngăn sự kiện click ra ngoài combobox
                     self.handleHideListData(); // Ẩn danh sách dữ liệu
                     return;
@@ -642,7 +734,7 @@ export default {
             self.indexItemSelected = -1; // Reset lại index item được chọn
             self.indexItemFocus = -1; // Reset lại index item được focus
             self.keyItemSelected = null; // Reset lại key item được chọn
-            self.textInput = ""; // Reset lại text input
+            self.textInput = null; // Reset lại text input
             if (self.mode === 'multiple') {
                 self.selectedItems = []; // Reset lại dữ liệu đã chọn
                 self.selectedItemsKey = []; // Reset lại dữ liệu đã chọn
@@ -676,28 +768,35 @@ export default {
     async created() {
         const self = this;
         try {
-            if (self.propApi) { // Nếu có prop api thì gọi api lấy dữ liệu
+            if (self.propApi && self.dataApi.length === 0) { // Nếu có prop api và dữ liệu api rỗng thì gọi api lấy dữ liệu
                 const response = await axios.get(self.propApi);
-                self.dataApi = response.data;
-                self.filterData = response.data;
+                if (response.data.success) {
+                    const data = response.data.data;
+                    if (!self.tree) {
+                        self.dataApi = data;
+                        self.filterData = data;
+                    } else {
+                        self.dataApi = createArrayTreeName(data, self.tree.id, self.tree.propName, self.tree.parentId);
+                        self.filterData = self.dataApi;
+                    }
+                }
             }
             if (self.data) { // Nếu có dữ liệu truyền từ component cha thì gán dữ liệu
-                self.dataApi = self.data;
-                self.filterData = self.data;
-            }
-            if (self.modelValue) { // Nếu có giá trị mặc định truyền từ component cha
-                if (self.mode === 'single') {
-                    const index = self.dataApi.findIndex((item) => item[self.propKey] === self.modelValue); // Tìm index của item có key trùng với giá trị mặc định
-                    if (index !== -1) { // Nếu tồn tại item có key trùng với giá trị mặc định\
-                        self.handleSelectItem(self.dataApi[index], index); // Lấy dữ liệu của item được focus
-                    }
+                if (!self.tree) {
+                    self.dataApi = self.data;
+                    self.filterData = self.data;
                 } else {
-                    self.selectedItemsKey = self.modelValue;
-                    self.selectedItems = self.dataApi.filter((item) => self.selectedItemsKey.includes(item[self.propKey]));
+                    self.dataApi = createArrayTreeName(self.data, self.tree.id, self.tree.propName, self.tree.parentId);
+                    self.filterData = self.dataApi;
                 }
-                if (self.additionValue) {
-                    self.textInput = self.modelValue;
-                }
+            }
+            if (self.modelValue != null) { // Nếu có giá trị mặc định truyền từ component cha
+                self.loadData();
+            }
+            if (self.focus) {
+                this.$nextTick(() => {
+                    self.handleInputFocus();
+                });
             }
         } catch (error) {
             console.log(error);

@@ -55,6 +55,10 @@ export default {
             type: Boolean,
             default: true
         },
+        delta: { // số trang hiển thị phần 2 bên của trang hiện tại
+            type: Number,
+            default: 2
+        }
     },
     computed: {
         /**
@@ -117,15 +121,14 @@ export default {
         pages() {
             let pages = []; // danh sách trang
             for (let i = 1; i <= this.totalPage; i++) {
-                if (i == 1 || i == this.totalPage || (i >= this.pageNumber - 2 && i <= this.pageNumber + 2)) {
-                    // nếu là trang đầu hoặc trang cuối hoặc trang hiện tại và 2 trang xung quanh thì hiển thị phần rìa là 2 trang
+                if (i == 1 || i == this.totalPage || (i >= this.pageNumber - this.delta && i <= this.pageNumber + this.delta)) {
+                    // nếu là trang đầu hoặc trang cuối, hoặc trang hiện tại và 2 trang xung quanh thì hiển thị phần rìa là 2 trang
                     pages.push(i);
-                } else if (i == this.pageNumber - 3 || i == this.pageNumber + 3) {
+                } else if (i == this.pageNumber - (this.delta + 1) || i == this.pageNumber + (this.delta + 1)) {
                     // nếu là trang xung quanh trang hiện tại thì hiển thị dấu ...
                     pages.push('...');
                 }
             }
-
             // trả về mảng các trang
             return pages;
         }

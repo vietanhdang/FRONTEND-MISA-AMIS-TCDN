@@ -90,12 +90,27 @@ export default {
             type: Boolean,
             default: false,
         },
+        isShowContent: { // Có show content hay không
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
             showContent: false, // Dropdown có show content hay không
             textContent: "", // Text của dropdown
         };
+    },
+    watch: {
+        showContent(value) { // Khi show content thay đổi thì emit ra ngoài
+            this.$emit("update:isShowContent", value);
+        },
+        isShowContent: { // Khi isShowContent thay đổi thì showContent cũng thay đổi
+            handler(value) {
+                this.showContent = value;
+            },
+            deep: true,
+        },
     },
     methods: {
         /**

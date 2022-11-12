@@ -17,7 +17,6 @@
       flex-direction: column;
       position: fixed;
       left: 50%;
-      top: 30%;
     }
 
     &__not-found-icon {
@@ -206,11 +205,10 @@
         border-bottom: 1px solid $bg-table-line;
         border-right: 1px dotted $bg-table-line;
         background-color: inherit;
+        overflow: hidden;
+        text-overflow: ellipsis;
         // white-space: pre-wrap;
-       
-       
-      
-      
+
         &:last-child {
           box-sizing: border-box;
           border-right: unset;
@@ -232,6 +230,23 @@
         background-color: inherit;
         height: 100%;
         width: 100%;
+      }
+    }
+    &__footer {
+      &-row {
+        height: 34px;
+      }
+      &-cell {
+        border-top: 1px solid #c7c7c7;
+        min-height: 34px;
+        background-color: #e8eaef;
+        font-size: 12px;
+        vertical-align: middle;
+        padding: 0 10px;
+        font-weight: 600;
+        &:nth-child(2) {
+          left: 20px;
+        }
       }
     }
   }

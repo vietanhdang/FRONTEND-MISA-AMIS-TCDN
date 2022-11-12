@@ -78,6 +78,7 @@
     "return": "Return",
     "duplicate": "Duplicate",
     "inactive": "Inactive",
+    "active": "Active",
     "more_action": "More Action",
     "table_setting": "Theme Setting"
   },
@@ -92,7 +93,11 @@
     "contain": "Contain",
     "not_contain": "Not Contain",
     "start_with": "Start With",
-    "end_with": "End With"
+    "end_with": "End With",
+    "greater_than": "Greater Than",
+    "greater_than_or_equal": "Greater Than Or Equal",
+    "less_than": "Less Than",
+    "less_than_or_equal": "Less Than Or Equal"
   },
   "action_form": {
     "save": "Save",

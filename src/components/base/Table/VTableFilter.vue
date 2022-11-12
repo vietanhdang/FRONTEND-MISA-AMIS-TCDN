@@ -2,30 +2,30 @@
     <div v-if="filterPopup.isShow" class="v-table__condition" ref="condition" v-click-outside="closeFilterPopup"
         :style="[{ top: `${filterPopupTemp.top}px` }, { left: `${filterPopupTemp.left}px` }]"
         @keydown.enter="applyFilter">
-        <!-- <div class="v-table__lock cursor-pointer">
+        <div class="v-table__lock cursor-pointer">
             <div class="ms-24 ms-icon ms-icon-header-pin"></div>
             <span class="ms-l-2">Cố định cột này</span>
-        </div> -->
+        </div>
         <div class="v-table__filter">
             <div class="v-table__column-filter">
                 <!-- Hiển thị lọc theo label -->
                 <div class="span">Lọc {{ filterPopup.title }}
                 </div>
                 <!-- Nếu kiểu dữ liệu là text thì hiển thị dropdown các điều kiện -->
-                <v-dropdown className="secondary rounded ms-l-3 color-blue" v-if="showCondition"
+                <v-dropdown className="secondary rounded ms-l-3 color-blue" v-if="!isShowCombobox"
                     icon="ms-12 ms-icon-v2 ms-icon-arrow-down-blue" :isTextChange="true" propKey="key" propValue="value"
-                    v-model:value="filterPopupTemp.condition" @onSelect="changeConditionName" :items="filterOptions">
+                    v-model:value="filterPopupTemp.condition" @onSelect="changeConditionName" :items="filterCondition">
                 </v-dropdown>
             </div>
             <div class="v-table__input-filter m-t-2">
                 <!-- Nếu kiểu dữ liệu là text thì hiển thị input -->
-                <v-input placeholder="Nhập giá trị lọc" type="text" v-model="filterPopupTemp.value" v-if="showCondition"
-                    :focus="true" :disabled="disableInputCondition">
+                <v-input placeholder="Nhập giá trị lọc" :type="filterPopup.type" v-model="filterPopupTemp.value"
+                    :maxNumber="maxNumber" v-if="!isShowCombobox" :focus="true" :disabled="disableInputCondition">
                 </v-input>
                 <!-- Nếu kiểu dữ liệu là combobox thì hiển thị combobox -->
-                <v-combobox v-else-if="isShowCombobox" position="bottom" propKey="key" :focus="true" propValue="value"
+                <v-combobox v-else-if="isShowCombobox" position="bottom" propKey="key" propValue="value"
                     v-model="filterPopupTemp.value" v-model:textInput="filterPopupTemp.selectedOption"
-                    :data="filterPopup.filterOptions">
+                    :data="filterPopup.filterOptions" :focus="true">
                 </v-combobox>
             </div>
             <div class="v-table__action-filter d-flex justify-content-between m-t-3">
@@ -51,11 +51,12 @@ export default {
                     title: '',
                     key: '',
                     value: '',
-                    condition: Enum.FilterConditon.Contain,
-                    conditionName: this.$t('table_filter.contain'),
-                    type: Enum.FilterType.String,
+                    condition: '',
+                    conditionName: '',
                     filterOptions: [],
                     selectedOption: null,
+                    type: Enum.FilterType.Text,
+                    column: null,
                 };
             }
         }
@@ -66,18 +67,25 @@ export default {
         };
     },
     watch: {
-        'filterPopup.isShow': function (val) {
-            if (val) {
-                this.filterPopupTemp = JSON.parse(JSON.stringify(this.filterPopup));
-                // tính lại vị trí của popup
-                this.$nextTick(() => {
-                    this.filterPopupTemp.left = this.$refs.condition.offsetLeft - this.$refs.condition.offsetWidth;
-                });
-            }
-        }
+        'filterPopup.isShow': {
+            handler: function (val) {
+                if (val) {
+                    this.filterPopupTemp = JSON.parse(JSON.stringify(this.filterPopup));
+                    // tính lại vị trí của popup
+                    this.$nextTick(() => {
+                        this.filterPopupTemp.left = this.$refs.condition.offsetLeft - this.$refs.condition.offsetWidth;
+                        if (this.filterPopupTemp.left < 0) { // nếu popup vượt quá bên trái thì hiển thị bên phải
+                            this.filterPopupTemp.left = 0 + this.$refs.condition.offsetWidth;
+                        }
+                    });
+                }
+            },
+            deep: true,
+        },
+
     },
     computed: {
-        filterOptions() { // các điều kiện lọc
+        filterText() { // các điều kiện lọc với type là text
             return [
                 {
                     key: Enum.FilterConditon.IsNull,
@@ -113,13 +121,63 @@ export default {
                 }
             ]
         },
-        showCondition() {
-            return this.filterPopup.type === Enum.FilterType.String;
+        filterNumber() { // các điều kiện lọc với type là number
+            return [
+                {
+                    key: Enum.FilterConditon.IsNull,
+                    value: this.$t('table_filter.is_null')
+                },
+                {
+                    key: Enum.FilterConditon.IsNotNull,
+                    value: this.$t('table_filter.is_not_null')
+                },
+                {
+                    key: Enum.FilterConditon.Equal,
+                    value: this.$t('table_filter.equal')
+                },
+                {
+                    key: Enum.FilterConditon.NotEqual,
+                    value: this.$t('table_filter.not_equal')
+                },
+                {
+                    key: Enum.FilterConditon.GreaterThan,
+                    value: this.$t('table_filter.greater_than')
+                },
+                {
+                    key: Enum.FilterConditon.GreaterThanOrEqual,
+                    value: this.$t('table_filter.greater_than_or_equal')
+                },
+                {
+                    key: Enum.FilterConditon.LessThan,
+                    value: this.$t('table_filter.less_than')
+                },
+                {
+                    key: Enum.FilterConditon.LessThanOrEqual,
+                    value: this.$t('table_filter.less_than_or_equal')
+                }
+            ]
         },
-        isShowCombobox() {
+        maxNumber() { // kiểm tra xem giá trị nhập vào có lớn hơn giá trị max của column không
+            if (this.filterPopupTemp.column && this.filterPopupTemp.column.maxNumber) {
+                return this.filterPopupTemp.column.maxNumber;
+            }
+            return Number.MAX_SAFE_INTEGER;
+        },
+        filterCondition() { // lấy ra danh sách lọc theo kiểu dữ liệu
+            return this.filterPopup.type === Enum.FilterType.Number ? this.filterNumber : this.filterText;
+        },
+        /**
+         * @description: Điều kiện để hiển thị combobox
+         * Author: AnhDV 07/11/2022
+         */
+        isShowCombobox() { // nếu có option thì hiển thị combobox
             return this.filterPopup.filterOptions && this.filterPopup.filterOptions.length > 0;
         },
-        disableInputCondition() { // disable input lọc
+        /**
+         * @description: Disable input điều kiện lọc
+         * Author: AnhDV 07/11/2022
+         */
+        disableInputCondition() { // nếu có option là trống hoặc không trống thì disable input điều kiện lọc
             return this.filterPopupTemp.condition === Enum.FilterConditon.IsNull || this.filterPopupTemp.condition === Enum.FilterConditon.IsNotNull;
         },
     },
@@ -147,7 +205,7 @@ export default {
          * Author: AnhDV 29/10/2022
          */
         closeFilterPopup() {
-            if (event.target.closest('.v-table__header-icon')) return;
+            if (event.target.closest('.v-table__header-icon') || event.target.closest('.v-select__content')) return;
             this.$emit('closeFilterPopup');
         },
         /**

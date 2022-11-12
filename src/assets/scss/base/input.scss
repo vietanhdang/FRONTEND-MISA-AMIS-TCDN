@@ -28,7 +28,7 @@
   &-input__input {
     @include flex-align-center;
     position: relative;
-    
+
     label {
       font-weight: 400;
       cursor: pointer;
@@ -64,6 +64,7 @@
       &::placeholder {
         font-size: 12px;
         color: $border-grey;
+        font-style: italic;
       }
       &[type="checkbox"],
       &[type="radio"] {

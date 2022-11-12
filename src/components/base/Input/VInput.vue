@@ -18,17 +18,17 @@
                 :tabindex="type === 'radio' ? (modelValue == value ? 0 : -1) : tabIndex" />
             <!-- Base for text area -->
             <textarea ref="input" v-else-if="type === 'textarea'" :class="[{ error: error }]" :id="id"
-                :disabled="disabled" :style="style" v-model.trim="tempValue" :tabindex="tabIndex" :rows="rows"
-                :placeholder="placeholder" autocomplete="off" spellcheck="false" @focus="handleInputFocus"
-                @click="hideErrorMessage" @mouseover="showErrorMessage" @keypress="filterInput($event)"
-                @mouseleave="hideErrorMessage" @focusout="handleInputFocusOut"></textarea>
+                :disabled="disabled" :style="style" :tabindex="tabIndex" :rows="rows" :placeholder="placeholder"
+                autocomplete="off" spellcheck="false" @focus="handleInputFocus" @click="hideErrorMessage"
+                v-model="tempValue" @mouseover="showErrorMessage" @mouseleave="hideErrorMessage"
+                @focusout="handleInputFocusOut"></textarea>
             <!-- Base for input type is text -->
             <input v-else ref="input" :placeholder="placeholder"
                 :class="[{ error: error }, { 'v-input__outline': outline }]" :id="id" :disabled="disabled"
-                v-model.trim="tempValue" :tabindex="tabIndex" autocomplete="off" spellcheck="false"
-                @focus="handleInputFocus" :style="[style, { textAlign: type === 'number' ? 'right' : 'left' }]"
-                @focusout="handleInputFocusOut" @click="hideErrorMessage" @mouseover="showErrorMessage"
-                @keypress="filterInput($event)" @mouseleave="hideErrorMessage" />
+                :tabindex="tabIndex" autocomplete="off" spellcheck="false" @focus="handleInputFocus"
+                :style="[style, { textAlign: type === 'number' ? 'right' : 'left' }]" @focusout="handleInputFocusOut"
+                :value="valueHeader" @click="hideErrorMessage" @mouseover="showErrorMessage" @input="handleInput"
+                @mouseleave="hideErrorMessage" @keydown="handleKeyDown" />
             <!-- Label custom for checkbox -->
             <label class="v-input__checkbox" v-if="type === 'checkbox'" @click="$refs.input.click()">
                 <label class="label_custom" v-if="label_custom">{{ label_custom }}</label>
@@ -47,7 +47,8 @@
 </template>
 <script>
 import Validate from "@/utils/validate";
-
+import format from "@/utils/format";
+/* eslint-disable */
 export default {
     name: "VInput",
     props: {
@@ -165,6 +166,12 @@ export default {
             required: false,
             default: false,
         },
+        isPercent: {
+            // Percent for input
+            type: Boolean,
+            required: false,
+            default: false,
+        },
         isNumber: {
             // Number for input
             type: Boolean,
@@ -179,6 +186,18 @@ export default {
         },
         maxLength: {
             // Max length for input
+            type: Number,
+            required: false,
+            default: 0,
+        },
+        minNumber: {
+            // Min number for input
+            type: Number,
+            required: false,
+            default: 0,
+        },
+        maxNumber: {
+            // Max number for input
             type: Number,
             required: false,
             default: 0,
@@ -200,6 +219,12 @@ export default {
             required: false,
             default: 'right',
         },
+        isNegative: {
+            // Negative for input
+            type: Boolean,
+            required: false,
+            default: false,
+        },
 
     },
     data() {
@@ -207,8 +232,8 @@ export default {
             error: false, // có hiển thị lỗi hay không
             errorMess: "", // nội dung lỗi
             isShowErrorMessage: false, // trạng thái hiển thị lỗi
-            isChange: false, // trạng thái thay đổi
-
+            isChange: false, // trạng thái thay đổi,
+            valueHeader: '', // giá trị header
         };
     },
     computed: {
@@ -240,7 +265,11 @@ export default {
             set(value) {
                 const self = this;
                 self.isChange = true;
-                self.$emit("update:modelValue", value);
+                let temp = value;
+                if (!Validate.isNullOrEmpty(value)) { // nếu value rỗng thì set value = null
+                    temp = null;
+                }
+                self.$emit("update:modelValue", temp);
                 if (self.validateCheck || self.required) {
                     // nếu validateCheck = true thì validate cho trường dữ liệu không bắt buộc nhưng cố tình nhập sai
                     self.errorMess = "";
@@ -253,7 +282,109 @@ export default {
         },
 
     },
+    watch: {
+        /**
+         * @description: Khi giá trị thay đổi thì gán vào valueHeader
+         * Author: AnhDV 14/09/2022
+         */
+        modelValue: {
+            handler(value) {
+                if (this.type == 'number') {
+                    if (!Validate.isNullOrEmpty(value)) return;
+                    this.valueHeader = format.formatNumberShow(value);
+                } else {
+                    this.valueHeader = value;
+                }
+            },
+            immediate: true,
+        },
+    },
     methods: {
+        /**
+         * @description: Hàm này dùng để xứ lý khi nhập vào input
+         * @param: {any} 
+         * Author: AnhDV 04/11/2022
+         */
+        handleInput(e) {
+            const self = this;
+            if (self.type == 'number') {
+                if (!self.isNegative) {
+                    e.target.value = e.target.value.replace(/[^0-9.,]/g, ''); // replace các ký tự không phải số
+                } else {
+                    e.target.value = e.target.value.replace(/[^0-9.,-]/g, ''); // replace các ký tự không phải số
+                }
+                if (e.target.value.includes(',')) {
+                    const arr = e.target.value.split(',');
+                    if (arr[1].length > 2) { // nếu số thập phân lớn hơn 2 thì bỏ đi
+                        e.target.value = arr[0] + ',' + arr[1].substring(0, 2);
+                    }
+                }
+                // nếu giá trị cuối cùng là dấu chấm thì xóa đi
+                if (e.target.value[e.target.value.length - 1] == '.') {
+                    e.target.value = e.target.value.substring(0, e.target.value.length - 1);
+                }
+                // nếu có dấu phẩy đầu tiên và chuỗi rỗng thì thêm 0 vào trước dấu phẩy
+                if (e.target.value.includes(',') && e.target.value.indexOf(',') == 0) {
+                    e.target.value = '0' + e.target.value;
+                }
+                let reverseString = format.reverseFormatNumber(e.target.value, 'vi-VN'); // đảo chuỗi thành số
+                if (!isNaN(reverseString) && reverseString != '') {
+                    if (self.minNumber || self.maxNumber) {
+                        if (reverseString > self.maxNumber) { // nếu lớn hơn max thì gán lại bằng tempValue
+                            e.target.value = format.formatNumberShow(self.tempValue, 2);
+                            return;
+                        }
+                    }
+                    self.tempValue = Number(reverseString); // set giá trị cho modelValue
+                    if (e.target.value.includes(',')) {
+                        self.valueHeader = format.formatNumberShow(reverseString, e.target.value.split(',')[1].length);
+                    } else {
+                        self.valueHeader = format.formatNumberShow(reverseString, 0);
+                    }
+                } else {
+                    self.tempValue = null;
+                    self.valueHeader = '';
+                }
+            } else {
+                self.tempValue = e.target.value;
+            }
+        },
+        /**
+         * @description: Hàm này dùng để xử lý khi nhập vào input
+         * @param: {any} 
+         * Author: AnhDV 05/11/2022
+         */
+        handleKeyDown(e) {
+            const self = this;
+            if (self.type == 'number') {
+                // nếu e.target.value đã có dấu , thì chặn không cho nhập thêm dấu phẩy
+                if ((e.key == ',' || e.key == '.') && e.target.value.includes(',')) {
+                    e.preventDefault();
+                }
+                // thay thế dấu . thành dấu ,
+                if (e.key == '.' && !e.target.value.includes(',')) {
+                    e.target.value = e.target.value + ',';
+                }
+                if (self.isNegative) {
+                    // nếu e.target.value đã có dấu - thì chặn không cho nhập thêm dấu -
+                    if (e.key == '-' && e.target.value.includes('-')) {
+                        e.preventDefault();
+                    }
+                }
+            }
+        },
+
+        /**
+         * @description: Hàm này dùng để show errorMessage từ bên ngoài
+         * @param: {any} 
+         * Author: AnhDV 09/11/2022
+         */
+        handleShowErrorMessage(message) {
+            this.error = true;
+            this.errorMess = message;
+            this.isShowErrorMessage = true;
+        },
+
         /**
          * @description: showErrorMessage cho tooltip khi hover vào input
          * Author: AnhDV 14/09/2022
@@ -324,7 +455,11 @@ export default {
          * Author: AnhDV 20/10/2022
          */
         handleInputFocus() {
-            this.$refs.input.focus();
+            try {
+                this.$refs.input.focus();
+            } catch (e) {
+            }
+
         },
         /**
          * @description: Hàm này dùng để validate khi input blur
@@ -332,31 +467,15 @@ export default {
          */
         handleInputFocusOut() {
             const self = this;
-            if (self.required || self.validateCheck) {
+            if (this.type == 'number') {
+                if (self.tempValue != null && Number(self.tempValue) > 0) {
+                    this.valueHeader = format.formatNumberShow(self.tempValue, 2);
+                }
+            }
+            if (self.required || self.validateCheck) { // validate khi input đã thay đổi
                 self.validate();
                 self.$emit('validate', { error: self.error, errorMess: self.errorMess });
             }
-        },
-        /**
-         * @description: Hàm này dùng để chặn dữ liệu nhập vào theo định dạng
-         * Author: AnhDV 26/10/2022
-         */
-        filterInput(event) {
-            const self = this;
-            if (self.type === "number") {
-                event = (event) ? event : window.event;
-                var charCode = (event.which) ? event.which : event.keyCode;
-                if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-                    event.preventDefault();
-                }
-            } else {
-                if (self.maxLength > 0 && self.tempValue && self.tempValue.length > self.maxLength) {
-                    event.preventDefault();
-                    return;
-                }
-            }
-
-
         },
         /**
          * @description: Hàm này dùng để reset lại input

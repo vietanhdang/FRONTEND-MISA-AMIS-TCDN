@@ -19,7 +19,7 @@
   &:before {
     content: "";
     border: 5px solid transparent; /* opinion 4 */
-    z-index: 999; /* absurdity 1 */
+    z-index: 10000; /* absurdity 1 */
   }
   &:after {
     content: attr(tooltip); /* magic! */
@@ -44,7 +44,7 @@
     box-shadow: 0 1em 2em -0.5em rgba(0, 0, 0, 0.35);
     background: $bg-tooltip;
     color: #fff;
-    z-index: 999; /* absurdity 2 */
+    z-index: 10000; /* absurdity 2 */
   }
   &:hover:before,
   &:hover:after {
@@ -133,11 +133,11 @@
   &[error="true"] {
     &:before,
     &:after {
-      border-bottom-color: #EB3333;
+      border-bottom-color: #eb3333;
     }
     &[error] {
       &:after {
-        background: #EB3333;
+        background: #eb3333;
       }
     }
   }
