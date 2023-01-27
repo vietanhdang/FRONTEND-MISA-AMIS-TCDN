@@ -1,7 +1,7 @@
 
 ## Introduction
 
-MISA AMIS is a web application for managing assets of an organization. It is developed by [MISA Technology](https://www.misa.com.vn/).
+MISA AMIS is a web application for managing assets of an organization. It is developed by [MISA JSC](https://www.misa.com.vn/).
 
 ## In this project, I use the following technologies:
 
